@@ -3,7 +3,7 @@ __main__.py entrypoint for the bot.
 """
 import os
 import discord
-from db.core.database import DB
+from Eos.app.db.core.database import DB
 
 client = discord.Client(intents=discord.Intents.all())
 
