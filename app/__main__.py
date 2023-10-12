@@ -3,15 +3,16 @@ __main__.py entrypoint for the bot.
 """
 import os
 import discord
-from Eos.app.db.core.database import DB
+
+from Eos.app.db.database import DB
+
 
 client = discord.Client(intents=discord.Intents.all())
-
 
 @client.event
 async def on_ready():
     db = DB(os.getenv('RETOOL_DB'))
-    # db.synchronise(client)
+    db.sync(client)
     print(f'We have logged in as {client.user}')
 
 
