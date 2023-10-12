@@ -6,13 +6,13 @@ import discord
 
 from Eos.app.db.database import DB
 
-
 client = discord.Client(intents=discord.Intents.all())
+
 
 @client.event
 async def on_ready():
-    db = DB(os.getenv('RETOOL_DB'))
-    db.sync(client)
+    db = DB(os.getenv('RETOOL_DB'), client)
+    db.sync(guilds=True, channels=True, roles=True, members=True)
     print(f'We have logged in as {client.user}')
 
 
