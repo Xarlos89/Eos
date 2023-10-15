@@ -5,8 +5,8 @@ Layer 2: Data validation checks
 Layer 3: Discord interaction.
 Layer 4: Syncs and Database jobs
 """
-import psycopg
 from datetime import datetime
+import psycopg
 
 
 class DB:
@@ -577,9 +577,8 @@ class DB:
                         WHERE role_id = (%s)
                         """
         cur.execute(query, (
-            str(id_guild), role_name, position, color, hoisted, mentionable, managed, permissions, created_at,
-            last_synced,
-            str(role_id)))
+            str(id_guild), role_name, position, color, hoisted, mentionable
+            , managed, permissions, created_at, last_synced, str(role_id)))
 
     def update_channel_in_db(self, cur, guild_id, channel_id, name, category
                              , position, mention, jump_url, permissions_synced
@@ -619,9 +618,9 @@ class DB:
                         WHERE channel_id = (%s)
                         """
         cur.execute(query, (
-            str(guild_id), name, category, position, mention, jump_url, permissions_synced, overwrites, created_at,
-            last_synced,
-            str(channel_id)))
+            str(guild_id), name, category, position, mention, jump_url
+            , permissions_synced, overwrites, created_at, last_synced
+            , str(channel_id)))
 
     # ---------- Delete commands
     def delete_guild(self, guild_id):
@@ -645,6 +644,14 @@ class DB:
         self.cursor.connection.close()
 
     def delete_member(self, member_id, guild_id):
+        """
+        Deletes a member from the database.
+
+        Parameters
+        ----------
+        :param member_id: The member ID
+        :param guild_id: The guild ID
+        """
         cursor = self.connection.cursor()
         query = """
                 DELETE FROM
@@ -859,7 +866,7 @@ class DB:
             :param cur: the database cursor
             """
             for guild in self.discord_client.guilds:
-                print(f"- Syncing members...")
+                print("- Syncing members...")
                 for member in guild.members:
                     if self.is_member_in_db(member.id) is None:
                         self.add_member_to_db(
