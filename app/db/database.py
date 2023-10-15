@@ -1,10 +1,10 @@
-import psycopg2
+import psycopg
 from datetime import datetime
 
 
 class DB:
     def __init__(self, db_string, discord_client):
-        self.connection = psycopg2.connect(db_string)
+        self.connection = psycopg.connect(db_string)
         self.cursor = self.connection.cursor()
         self.discord_client = discord_client
 
@@ -65,12 +65,16 @@ class DB:
         query = f"SELECT * FROM {table_name} WHERE {column_name} = (%s)"
         cursor.execute(query, (value,))
         data = cursor.fetchone()
-        if len(data) > 0:
-            return True
-        return False
+
+        if data is None:
+            return False
+        return True
 
     def is_guild_in_db(self, guild_id):
         return self.is_data_in_db("guilds", "discord_guild_id", str(guild_id))
+
+    def is_settings_in_db(self, guild_id):
+        return self.is_data_in_db("settings", "discord_guild_id", str(guild_id))
 
     def is_channel_in_db(self, channel_id):
         return self.is_data_in_db("channels", "channel_id", str(channel_id))
@@ -110,6 +114,20 @@ class DB:
                , g_language
                , dt_now
                , str(discord_guild_id),)
+        )
+
+    def add_settings_to_db(self, cur, discord_guild_id, logging, moderation, dt_now):
+        query = """INSERT 
+                        INTO settings
+                            (discord_guild_id, logging, moderation, last_sync)
+                        VALUES((%s), (%s), (%s), (%s))"""
+        cur.execute(
+            query
+            , (str(discord_guild_id)
+               , logging
+               , moderation
+               , dt_now
+               )
         )
 
     def add_channel_to_db(self, cur, guild_id, channel_id, name, category, position, mention, jump_url,
@@ -243,7 +261,6 @@ class DB:
                , str(member_id))
         )
 
-
     def update_role_in_db(self, cur, id_guild, role_id, role_name, position, color, hoisted, mentionable, managed,
                           permissions, created_at, last_synced):
         query = """UPDATE 
@@ -355,7 +372,7 @@ class DB:
     
     """
 
-    def sync(self, guilds=True, channels=True, members=True, roles=True):
+    def sync(self, guilds=True, channels=True, members=True, roles=True, settings=True):
         cur = self.connection.cursor()
 
         def sync_guild_info(cur):
@@ -484,6 +501,18 @@ class DB:
                             , member.joined_at
                         )
 
+        def sync_settings_info(cur):
+            for guild in self.discord_client.guilds:
+                print("- Adding settings...")
+                if not self.is_settings_in_db(guild.id):
+                    self.add_settings_to_db(
+                        cur
+                        , guild.id
+                        , True
+                        , True
+                        , datetime.now()
+                    )
+
         if guilds:
             sync_guild_info(cur)
             self.connection.commit()
@@ -503,5 +532,8 @@ class DB:
             sync_member_info(cur)
             self.connection.commit()
 
+        if settings:
+            sync_settings_info(cur)
+            self.connection.commit()
 
-
+        self.connection.close()
