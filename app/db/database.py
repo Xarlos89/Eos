@@ -712,9 +712,28 @@ class DB:
     """
 
     def sync(self, guilds=True, channels=True, members=True, roles=True, settings=True):
+        """
+        Allows us to sync the database with all discord server information.
+        This can be a new server, or an existing server in the DB.
+
+        :param guilds: boolean indicating if we want to sync guilds
+        :param channels: boolean indicating if we want to sync channels
+        :param members: boolean indicating if we want to sync member information
+        :param roles: boolean indicating if we want to sync role information
+        :param settings: boolean indicating if we want to sync settings information
+        """
         cur = self.connection.cursor()
 
         def sync_guild_info(cur):
+            """
+            Syncs all guild information in the database.
+            If the guild is not in the database, it will be added.
+            If the guild is in the database, it will be updated.
+
+            Parameters
+            ----------
+            :param cur: the database cursor
+            """
             for guild in self.discord_client.guilds:
                 print("- Syncing Guild...")
                 if self.is_guild_in_db(guild.id) is None:
@@ -743,6 +762,15 @@ class DB:
                     )
 
         def sync_channel_info(cur):
+            """
+            Syncs all channel information in the database.
+            If the channel does not exist in the database, it will be added.
+            If the channel exists in the database, it will be updated.
+
+            Parameters
+            ----------
+            :param cur: the database cursor
+            """
             for guild in self.discord_client.guilds:
                 print("- Syncing Channels")
                 for channel in guild.channels:
@@ -777,6 +805,15 @@ class DB:
                         )
 
         def sync_role_info(cur):
+            """
+            Syncs all role information in the database.
+            If the role does not exist in the database, it will be added.
+            If the role exists in the database, it will be updated.
+
+            Parameters
+            ----------
+            :param cur: the database cursor
+            """
             for guild in self.discord_client.guilds:
                 print("- Syncing roles")
                 for role in guild.roles:
@@ -812,6 +849,15 @@ class DB:
                         )
 
         def sync_member_info(cur):
+            """
+            Syncs all member information in the database.
+            If the member does not exist in the database, it will be added.
+            If the member exists in the database, it will be updated.
+
+            Parameters
+            ----------
+            :param cur: the database cursor
+            """
             for guild in self.discord_client.guilds:
                 print(f"- Syncing members...")
                 for member in guild.members:
@@ -841,6 +887,14 @@ class DB:
                         )
 
         def sync_settings_info(cur):
+            """
+            Created an entry in the settings table for a new guild.
+            Existing guilds are not modified
+
+            Parameters
+            ----------
+            :param cur: the database cursor
+            """
             for guild in self.discord_client.guilds:
                 print("- Adding settings...")
                 if not self.is_settings_in_db(guild.id):
@@ -865,9 +919,6 @@ class DB:
             self.connection.commit()
 
         if members:
-            # TODO: strange bug in this ONLY when run with all the others too.
-            # File "/Users/xarlos/Documents/GitHub/Eos/Eos/app/db/database.py", line 66, in is_data_in_db
-            # cursor.execute(query, (value,))
             sync_member_info(cur)
             self.connection.commit()
 
