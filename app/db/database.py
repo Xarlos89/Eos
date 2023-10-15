@@ -261,6 +261,22 @@ class DB:
     # ---------- Add commands
     def add_guild_to_db(self, cur, g_name, g_logo, g_created_at, g_member_count, g_nsfw_level
                         , g_language, dt_now, discord_guild_id):
+        """
+        Adds a guild to the database, along with all of its corresponding information
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param g_name: the name of the guild
+        :param g_logo: the logo of the guild
+        :param g_created_at: the datetime when the guild was created
+        :param g_member_count: the integer of members in the guild
+        :param g_nsfw_level: the nsfw level of the guild
+        :param g_language: the primary language of the guild
+        :param dt_now: the current datetime
+        :param discord_guild_id: the id of the discord guild
+
+        """
         query = """INSERT 
                         INTO guilds
                             (discord_guild_id, name, logo, created_at, member_count, nsfw_level, language, last_sync)
@@ -278,6 +294,18 @@ class DB:
         )
 
     def add_settings_to_db(self, cur, discord_guild_id, logging, moderation, dt_now):
+        """
+        Adds guild settings to the database
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param discord_guild_id: the id of the discord guild
+        :param logging: the logging setting
+        :param moderation: the moderation setting
+        :param dt_now: the current datetime
+
+        """
         query = """
         INSERT INTO settings
             (discord_guild_id, logging, moderation, last_sync)
@@ -295,6 +323,25 @@ class DB:
     def add_channel_to_db(self, cur, guild_id, channel_id, name, category
                           , position, mention, jump_url, permissions_synced
                           , overwrites, created_at, last_synced):
+        """
+        Adds all guild channel information to the database
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param guild_id: the id of the guild
+        :param channel_id: the id of the channel
+        :param name: the name of the channel
+        :param category: the category of the channel
+        :param position: the position of the channel
+        :param mention: the mention of the channel
+        :param jump_url: the jump url of the channel
+        :param permissions_synced: the permissions synced of the channel
+        :param overwrites: the overwrites of the channel
+        :param created_at: the datetime when the channel was created
+        :param last_synced: the datetime when the channel was last synced
+
+        """
         query = """INSERT 
                         INTO channels (
                             discord_guild_id
@@ -329,6 +376,22 @@ class DB:
 
     def add_member_to_db(self, cur, guild_id, member_id, name, avatar, created_at
                          , nickname, display_name, joined_at):
+        """
+        Adds all members from a specified guild to the database
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param guild_id: the id of the guild
+        :param member_id: the id of the member
+        :param name: the name of the member
+        :param avatar: the avatar of the member
+        :param created_at: the datetime when the member was created
+        :param nickname: the nickname of the member
+        :param display_name: the display name of the member
+        :param joined_at: the datetime when the member joined the guild
+
+        """
         query = """INSERT 
                         INTO members
                             (discord_guild_id, member_id, name, avatar, created_at, nickname, display_name, joined_at, points)
@@ -341,6 +404,25 @@ class DB:
     def add_role_to_db(self, cur, id_guild, role_id, role_name, position, color
                        , hoisted, mentionable, managed, permissions, created_at
                        , last_synced):
+        """
+        Adds all roles from a specified guild to the database
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param id_guild: the id of the guild
+        :param role_id: the id of the role
+        :param role_name: the name of the role
+        :param position: the position of the role
+        :param color: the color of the role
+        :param hoisted: If the role is seperated in the members tab
+        :param mentionable: If the role is mentionable or not
+        :param managed: If the role is managed or not
+        :param permissions: the permissions of the role
+        :param created_at: the datetime when the role was created
+        :param last_synced: the datetime when the role was last synced
+
+        """
         query = """INSERT 
                         INTO roles (
                             discord_guild_id
@@ -376,6 +458,21 @@ class DB:
     # ---------- Update commands
     def update_guild_info(self, cur, g_name, g_logo, g_created_at, g_member_count
                           , g_nsfw_level, g_language, dt_now, guild_id):
+        """
+        Update guild information in the database.
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param g_name: the name of the guild
+        :param g_logo: the logo of the guild
+        :param g_created_at: the datetime when the guild was created
+        :param g_member_count: the integer of members in the guild
+        :param g_nsfw_level: the nsfw level of the guild
+        :param g_language: the primary language of the guild
+        :param dt_now: the current datetime
+        :param guild_id: the id of the discord guild
+        """
 
         query = """UPDATE
                             guilds
@@ -403,6 +500,21 @@ class DB:
 
     def update_member_info(self, cur, guild_id, member_id, name, avatar, created_at
                            , nickname, display_name, joined_at):
+        """
+        Updates all member information in the database.
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param guild_id: the id of the discord guild
+        :param member_id: the id of the member
+        :param name: the name of the member
+        :param avatar: the avatar of the member
+        :param created_at: the datetime when the member was created
+        :param nickname: the nickname of the member
+        :param display_name: the display name of the member
+        :param joined_at: the datetime when the member joined the guild
+        """
         query = """UPDATE 
                             members
                         SET
@@ -430,6 +542,24 @@ class DB:
     def update_role_in_db(self, cur, id_guild, role_id, role_name, position, color
                           , hoisted, mentionable, managed, permissions, created_at
                           , last_synced):
+        """
+        Updates all roles in the database.
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param id_guild: the id of the discord guild
+        :param role_id: the id of the role
+        :param role_name: the name of the role
+        :param position: the position of the role in the roles list
+        :param color: the color of the role
+        :param hoisted: If the role is seperated in the members tab
+        :param mentionable: If the role is mentionable or not
+        :param managed: If the role is managed or not
+        :param permissions: the permissions of the role
+        :param created_at: the datetime when the role was created
+        :param last_synced: the datetime when the role was last synced
+        """
         query = """UPDATE 
                             roles
                         SET
@@ -454,6 +584,24 @@ class DB:
     def update_channel_in_db(self, cur, guild_id, channel_id, name, category
                              , position, mention, jump_url, permissions_synced
                              , overwrites, created_at, last_synced):
+        """
+        Updates all channel information for a guild in the database.
+
+        Parameters
+        ----------
+        :param cur: the db cursor
+        :param guild_id: the id of the discord guild
+        :param channel_id: the id of the channel
+        :param name: the name of the channel
+        :param category: the category of the channel
+        :param position: the position of the channel in the channels list
+        :param mention: If the channel is mentionable or not
+        :param jump_url: the jump url of the channel
+        :param permissions_synced: the permissions of the channel
+        :param overwrites: the overwrites of the channel
+        :param created_at: the datetime when the channel was created
+        :param last_synced: the datetime when the channel was last synced
+        """
 
         query = """UPDATE 
                             channels
@@ -477,6 +625,13 @@ class DB:
 
     # ---------- Delete commands
     def delete_guild(self, guild_id):
+        """
+        removes a guild from the database
+
+        Parameters
+        ----------
+        :param guild_id: The guild ID
+        """
         cursor = self.connection.cursor()
         query = """
                 DELETE
@@ -504,6 +659,14 @@ class DB:
         self.cursor.connection.close()
 
     def delete_role(self, role_id, guild_id):
+        """
+        Deletes a role from the database.
+
+        Parameters
+        ----------
+        :param role_id: The role ID
+        :param guild_id: The guild ID
+        """
         cursor = self.connection.cursor()
         query = """
                 DELETE FROM
@@ -518,6 +681,14 @@ class DB:
         self.cursor.connection.close()
 
     def delete_channel(self, channel_id, guild_id):
+        """
+        Deletes a channel from the database.
+
+        Parameters
+        ----------
+        :param channel_id: The channel ID
+        :param guild_id: The guild ID
+        """
         cursor = self.connection.cursor()
         query = """
                 DELETE FROM
