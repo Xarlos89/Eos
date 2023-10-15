@@ -143,6 +143,19 @@ class DB:
     """
 
     def is_data_in_db(self, table_name, column_name, value):
+        """
+        Check if a value is in the database.
+
+        Parameters
+        ----------
+        :param table_name: The name of the table to check
+        :param column_name: The name of the column to check
+        :param value: the value to pass to the pyscopg query
+
+        Returns
+        -------
+        :return: boolean - if the data is in the database
+        """
         cursor = self.connection.cursor()
         query = f"SELECT * FROM {table_name} WHERE {column_name} = (%s)"
         cursor.execute(query, (value,))
@@ -153,21 +166,87 @@ class DB:
         return True
 
     def is_guild_in_db(self, guild_id):
+        """
+        Check if a guild is in the database.
+
+        Parameters
+        ----------
+        :param guild_id: The id of the guild to check
+
+        Returns
+        -------
+        :return: boolean - if the guild is in the database
+        """
         return self.is_data_in_db("guilds", "discord_guild_id", str(guild_id))
 
     def is_settings_in_db(self, guild_id):
+        """
+        Check if the settings for a guild is in the database.
+
+        Parameters
+        ----------
+        :param guild_id: The id of the guild to check
+
+        Returns
+        -------
+        :return: boolean - if the settings for a guild are in the database
+        """
         return self.is_data_in_db("settings", "discord_guild_id", str(guild_id))
 
     def is_channel_in_db(self, channel_id):
+        """
+        Check if a channel is in the database.
+
+        Parameters
+        ----------
+        :param channel_id: The id of the channel to check
+
+        Returns
+        -------
+        :return: boolean - if the channel is in the database
+        """
         return self.is_data_in_db("channels", "channel_id", str(channel_id))
 
     def is_member_in_db(self, member_id):
+        """
+        Check if a member is in the database.
+
+        Parameters
+        ----------
+        :param member_id: The id of the member to check
+
+        Returns
+        -------
+        :return: boolean - if the member is in the database
+        """
         return self.is_data_in_db("members", "member_id", str(member_id))
 
     def is_role_in_db(self, role_id):
+        """
+        Check if a role is in the database.
+
+        Parameters
+        ----------
+        :param role_id: The id of the role to check
+
+        Returns
+        -------
+        :return: boolean - if the role is in the database
+        """
         return self.is_data_in_db("roles", "role_id", str(role_id))
 
     def is_command_in_db(self, command_id):
+        """
+        Check if a command is in the database.
+
+        Parameters
+        ----------
+        :param command_id: The id of the command to check
+
+        Returns
+        -------
+        :return: boolean - if the command is in the database
+        """
         return self.is_data_in_db("commands", "command_id", str(command_id))
 
     """
