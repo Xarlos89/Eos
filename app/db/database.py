@@ -1,30 +1,76 @@
+"""
+A database class that implements database methods in different layers.
+Layer 1: Basic Database interaction.
+Layer 2: Data validation checks
+Layer 3: Discord interaction.
+Layer 4: Syncs and Database jobs
+"""
 import psycopg
 from datetime import datetime
 
 
 class DB:
+    """
+    1st Layer.
+    From here we create:
+    - Basic Database interaction
+    """
     def __init__(self, db_string, discord_client):
+        """
+        Initialize the database, create a connection using the provided
+        database connection string, create a cursor and define the client.
+
+        Parameters
+        ----------
+        db_string : str
+            Your PostgresDB connection string
+        discord_client : discord client object
+            your discord client object defined in main
+
+        Returns
+        -------
+        db object
+        """
         self.connection = psycopg.connect(db_string)
         self.cursor = self.connection.cursor()
         self.discord_client = discord_client
 
-    """ 
-    1st Layer.
-     From here we create:
-    - Basic Database interaction
-    """
-
     def create_cursor(self):
+        """
+        Create a cursor and return it.
+
+        Returns
+        -------
+        database cursor
+        """
         return self.connection.cursor()
 
     def close_cursor(self):
+        """
+        Close the cursor and connection.
+        """
         self.cursor.close()
         self.connection.close()
 
     def commit_query(self):
+        """
+        Commit the current query
+        """
         self.connection.commit()
 
     def select_one(self, query, *data):
+        """
+        Execute a query and return the first result.
+
+        Parameters
+        ----------
+        :param query: A pyscopg query string
+        :param data: Data to be passed to the query
+
+        Returns
+        -------
+        :return: The first result of the query
+        """
         if data:
             self.cursor.execute(query, data)
         else:
@@ -35,6 +81,18 @@ class DB:
         return data
 
     def select_all(self, query, *data):
+        """
+        Execute a query and return all results.
+
+        Parameters
+        ----------
+        :param query: A pyscopg query string
+        :param data: Data to be passed to the query
+
+        Returns
+        -------
+        :return: All results of the query
+        """
         if data:
             self.cursor.execute(query, data)
         else:
@@ -45,18 +103,42 @@ class DB:
         return data
 
     def update(self, query, data):
+        """
+        Execute an update query.
+
+        Parameters
+        ----------
+        :param query: A pyscopg query string
+        :param data: The data to be passed to the query
+
+        Returns
+        -------
+        :return: None - updates the database
+        """
         self.cursor.execute(query, (data,))
         self.connection.commit()
         self.connection.close_cursor()
 
     def insert(self, query, data):
+        """
+        Execute an insert query.
+
+        Parameters
+        ----------
+        :param query: A pyscopg query string
+        :param data: The data to be passed to the query
+
+        Returns
+        -------
+        :return: None - inserts into the database
+        """
         self.cursor.execute(query, (data,))
         self.connection.commit()
         self.connection.close_cursor()
 
     """ 
     2nd Layer.
-     From here we create:
+    From here we create:
     - Existence Checks
     """
 
@@ -98,8 +180,8 @@ class DB:
     """
 
     # ---------- Add commands
-    def add_guild_to_db(self, cur, g_name, g_logo, g_created_at, g_member_count, g_nsfw_level, g_language, dt_now,
-                        discord_guild_id):
+    def add_guild_to_db(self, cur, g_name, g_logo, g_created_at, g_member_count, g_nsfw_level
+                        , g_language, dt_now, discord_guild_id):
         query = """INSERT 
                         INTO guilds
                             (discord_guild_id, name, logo, created_at, member_count, nsfw_level, language, last_sync)
@@ -117,10 +199,11 @@ class DB:
         )
 
     def add_settings_to_db(self, cur, discord_guild_id, logging, moderation, dt_now):
-        query = """INSERT 
-                        INTO settings
-                            (discord_guild_id, logging, moderation, last_sync)
-                        VALUES((%s), (%s), (%s), (%s))"""
+        query = """
+        INSERT INTO settings
+            (discord_guild_id, logging, moderation, last_sync)
+        VALUES((%s), (%s), (%s), (%s))
+                """
         cur.execute(
             query
             , (str(discord_guild_id)
@@ -130,8 +213,9 @@ class DB:
                )
         )
 
-    def add_channel_to_db(self, cur, guild_id, channel_id, name, category, position, mention, jump_url,
-                          permissions_synced, overwrites, created_at, last_synced):
+    def add_channel_to_db(self, cur, guild_id, channel_id, name, category
+                          , position, mention, jump_url, permissions_synced
+                          , overwrites, created_at, last_synced):
         query = """INSERT 
                         INTO channels (
                             discord_guild_id
@@ -164,18 +248,20 @@ class DB:
             )
         )
 
-    def add_member_to_db(self, cur, guild_id, member_id, name, avatar, created_at, nickname, display_name, joined_at):
+    def add_member_to_db(self, cur, guild_id, member_id, name, avatar, created_at
+                         , nickname, display_name, joined_at):
         query = """INSERT 
                         INTO members
                             (discord_guild_id, member_id, name, avatar, created_at, nickname, display_name, joined_at, points)
                         VALUES((%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s))
                             """
         cur.execute(query,
-                    (str(guild_id), str(member_id), name, avatar, created_at, nickname, display_name, joined_at,
-                     10))
+                    (str(guild_id), str(member_id), name, avatar
+                     , created_at, nickname, display_name, joined_at, 10))
 
-    def add_role_to_db(self, cur, id_guild, role_id, role_name, position, color, hoisted, mentionable, managed,
-                       permissions, created_at, last_synced):
+    def add_role_to_db(self, cur, id_guild, role_id, role_name, position, color
+                       , hoisted, mentionable, managed, permissions, created_at
+                       , last_synced):
         query = """INSERT 
                         INTO roles (
                             discord_guild_id
@@ -209,8 +295,8 @@ class DB:
         )
 
     # ---------- Update commands
-    def update_guild_info(self, cur, g_name, g_logo, g_created_at, g_member_count, g_nsfw_level, g_language, dt_now,
-                          guild_id):
+    def update_guild_info(self, cur, g_name, g_logo, g_created_at, g_member_count
+                          , g_nsfw_level, g_language, dt_now, guild_id):
 
         query = """UPDATE
                             guilds
@@ -236,7 +322,8 @@ class DB:
                , str(guild_id),)
         )
 
-    def update_member_info(self, cur, guild_id, member_id, name, avatar, created_at, nickname, display_name, joined_at):
+    def update_member_info(self, cur, guild_id, member_id, name, avatar, created_at
+                           , nickname, display_name, joined_at):
         query = """UPDATE 
                             members
                         SET
@@ -261,8 +348,9 @@ class DB:
                , str(member_id))
         )
 
-    def update_role_in_db(self, cur, id_guild, role_id, role_name, position, color, hoisted, mentionable, managed,
-                          permissions, created_at, last_synced):
+    def update_role_in_db(self, cur, id_guild, role_id, role_name, position, color
+                          , hoisted, mentionable, managed, permissions, created_at
+                          , last_synced):
         query = """UPDATE 
                             roles
                         SET
@@ -284,8 +372,9 @@ class DB:
             last_synced,
             str(role_id)))
 
-    def update_channel_in_db(self, cur, guild_id, channel_id, name, category, position, mention, jump_url,
-                             permissions_synced, overwrites, created_at, last_synced):
+    def update_channel_in_db(self, cur, guild_id, channel_id, name, category
+                             , position, mention, jump_url, permissions_synced
+                             , overwrites, created_at, last_synced):
 
         query = """UPDATE 
                             channels
