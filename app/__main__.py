@@ -3,6 +3,7 @@ __main__.py entrypoint for the bot.
 """
 import os
 import discord
+from logging import log
 
 from Eos.app.db.database import DB
 
@@ -13,7 +14,7 @@ client = discord.Client(intents=discord.Intents.all())
 async def on_ready():
     db = DB(os.getenv('RETOOL_DB'))
     db.sync(client)
-    print(f'We have logged in as {client.user}')
+    log.info(f'We have logged in as {client.user}')
 
 
 if __name__ == "__main__":
