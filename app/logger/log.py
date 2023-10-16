@@ -1,6 +1,6 @@
 """
-Controls the logging for the entire application.
-Also, the logging level is controlled here
+Controls the logger for the entire application.
+Also, the logger level is controlled here
 """
 import logging
 import os
@@ -9,7 +9,7 @@ import json
 
 
 
-log_file_path = pathlib.Path('logs.txt')
+log_file_path = pathlib.Path('app', 'logger', 'logs.txt')
 logging.basicConfig(filename=log_file_path,
                     format='%(asctime)s - %(levelname)s: %(message)s',
                     datefmt='%Y-%m-%d %H:%M.%S',
@@ -22,27 +22,27 @@ logger = logging.getLogger()
 30 = WARN
 50 = CRITICAL
 """
-logger.setLevel(os.getenv('LOG_LEVEL'))
+logger.setLevel(int(os.getenv('LOG_LEVEL')))
 
 
-def log_debug(thing: object):
+def debug(thing: object):
     """ Logs at the debug level """
     logger.debug(thing)
 
 
-def log_info(thing: object):
+def info(thing: object):
     """ Logs at the info level """
     print(thing)
     logger.info(thing)
 
 
-def log_warn(thing: object):
+def warn(thing: object):
     """ Logs at the warn level """
     print(thing)
     logger.warning(thing)
 
 
-def log_critical(thing: object):
+def critical(thing: object):
     """ Logs at the critical level """
     print(thing)
     logger.critical(thing)
