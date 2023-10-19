@@ -5,15 +5,23 @@ import os
 import discord
 
 from Eos.app.db.database import DB
+from logger import log
+
 
 client = discord.Client(intents=discord.Intents.all())
 
 
 @client.event
+async def before_identify_hook(shard_id, initial):
+    if initial:
+        log.info('Connecting to DB')
+        # db = DB(os.getenv('RETOOL_DB'))
+        log.info('Connection Success')
+
+@client.event
 async def on_ready():
-    db = DB(os.getenv('RETOOL_DB'), client)
-    db.sync(guilds=False, channels=False, roles=False, members=False, settings=True)
-    print(f'We have logged in as {client.user}')
+    # db.sync(client)
+    log.info(f'We have logged in as {client.user}')
 
 
 if __name__ == "__main__":
