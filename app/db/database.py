@@ -7,7 +7,7 @@ Layer 4: Syncs and Database jobs
 """
 from datetime import datetime
 import psycopg
-from logging import log
+from logger import log
 
 
 class DB:
