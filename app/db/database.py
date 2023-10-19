@@ -7,6 +7,7 @@ Layer 4: Syncs and Database jobs
 """
 from datetime import datetime
 import psycopg
+from logger import log
 
 
 class DB:
@@ -15,6 +16,9 @@ class DB:
     From here we create:
     - Basic Database interaction
     """
+    log.info('- Connecting to DB')
+
+
     def __init__(self, db_string, discord_client):
         """
         Initialize the database, create a connection using the provided
@@ -34,6 +38,8 @@ class DB:
         self.connection = psycopg.connect(db_string)
         self.cursor = self.connection.cursor()
         self.discord_client = discord_client
+        log.debug(f"Connecting to: {db_string}")
+        log.debug(f"Using {discord_client} as discord client")
 
     def create_cursor(self):
         """
@@ -249,6 +255,17 @@ class DB:
         """
         return self.is_data_in_db("commands", "command_id", str(command_id))
 
+    def get_all_tables_in_database(self):
+        """
+        Returns a list of all tables in the database
+
+        :return: list - containing all table names in the database
+        """
+        query = ("SELECT table_name FROM information_schema.tables"
+                 " WHERE table_schema='public' AND table_type='BASE TABLE';")
+        return self.select_all(self,query)
+
+
     """
     3rd Layer. 
     From here we create:
@@ -281,6 +298,7 @@ class DB:
                         INTO guilds
                             (discord_guild_id, name, logo, created_at, member_count, nsfw_level, language, last_sync)
                         VALUES((%s), (%s), (%s), (%s),(%s), (%s), (%s))"""
+        log.debug(f"Adding guild: {g_name}")
         cur.execute(
             query
             , (g_name
@@ -311,6 +329,7 @@ class DB:
             (discord_guild_id, logging, moderation, last_sync)
         VALUES((%s), (%s), (%s), (%s))
                 """
+        log.debug(f"Adding settings to: {discord_guild_id}")
         cur.execute(
             query
             , (str(discord_guild_id)
@@ -358,6 +377,7 @@ class DB:
                             )
                         VALUES((%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s))
                             """
+        log.debug(f"Adding channel:{name} to: {guild_id}")
         cur.execute(
             query, (
                 str(guild_id)
@@ -397,6 +417,7 @@ class DB:
                             (discord_guild_id, member_id, name, avatar, created_at, nickname, display_name, joined_at, points)
                         VALUES((%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s))
                             """
+        log.debug(f"Adding member:{name} to: {guild_id}")
         cur.execute(query,
                     (str(guild_id), str(member_id), name, avatar
                      , created_at, nickname, display_name, joined_at, 10))
@@ -439,6 +460,7 @@ class DB:
                             )
                         VALUES((%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s),(%s))
                             """
+        log.debug(f"Adding role:{role_name} to: {id_guild}")
         cur.execute(
             query, (
                 str(id_guild)
@@ -486,6 +508,7 @@ class DB:
                           , last_sync = (%s)
                         WHERE
                             discord_guild_id = (%s)"""
+        log.debug(f"Updating guild: {g_name}")
         cur.execute(
             query
             , (g_name
@@ -527,6 +550,7 @@ class DB:
                             , joined_at = (%s)
                         WHERE member_id = (%s)
                         """
+        log.debug(f"Updating member: {name} in guild: {guild_id}")
         cur.execute(
             query
             , (str(guild_id)
@@ -576,6 +600,7 @@ class DB:
 
                         WHERE role_id = (%s)
                         """
+        log.debug(f"Updating role: {role_name} in guild: {id_guild}")
         cur.execute(query, (
             str(id_guild), role_name, position, color, hoisted, mentionable
             , managed, permissions, created_at, last_synced, str(role_id)))
@@ -617,6 +642,7 @@ class DB:
                             , last_synced = (%s)
                         WHERE channel_id = (%s)
                         """
+        log.debug(f"Updating channel: {name} in guild: {guild_id}")
         cur.execute(query, (
             str(guild_id), name, category, position, mention, jump_url
             , permissions_synced, overwrites, created_at, last_synced
@@ -638,6 +664,7 @@ class DB:
                 WHERE
                     discord_guild_id = (%s)
                 """
+        log.debug(f"Deleting guild: {guild_id}")
         cursor.execute(query, (str(guild_id),))
 
         self.cursor.connection.commit()
@@ -660,6 +687,7 @@ class DB:
                     member_id = (%s) 
                     and discord_guild_id = (%s)
                 """
+        log.debug(f"Deleting member: {member_id} in guild: {guild_id}")
         cursor.execute(query, (member_id, str(guild_id),))
 
         self.cursor.connection.commit()
@@ -682,6 +710,7 @@ class DB:
                     role_id = (%s) 
                     and discord_guild_id = (%s)
                 """
+        log.debug(f"Deleting role: {role_id} in guild: {guild_id}")
         cursor.execute(query, (role_id, str(guild_id),))
 
         self.cursor.connection.commit()
@@ -704,6 +733,7 @@ class DB:
                     channel_id = (%s) 
                     and discord_guild_id = (%s)
                 """
+        log.debug(f"Deleting channel: {channel_id} in guild: {guild_id}")
         cursor.execute(query, (channel_id, str(guild_id),))
 
         self.cursor.connection.commit()
@@ -730,7 +760,7 @@ class DB:
         :param settings: boolean indicating if we want to sync settings information
         """
         cur = self.connection.cursor()
-
+        log.info("Starting database sync...")
         def sync_guild_info(cur):
             """
             Syncs all guild information in the database.
@@ -742,7 +772,7 @@ class DB:
             :param cur: the database cursor
             """
             for guild in self.discord_client.guilds:
-                print("- Syncing Guild...")
+                log.info("Syncing guild...")
                 if self.is_guild_in_db(guild.id) is None:
                     self.add_guild_to_db(
                         cur
@@ -779,7 +809,7 @@ class DB:
             :param cur: the database cursor
             """
             for guild in self.discord_client.guilds:
-                print("- Syncing Channels")
+                log.info("Syncing channel...")
                 for channel in guild.channels:
                     if self.is_channel_in_db(channel.id) is None:
                         self.add_channel_to_db(
@@ -822,7 +852,7 @@ class DB:
             :param cur: the database cursor
             """
             for guild in self.discord_client.guilds:
-                print("- Syncing roles")
+                log.info("Syncing roles...")
                 for role in guild.roles:
                     if self.is_role_in_db(role.id) is None:
                         self.add_role_to_db(
@@ -866,7 +896,7 @@ class DB:
             :param cur: the database cursor
             """
             for guild in self.discord_client.guilds:
-                print("- Syncing members...")
+                log.info("Syncing members...")
                 for member in guild.members:
                     if self.is_member_in_db(member.id) is None:
                         self.add_member_to_db(
@@ -903,7 +933,7 @@ class DB:
             :param cur: the database cursor
             """
             for guild in self.discord_client.guilds:
-                print("- Adding settings...")
+                log.info("- Adding settings...")
                 if not self.is_settings_in_db(guild.id):
                     self.add_settings_to_db(
                         cur
@@ -934,3 +964,5 @@ class DB:
             self.connection.commit()
 
         self.connection.close()
+
+    log.info('- Connection Success')
