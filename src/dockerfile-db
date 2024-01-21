@@ -1,0 +1,3 @@
+FROM postgres
+RUN su postgres
+COPY /database/scripts /docker-entrypoint-initdb.d/

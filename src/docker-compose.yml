@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+  bot:
+    container_name: eos
+    build:
+      context: .
+      dockerfile: dockerfile-bot
+    env_file: .env
+    image: eos-bot
+    restart: always
+    networks:
+      - boobies
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: dockerfile-api
+    image: eos-api
+    networks:
+      - boobies
+    environment:
+      POSTGRES_HOST: postgres
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    container_name: db
+    env_file: .env
+    build:
+      context: .
+      dockerfile: dockerfile-db
+    image: postgres:16.1-alpine
+    ports:
+      - 5432:5432
+    networks:
+      - boobies
+    restart: always
+    volumes:
+      - ./database/scripts/:/docker-entrypoint-initdb.d
+
+networks:
+  boobies:
+    driver: bridge

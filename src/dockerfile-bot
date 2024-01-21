@@ -1,0 +1,9 @@
+FROM python:3.11.6-slim-bookworm
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app
+COPY /bot .
+# Not needed until adding voice. Until then, much faster without
+# RUN apt-get update && apt-get install -y ffmpeg
+RUN pip install -r requirements.txt
+
+ENTRYPOINT ["python", "__main__.py"]
