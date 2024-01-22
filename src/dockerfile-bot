@@ -1,4 +1,4 @@
-FROM python:3.11.6-slim-bookworm
+FROM python:3.10.13-slim-bookworm
 ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY /bot .
