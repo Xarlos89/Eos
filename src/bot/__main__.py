@@ -15,10 +15,8 @@ intents = discord.Intents.all()
 intents.message_content = True
 bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
 bot.api = API()
-bot.db = DB(f"postgresql://"
-                    f"{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}"
-                    f"@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}"
-                    f"/{os.getenv('POSTGRES_DB')}")
+bot.db = DB()
+
 
 async def load_cogs(robot: commands.Bot) -> None:
     """
