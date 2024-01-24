@@ -1,9 +1,15 @@
+import os
 import psycopg
 
 
 class DB:
-    def __init__(self, connection_string):
-        self.conn = psycopg.connect(connection_string)
+    def __init__(self):
+        self.conn = psycopg.connect(
+                dbname=os.getenv('POSTGRES_DB'),
+                user=os.getenv('POSTGRES_USER'),
+                password=os.getenv('POSTGRES_PASSWORD'),
+                host=os.getenv('POSTGRES_HOST')
+            )
         self.cursor = self.conn.cursor()
 
     def execute_query(self, query, params=None):
