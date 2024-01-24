@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify
 
-
 # Define a Blueprint
 healthchecks = Blueprint('healthchecks', __name__)
 
