@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   bot:
-    container_name: eos
+    container_name: eos-bot
     build:
       context: .
       dockerfile: dockerfile-bot
@@ -15,7 +15,7 @@ services:
     restart: always
 
   api:
-    container_name: api
+    container_name: eos-api
     build:
       context: .
       dockerfile: dockerfile-api
@@ -29,7 +29,7 @@ services:
     restart: always
 
   postgres:
-    container_name: db
+    container_name: eos-db
     build:
       context: .
       dockerfile: dockerfile-db
