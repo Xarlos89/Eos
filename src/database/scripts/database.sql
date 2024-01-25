@@ -11,20 +11,35 @@ BEGIN
     ----------------------------------------------------------------
     -- settings
     ----------------------------------------------------------------
-    IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'settings') THEN
-        -- Create the table
-        EXECUTE '
-            CREATE TABLE settings (
-                id SERIAL PRIMARY KEY,
-                guild_id VARCHAR(255) NOT NULL,
-                join_log varchar(255),
-                chat_log varchar(255),
-                mod_actions_log varchar(255),
-                server_change_log varchar(255),
-                bot_error_log varchar(255),
-                status BOOL,
-                value VARCHAR(255) NULL
-            )';
+    IF
+        NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'settings') THEN
+            -- Create the table
+            EXECUTE '
+                CREATE TABLE settings (
+                    id SERIAL PRIMARY KEY,
+                    guild_id VARCHAR(255) NOT NULL,
+                    join_log varchar(255),
+                    chat_log varchar(255),
+                    mod_actions_log varchar(255),
+                    server_change_log varchar(255),
+                    bot_error_log varchar(255),
+                    status BOOL,
+                    value VARCHAR(255) NULL
+                )';
+    END IF;
+
+    ----------------------------------------------------------------
+    -- users
+    ----------------------------------------------------------------
+    IF
+        NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users') THEN
+            -- Create the table
+            EXECUTE '
+                CREATE TABLE users (
+                    id SERIAL PRIMARY KEY,
+                    user_id VARCHAR(255) NOT NULL,
+                    name VARCHAR(255) NOT NULL
+                )';
     END IF;
 
 END $$;
