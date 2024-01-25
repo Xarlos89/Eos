@@ -4,9 +4,9 @@ from flask import Blueprint, jsonify
 healthchecks = Blueprint('healthchecks', __name__)
 
 
-@healthchecks.route('/hc', methods=['GET'])
+@healthchecks.route('/hc', methods=['GET', 'PUT'])
 def healthcheck():
     """
     A simple healthcheck that returns an up status.
     """
-    return jsonify({"status": "up"}), 200
+    return jsonify("up", 200)
