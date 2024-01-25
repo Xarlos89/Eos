@@ -20,9 +20,7 @@ services:
       context: .
       dockerfile: dockerfile-api
     image: eos-api
-    environment:
-      POSTGRES_HOST: postgres
-      PGUSER: postgres
+    env_file: .env
     depends_on:
       postgres:
         condition: service_healthy
