@@ -2,7 +2,6 @@ import logging
 import discord
 from discord.ext import commands
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -25,13 +24,18 @@ class CommandListener(commands.Cog):
             await ctx.send(f"That command does not exist. Try again.\n {error}")
             return
 
-        if isinstance(error, discord.ext.commands.errors.HTTPException):
-            logger.critical(f"ERROR: {ctx.guild.name} -- {ctx.author} -- {error}")
-            await ctx.send(f"There was an API error, check the logs.")
+        if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+            logger.warning(f"ERROR: {ctx.guild.name} -- {ctx.author} -- {error}")
+            await ctx.send(f"There was an issue with the command.\nError: {error}")
             return
 
-        logger.critical(f"Error: {error}")
+        logger.critical(f"Error: {error}\n"
+                        f"Type: {type(error)}")
 
+        await ctx.send(f"Unhandled Error!\n"
+                       f"Maybe we should add this to the error handler?\n"
+                       f"Error: {error}\n"
+                       f"Type: {type(error)}")
 
 
 async def setup(bot: commands.Bot) -> None:
