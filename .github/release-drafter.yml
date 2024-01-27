@@ -5,20 +5,15 @@ categories:
     labels:
       - 'feature'
       - 'enhancement'
-      - 'improvement'
   - title: '🐛 Bug Fixes'
     labels:
-      - 'fix'
       - 'bugfix'
-      - 'bug'
       - 'patch'
   - title: '🧰 Maintenance'
     labels:
       - 'chore'
-      - 'task'
       - 'cleanup'
-      - 'refactor'
-      - 'document'
+      - 'documentation'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
@@ -30,7 +25,7 @@ version-resolver:
       - 'minor'
   patch:
     labels:
-      - 'patch'
+      - 'bugfix'
   default: patch
 template: |
   ## Changes

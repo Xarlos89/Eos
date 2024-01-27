@@ -17,7 +17,6 @@ bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
 bot.api = API()
 
 
-
 async def load_cogs(robot: commands.Bot) -> None:
     """
     Loads the directories under the /cogs/ folder,
