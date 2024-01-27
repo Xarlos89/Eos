@@ -20,10 +20,18 @@ class CommandListener(commands.Cog):
         This is an error handler for command errors.
         For a list of command errors -> https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exceptions
         """
-        await ctx.send(f"That command does not exist. Try again.\n {error}")
-
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-            logger.info(f"ERROR: {ctx.guild.name} -- {ctx.author} -- {error}")
+            logger.warning(f"ERROR: {ctx.guild.name} -- {ctx.author} -- {error}")
+            await ctx.send(f"That command does not exist. Try again.\n {error}")
+            return
+
+        if isinstance(error, discord.ext.commands.errors.HTTPException):
+            logger.critical(f"ERROR: {ctx.guild.name} -- {ctx.author} -- {error}")
+            await ctx.send(f"There was an API error, check the logs.")
+            return
+
+        logger.critical(f"Error: {error}")
+
 
 
 async def setup(bot: commands.Bot) -> None:
