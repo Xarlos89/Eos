@@ -1,5 +1,6 @@
 import os
 import psycopg
+from psycopg import OperationalError
 
 
 class DB:
@@ -11,6 +12,13 @@ class DB:
                 host=os.getenv('POSTGRES_HOST')
             )
         self.cursor = self.conn.cursor()
+
+    def db_health_check(self):
+        try:
+            self.conn.close()
+            return True
+        except OperationalError as err:
+            return {"error": {err}, "status": False}
 
     def execute_query(self, query, params=None):
         try:

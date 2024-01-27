@@ -1,12 +1,22 @@
 from flask import Blueprint, jsonify
+from ..utilities.db_helper import db
 
 # Define a Blueprint
 healthchecks = Blueprint('healthchecks', __name__)
 
 
-@healthchecks.route('/hc', methods=['GET', 'PUT'])
-def healthcheck():
+@healthchecks.route('/hc-api', methods=['GET'])
+def api_health_check():
     """
     A simple healthcheck that returns an up status.
     """
-    return jsonify("up", 200)
+    return jsonify({'api': 'ok'}, 200)
+
+
+@healthchecks.route('/hc-db', methods=['GET'])
+def database_health_check():
+    """
+    A simple healthcheck that returns an up status.
+    """
+    hc = db.database_health_check()
+    return jsonify(hc, 200)
