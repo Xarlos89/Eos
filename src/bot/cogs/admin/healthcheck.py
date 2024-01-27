@@ -12,12 +12,31 @@ class Health(commands.Cog):
     @commands.hybrid_command()
     async def healthcheck_api(self, ctx: commands.Context) -> None:
         logger.debug("healthcheck_api command used.")
-        await ctx.channel.send(self.bot.api.api_health_check())
+
+        hc = self.bot.api.api_health_check()
+        message = hc[0]['status']
+        status_code = hc[1]
+
+        if message == "ok":
+            await ctx.channel.send(f"Response: {status_code}\n"
+                                   f"API Status: Healthy")
+        else:
+            await ctx.channel.send(f"Response: {status_code}\n"
+                                   f"API Status: Unhealthy")
 
     @commands.hybrid_command()
     async def healthcheck_db(self, ctx: commands.Context) -> None:
         logger.debug("healthcheck_db command used.")
-        await ctx.channel.send(self.bot.api.database_health_check())
+        hc = self.bot.api.database_health_check()
+        message = hc[0]['status']
+        status_code = hc[1]
+
+        if message == "ok":
+            await ctx.channel.send(f"Response: {status_code}\n"
+                                   f"API Status: Healthy")
+        else:
+            await ctx.channel.send(f"Response: {status_code}\n"
+                                   f"API Status: Unhealthy")
 
 
 async def setup(bot: commands.Bot) -> None:
