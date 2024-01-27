@@ -9,11 +9,15 @@ from core.api_helper import API
 
 
 logger = logging.getLogger(__name__)
-setup_logger(level=int(os.getenv("LOG_LEVEL")), stream_logs=bool(os.getenv("STREAM_LOGS")))
+setup_logger(
+    level=int(os.getenv("LOG_LEVEL"))
+    , stream_logs=bool(os.getenv("STREAM_LOGS")))
 
 intents = discord.Intents.all()
 intents.message_content = True
-bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
+bot = commands.Bot(
+    command_prefix=os.getenv("PREFIX")
+    , intents=intents)
 bot.api = API()
 
 
