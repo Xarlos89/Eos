@@ -10,14 +10,14 @@ class Health(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command()
-    async def healthcheck(self, ctx: commands.Context) -> None:
-        logger.debug("healthcheck command used.")
-        await ctx.channel.send(self.bot.api.healthcheck())
+    async def healthcheck_api(self, ctx: commands.Context) -> None:
+        logger.debug("healthcheck_api command used.")
+        await ctx.channel.send(self.bot.api.api_health_check())
 
     @commands.hybrid_command()
-    async def all_commands(self, ctx: commands.Context) -> None:
-        logger.debug("all_commands command used.")
-        await ctx.channel.send(self.bot.api.all_commands())
+    async def healthcheck_db(self, ctx: commands.Context) -> None:
+        logger.debug("healthcheck_db command used.")
+        await ctx.channel.send(self.bot.api.database_health_check())
 
 
 async def setup(bot: commands.Bot) -> None:
