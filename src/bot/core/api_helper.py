@@ -7,13 +7,17 @@ class API:
         self.api = 'http://api:5000'
         self.headers = {'Content-Type': 'application/json'}
 
+    ##############################
+    #        Health checks       #
+    ##############################
 
-    ##############################
-    #        Healthchecks        #
-    ##############################
-    def healthcheck(self):
+    def api_health_check(self):
         """Returns the healthcheck status of the API"""
-        return requests.get(f"{self.api}/hc").json()
+        return requests.get(f"{self.api}/hc_api").json()
+
+    def database_health_check(self):
+        """Returns the healthcheck status of the API"""
+        return requests.get(f"{self.api}/hc_db").json()
 
     ##############################
     #           Settings         #
