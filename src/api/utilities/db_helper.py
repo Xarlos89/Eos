@@ -13,12 +13,12 @@ class DB:
             )
         self.cursor = self.conn.cursor()
 
-    def db_health_check(self):
+    def database_health_check(self):
         try:
             self.conn.close()
-            return True
+            return {"status": "ok"}
         except OperationalError as err:
-            return {"error": {err}, "status": False}
+            return {"status": "unhealthy", "error": {err}}
 
     def execute_query(self, query, params=None):
         try:
