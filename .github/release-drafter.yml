@@ -1,5 +1,7 @@
 name-template: '🌈 v$RESOLVED_VERSION  🌈'
 tag-template: 'v$RESOLVED_VERSION'
+
+# We use Github Labels to categorize feature/bug/task branches into categories in the Changelog
 categories:
   - title: '🚀 Features'
     labels:
@@ -16,6 +18,10 @@ categories:
       - 'documentation'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
+
+# The NAME of the PR will update the version.
+# If the PR into prod has this label, the version is updated.
+# Default (No specific name) will be a patch (vX.X.NUMBER)
 version-resolver:
   major:
     labels:
