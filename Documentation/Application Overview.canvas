@@ -1,0 +1,23 @@
+{
+	"nodes":[
+		{"id":"a1d25621ccd03f03","x":-2840,"y":-1056,"width":1010,"height":936,"color":"5","type":"group","label":"src/bot"},
+		{"id":"c8a03580bac270d7","x":-2280,"y":-40,"width":1040,"height":840,"color":"5","type":"group","label":"src/api"},
+		{"id":"fe6259a3d1aecd08","x":-1720,"y":-1056,"width":840,"height":936,"color":"5","type":"group","label":"src/ui"},
+		{"id":"d7c194f67b3bcacf","x":-2280,"y":880,"width":1040,"height":520,"color":"5","type":"group","label":"src/database"},
+		{"id":"3e733f8358fcea3e","type":"file","file":"Eos/API/API Database-wrapper.md","x":-1950,"y":480,"width":400,"height":260,"color":"3"},
+		{"id":"3735aa0b0ccffda4","type":"file","file":"Eos/API/API.md","x":-2200,"y":0,"width":900,"height":400,"color":"1"},
+		{"id":"df4683f10d626327","type":"file","file":"Eos/Database/Database.md","x":-2200,"y":920,"width":900,"height":400,"color":"1"},
+		{"id":"4cbe842c02f833dd","type":"file","file":"Eos/UI/Bot UI.md","x":-1670,"y":-988,"width":710,"height":400,"color":"1"},
+		{"id":"b51fe1634addaa17","type":"file","file":"Eos/UI/UI API Wrapper.md","x":-1360,"y":-420,"width":400,"height":260,"color":"3"},
+		{"id":"e2018290e28cfdb6","type":"file","file":"Eos/Bot/Discord Bot.md","x":-2800,"y":-920,"width":900,"height":400,"color":"1"},
+		{"id":"d2be4e8b9cabea6d","type":"file","file":"Eos/Bot/Bot API-wrapper.md","x":-2600,"y":-420,"width":400,"height":260,"color":"3"}
+	],
+	"edges":[
+		{"id":"3ffbf6e8fb4f7302","fromNode":"e2018290e28cfdb6","fromSide":"bottom","toNode":"d2be4e8b9cabea6d","toSide":"top","color":"5"},
+		{"id":"5e816decc0a67f7e","fromNode":"d2be4e8b9cabea6d","fromSide":"bottom","toNode":"3735aa0b0ccffda4","toSide":"left","color":"4","label":"requests"},
+		{"id":"5190749c70d9c3b7","fromNode":"4cbe842c02f833dd","fromSide":"bottom","toNode":"b51fe1634addaa17","toSide":"top","color":"5"},
+		{"id":"86caf06f8623fbae","fromNode":"b51fe1634addaa17","fromSide":"bottom","toNode":"3735aa0b0ccffda4","toSide":"right","color":"4","label":"requests"},
+		{"id":"6a98a65eac1b6451","fromNode":"3735aa0b0ccffda4","fromSide":"bottom","toNode":"3e733f8358fcea3e","toSide":"top","color":"5"},
+		{"id":"e0a31bc6a5ad93b8","fromNode":"3e733f8358fcea3e","fromSide":"bottom","toNode":"df4683f10d626327","toSide":"top","color":"2","label":"queries"}
+	]
+}
