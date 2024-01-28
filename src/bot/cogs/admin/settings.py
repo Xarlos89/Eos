@@ -2,8 +2,11 @@ import logging
 import discord
 from discord.ext import commands
 
-
 logger = logging.getLogger(__name__)
+
+
+async def is_admin(ctx) -> bool:
+    return ctx.message.author.guild_permissions.administrator
 
 
 class Admin_Settings(commands.Cog):
@@ -20,7 +23,46 @@ class Admin_Settings(commands.Cog):
         logger.debug("get_settings command used.")
         await ctx.channel.send(self.bot.api.get_settings_for_guild(guild.id))
 
+    @commands.hybrid_command()
+    @commands.check(is_admin)
+    async def log_channel_settings(self, ctx: commands.Context):
+        logs = ["User Join/Leave Log", "User Change Log", "Chat Log", "Moderation Log", "Server Change Log"]
+
+        await ctx.send("# Logging Settings")
+        for setting in logs:
+            await ctx.send(f"### {setting}", view=LogChannelSelectMenu(setting))
+
+    @log_channel_settings.error
+    async def log_channel_settings_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.send('Oie, you cant use that.')
+
+
+class LogChannelSelectMenu(discord.ui.View):
+    def __init__(self, target, *, timeout=180):
+        super().__init__(timeout=timeout)
+        self.add_item(SelectChannels(target))
+
+
+class SelectChannels(discord.ui.ChannelSelect):
+    def __init__(self, label):
+        super().__init__(
+            placeholder=f"{label}"
+            , channel_types=[discord.ChannelType.text, discord.ChannelType.private]
+            , max_values=1
+            , min_values=1
+        )
+        self.label = label
+
+    async def callback(self, interaction: discord.Interaction):
+        channel_obj = self.values[0]
+        logger.info(f"{interaction.user.name} set the {self.label} to #{channel_obj.name}")
+
+        # TODO: Add the API call for the specific selection here.
+
+        await interaction.response.send_message(content=f"{self.label} is set to: {channel_obj.mention}",
+                                                ephemeral=True)
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Admin_Settings(bot))
-
