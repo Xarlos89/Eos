@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 
-from api.utilities.db_helper import DB
+from api.core.db_helper import DB
 
 from api.routes.healthcheck import health_checks
 from api.routes.settings import settings
