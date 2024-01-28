@@ -45,3 +45,31 @@ docker logs bot
 # OR
 docker logs db
 ```
+
+
+## Releases, Versioning and the Changelog
+We use release drafter to changelog and version the releases. 
+
+Any PR into Prod will trigger a release.
+- The Name of the PR into prod must start with 'major' or 'minor' otherwise it will be a patch release
+  - Major = v1.x.x
+  - Minor = vx.1.x
+  - Patch = vx.x.1
+
+
+Any PR with Github labels into Development will add an item to the changelog.
+
+The label categorizes the entry in the changelog.
+
+category: '🚀 Features'
+- 'feature'
+- 'enhancement'
+
+category: '🐛 Bug Fixes'
+- 'bugfix'
+- 'patch'
+
+category: '🧰 Maintenance'
+- 'chore'
+- 'cleanup'
+- 'documentation'
