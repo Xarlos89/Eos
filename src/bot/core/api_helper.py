@@ -30,10 +30,17 @@ class API:
         """Returns all settings for a guild in the Database"""
         return requests.get(f"{self.api}/settings/{guild_id}").json()
 
-    # def update_settings(self, data):
-    #     """Updates the settings for a guild in the Database"""
-    #     response = requests.put(f"{self.api}/settings/", data=json.dumps(data), headers=self.headers)
-    #     return response.json()
+    def update_settings(self, data, guild_id):
+        """
+        Updates the settings for a guild in the Database
+        Expected in data:
+            {
+            "target": Name of setting to update
+            , "channel_id": the ID of the channel to update
+            , "status": True or False
+            }
+        """
+        return requests.put(f"{self.api}/settings/{guild_id}", data=json.dumps(data), headers=self.headers)
 
     ##############################
     #           Users            #

@@ -29,3 +29,11 @@ def get_settings_for_guild(guild_id):
 
         except Exception as e:
             return jsonify(f"Oops! Something went wrong: {e}", 404)
+
+
+@settings.route('/settings/<guild_id>', methods=['PUT'])
+def update_settings_for_guild(payload, guild_id):
+    #TODO: Left off here. The payload param seems to be in the wrong place?
+    # Or maybe the request is sending the wrong param?
+    if request.method == 'PUT':
+        return jsonify(f'{payload}', 200)
