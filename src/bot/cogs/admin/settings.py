@@ -30,7 +30,7 @@ class Admin_Settings(commands.Cog):
 
         await ctx.send("# Logging Settings")
         for setting in logs:
-            await ctx.send(f"### {setting}", view=LogChannelSelectMenu(setting))
+            await ctx.send(f"### {setting}", view=LogChannelSelectMenu(self.bot, setting))
 
     @log_channel_settings.error
     async def log_channel_settings_error(self, ctx, error):
@@ -39,27 +39,34 @@ class Admin_Settings(commands.Cog):
 
 
 class LogChannelSelectMenu(discord.ui.View):
-    def __init__(self, target, *, timeout=180):
+    def __init__(self, bot, target, *, timeout=180):
         super().__init__(timeout=timeout)
-        self.add_item(SelectChannels(target))
+        self.bot = bot
+        self.add_item(SelectChannels(self.bot, target))
 
 
 class SelectChannels(discord.ui.ChannelSelect):
-    def __init__(self, label):
+    def __init__(self, bot, label):
         super().__init__(
             placeholder=f"{label}"
             , channel_types=[discord.ChannelType.text, discord.ChannelType.private]
             , max_values=1
-            , min_values=1
+            , min_values=0
         )
+        self.bot = bot
         self.label = label
 
     async def callback(self, interaction: discord.Interaction):
         channel_obj = self.values[0]
         logger.info(f"{interaction.user.name} set the {self.label} to #{channel_obj.name}")
 
-        # TODO: Add the API call for the specific selection here.
-
+        payload = {
+            "target": self.label
+            , "channel_id": channel_obj.id
+            , "status": False if channel_obj is None else True
+        }
+        logger.info(payload)
+        self.bot.api.update_settings(payload, interaction.guild_id)
         await interaction.response.send_message(content=f"{self.label} is set to: {channel_obj.mention}",
                                                 ephemeral=True)
 
