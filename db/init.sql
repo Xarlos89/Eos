@@ -3,7 +3,7 @@ BEGIN
     ----------------------------------------------------------------
     -- Check if the database exists and create it if not
     ----------------------------------------------------------------
-    IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'postgres') THEN
+    IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'eos') THEN
         CREATE DATABASE postgres;
     END IF;
 

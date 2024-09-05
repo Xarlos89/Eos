@@ -9,7 +9,7 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - docker-doopbot
+      - eos
     depends_on:
       - doopbot
     restart: always
@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile-bot
     env_file: .env
     networks:
-      - docker-doopbot
+      - eos
     depends_on:
       postgres:
         condition: service_healthy
@@ -43,8 +43,8 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - docker-doopbot
+      - eos
 
 networks:
-  docker-doopbot:
+  eos:
     driver: bridge
