@@ -1,0 +1,8 @@
+FROM python:3.11.9-slim
+
+WORKDIR /bot
+
+COPY /bot /bot/.
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r /bot/requirements-bot.txt
+
+CMD ["python", "/bot/main.py"]

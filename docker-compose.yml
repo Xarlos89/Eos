@@ -1,0 +1,50 @@
+---
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile-api
+    env_file: .env
+    ports:
+      - "5000:5000"
+    networks:
+      - docker-doopbot
+    depends_on:
+      - doopbot
+    restart: always
+
+  doopbot:
+    container_name: bot
+    build:
+      context: .
+      dockerfile: Dockerfile-bot
+    env_file: .env
+    networks:
+      - docker-doopbot
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    container_name: db
+    build:
+      context: .
+      dockerfile: Dockerfile-db
+    volumes:
+      - ./db/postgres-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    networks:
+      - docker-doopbot
+
+networks:
+  docker-doopbot:
+    driver: bridge
