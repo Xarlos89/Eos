@@ -25,9 +25,24 @@ class API:
     #           Settings         #
     ##############################
     def get_all_settings(self):
-        """Returns all settings for all guilds in the Database"""
-        return requests.get(f"{self.api}/settings/all").json()
+        """Retrieves all settings from the database"""
+        return requests.get(f"{self.api}/settings").json()
 
-    def get_settings_for_guild(self, guild_id):
-        """Returns all settings for a guild in the Database"""
-        return requests.get(f"{self.api}/settings/{guild_id}").json()
+    def add_new_setting(self, name, value):
+        """Adds a new setting to the database"""
+        data = {
+            'name': name,
+            'value': value
+        }
+        return requests.post(f"{self.api}/settings", json=data).json()
+
+    def update_existing_setting(self, setting_id, new_value):
+        """Updates an existing setting in the database"""
+        data = {
+            'value': new_value
+        }
+        return requests.put(f"{self.api}/settings/{setting_id}", json=data).json()
+
+    def delete_setting(self, setting_id):
+        """Deletes a setting from the database"""
+        return requests.delete(f"{self.api}/settings/{setting_id}").json()

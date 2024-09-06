@@ -6,26 +6,48 @@ from flask import current_app as eos
 settings = Blueprint('settings', __name__)
 
 
-@settings.route('/settings/all', methods=['GET'])
-def get_all_settings():
+@settings.route('/settings', methods=['GET'])
+def get_settings():
+    """
+    Retrieve all settings from the database.
+    """
     if request.method == 'GET':
-        try:
-            return jsonify(eos.db.read('settings'), 200)
-        except Exception as e:
-            return jsonify(f"Oops! Something went wrong: {e}", 404)
+        result = eos.db.get_settings()
+        return jsonify(result, 200)
 
-    else:
-        return jsonify("Method not allowed", 405)
+    return jsonify({'message': 'improper request method'}, 405)
 
+@settings.route('/settings/<setting_id>', methods=['PUT'])
+def update_setting(setting_id):
+    """
+    Update an existing setting in the database.
+    """
+    if request.method == 'PUT':
+        data = request.json
+        result = eos.db.update_setting(int(setting_id), data['value'])
+        return jsonify(result, 200)
 
-@settings.route('/settings/<guild_id>', methods=['GET'])
-def get_settings_for_guild(guild_id):
-    if request.method == 'GET':
-        try:
-            return jsonify(
-                eos.db.read(
-                    'settings', 'guild_id = %s', (guild_id,)
-                ), 200)
+    return jsonify({'message': 'improper request method'}, 405)
 
-        except Exception as e:
-            return jsonify(f"Oops! Something went wrong: {e}", 404)
+@settings.route('/settings', methods=['POST'])
+def add_setting():
+    """
+    Add a new setting to the database.
+    """
+    if request.method == 'POST':
+        data = request.json
+        result = eos.db.add_setting(data['name'], data['value'])
+        return jsonify(result, 201)
+
+    return jsonify({'message': 'improper request method'}, 405)
+
+@settings.route('/settings/<int:setting_id>', methods=['DELETE'])
+def delete_setting(setting_id):
+    """
+    Delete a specific setting from the database.
+    """
+    if request.method == 'DELETE':
+        result = eos.db.delete_setting(setting_id)
+        return jsonify(result, 200)
+
+    return jsonify({'message': 'improper request method'}, 405)

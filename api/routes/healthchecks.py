@@ -1,6 +1,6 @@
 
 from flask import Blueprint, jsonify, request
-from flask import current_app as doopbot
+from flask import current_app as eos
 
 
 # Define a Blueprint
@@ -26,7 +26,7 @@ def database_health_check():
     """
     if request.method == 'GET':
         try:
-            hc = doopbot.db.database_health_check()
+            hc = eos.db.database_health_check()
             return jsonify(hc, 200)
 
         except TypeError as ded:
