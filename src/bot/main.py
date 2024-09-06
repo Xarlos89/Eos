@@ -67,7 +67,7 @@ def boink() -> None:
     """
     Loads the bot key as the first arg when running the bot OR from an env variable.
     For example:
-        "python __main__.py BOT_TOKEN_HERE"
+        "python main.py BOT_TOKEN_HERE"
     """
 
     if len(sys.argv) > 1:  # Check args for the token first
