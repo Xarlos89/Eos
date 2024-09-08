@@ -76,3 +76,54 @@ class DB:
             log.error(f"Error deleting setting: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
+
+    ##################
+    ##    Points    ##
+    ##################
+    def get_points_for_user(self, user_id):
+        try:
+            self.cursor.execute("SELECT * FROM points where user_id =%s", (user_id,))
+            result = self.cursor.fetchone()
+            return {"status": "ok", "points": result}
+        except OperationalError as err:
+            log.error(f"Error fetching points: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def update_points(self, user_id, value):
+        try:
+            self.cursor.execute("UPDATE points SET value = value + %s WHERE user_id = %s", (value, user_id))
+            self.conn.commit()
+            return {"status": "ok", "message": "points updated successfully"}
+        except OperationalError as err:
+            log.error(f"Error updating points: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def add_user_to_points(self, user_id):
+
+        # TODO: giving an error when calling the API
+        # Error coming from API container.
+        # # TypeError: add_user_to_points() got an unexpected keyword argument 'user_id'
+
+        try:
+            self.cursor.execute("INSERT INTO points (user_id, value) VALUES (%s, 0)", (user_id, ))
+            self.conn.commit()
+            return {"status": "ok", "message": "New user added to 'points' successfully"}
+        except OperationalError as err:
+            log.error(f"Error adding new user: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def remove_user_from_points(self, user_id):
+        try:
+            self.cursor.execute("DELETE FROM points WHERE user_id = %s", (user_id,))
+            affected_rows = self.cursor.rowcount
+            if affected_rows > 0:
+                self.conn.commit()
+                return {"status": "ok", "message": f"User with ID: {user_id} deleted successfully"}
+            else:
+                return {"status": "not_found", "message": f"No user found with ID: {user_id}"}
+        except OperationalError as err:
+            log.error(f"Error deleting user: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
