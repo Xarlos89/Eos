@@ -10,13 +10,20 @@ BEGIN
     ----------------------------------------------------------------
     -- settings
     ----------------------------------------------------------------
-
     CREATE TABLE IF NOT EXISTS settings (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         value TEXT NOT NULL
     );
 
+    ----------------------------------------------------------------
+    -- points
+    ----------------------------------------------------------------
+    CREATE TABLE IF NOT EXISTS points (
+        id SERIAL PRIMARY KEY,
+        discord_id VARCHAR(255) NOT NULL,
+        amount int NOT NULL
+    );
 
 
 END $$;
