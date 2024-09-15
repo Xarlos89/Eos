@@ -11,7 +11,7 @@ from routes.points import points
 from core.db_helper import DB
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 setup_logger(
     level=int(os.getenv("LOG_LEVEL"))
     , stream_logs=bool(os.getenv("STREAM_LOGS")))

@@ -5,16 +5,16 @@ from psycopg import OperationalError
 
 log = logging.getLogger(__name__)
 
+
 class DB:
     def __init__(self):
         self.conn = psycopg.connect(
-                dbname=os.getenv('POSTGRES_DB'),
-                user=os.getenv('POSTGRES_USER'),
-                password=os.getenv('POSTGRES_PASSWORD'),
-                host=os.getenv('POSTGRES_HOST')
-            )
+            dbname=os.getenv('POSTGRES_DB'),
+            user=os.getenv('POSTGRES_USER'),
+            password=os.getenv('POSTGRES_PASSWORD'),
+            host=os.getenv('POSTGRES_HOST')
+        )
         self.cursor = self.conn.cursor()
-
 
     ##################
     ## Healthchecks ##
@@ -82,7 +82,7 @@ class DB:
     ##################
     def get_points_for_user(self, user_id):
         try:
-            self.cursor.execute("SELECT * FROM points where user_id =%s", (user_id,))
+            self.cursor.execute("SELECT * FROM users where discord_id =%s", (user_id,))
             result = self.cursor.fetchone()
             return {"status": "ok", "points": result}
         except OperationalError as err:
@@ -91,7 +91,7 @@ class DB:
 
     def update_points(self, user_id, value):
         try:
-            self.cursor.execute("UPDATE points SET value = value + %s WHERE user_id = %s", (value, user_id))
+            self.cursor.execute("UPDATE users SET points = points + %s WHERE discord_id = %s", (value, user_id))
             self.conn.commit()
             return {"status": "ok", "message": "points updated successfully"}
         except OperationalError as err:
@@ -100,13 +100,11 @@ class DB:
             return {"status": "error", "message": str(err)}
 
     def add_user_to_points(self, user_id):
-
-        # TODO: giving an error when calling the API
-        # Error coming from API container.
-        # # TypeError: add_user_to_points() got an unexpected keyword argument 'user_id'
-
         try:
-            self.cursor.execute("INSERT INTO points (user_id, value) VALUES (%s, 0)", (user_id, ))
+            self.cursor.execute(
+                "INSERT INTO users (discord_id, points) VALUES (%s, 0) ON CONFLICT (discord_id) DO NOTHING;"
+                , (user_id,)
+            )
             self.conn.commit()
             return {"status": "ok", "message": "New user added to 'points' successfully"}
         except OperationalError as err:
@@ -116,7 +114,7 @@ class DB:
 
     def remove_user_from_points(self, user_id):
         try:
-            self.cursor.execute("DELETE FROM points WHERE user_id = %s", (user_id,))
+            self.cursor.execute("DELETE FROM users WHERE discord_id = %s", (user_id,))
             affected_rows = self.cursor.rowcount
             if affected_rows > 0:
                 self.conn.commit()

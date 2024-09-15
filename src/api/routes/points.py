@@ -1,11 +1,15 @@
 from flask import Blueprint, jsonify, request
 from flask import current_app as eos
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 # Define a Blueprint
 points = Blueprint('points', __name__)
 
 @points.route('/points/<user_id>', methods=['GET'])
-def get_points():
+def get_points(user_id):
     """
     Retrieve points from the database.
     """
@@ -13,11 +17,11 @@ def get_points():
         result = eos.db.get_points_for_user(user_id)
         return jsonify(result), 200
     except Exception as err:
-        eos.log.error(f"Error fetching points: {err}")
+        logger.error(f"Error fetching points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 500
 
 @points.route('/points/<user_id>/update', methods=['POST'])
-def update_points():
+def update_points(user_id):
     """
     Update points for a user.
     """
@@ -29,14 +33,14 @@ def update_points():
         result = eos.db.update_points(user_id, data['value'])
         return jsonify(result), 200
     except ValueError as ve:
-        eos.log.error(f"Invalid input: {ve}")
+        logger.error(f"Invalid input: {ve}")
         return jsonify({"status": "error", "message": str(ve)}), 400
     except Exception as err:
-        eos.log.error(f"Error updating points: {err}")
+        logger.error(f"Error updating points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 500
 
 @points.route('/points/<user_id>/add', methods=['POST'])
-def add_user_to_points():
+def add_user_to_points(user_id):
     """
     Add a new user to the points table.
     """
@@ -44,14 +48,14 @@ def add_user_to_points():
         result = eos.db.add_user_to_points(user_id)
         return jsonify(result), 201
     except ValueError as ve:
-        eos.log.error(f"Invalid input: {ve}")
+        logger.error(f"Invalid input: {ve}")
         return jsonify({"status": "error", "message": str(ve)}), 400
     except Exception as err:
-        eos.log.error(f"Error adding user: {err}")
+        logger.error(f"Error adding user: {err}")
         return jsonify({"status": "error", "message": str(err)}), 500
 
 @points.route('/points/<user_id>', methods=['DELETE'])
-def remove_user_from_points():
+def remove_user_from_points(user_id):
     """
     Remove a user from the points table.
     """
@@ -59,8 +63,8 @@ def remove_user_from_points():
         result = eos.db.remove_user_from_points(user_id)
         return jsonify(result), 200
     except ValueError as ve:
-        eos.log.error(f"Invalid input: {ve}")
+        logger.error(f"Invalid input: {ve}")
         return jsonify({"status": "error", "message": str(ve)}), 400
     except Exception as err:
-        eos.log.error(f"Error removing user: {err}")
+        logger.error(f"Error removing user: {err}")
         return jsonify({"status": "error", "message": str(err)}), 500

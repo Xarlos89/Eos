@@ -24,6 +24,7 @@ class API:
     ##############################
     #           Settings         #
     ##############################
+
     def get_all_settings(self):
         """Retrieves all settings from the database"""
         return requests.get(f"{self.api}/settings").json()
@@ -46,3 +47,21 @@ class API:
     def delete_setting(self, setting_id):
         """Deletes a setting from the database"""
         return requests.delete(f"{self.api}/settings/{setting_id}").json()
+
+
+    ##############################
+    #            Points          #
+    ##############################
+
+    def add_user_to_points(self, user_id):
+        return requests.post(f"{self.api}/{user_id}/add").json()
+
+    def delete_user_from_points(self, user_id):
+        return requests.delete(f"{self.api}/{user_id}").json()
+
+    def get_points(self, user_id):
+        return requests.get(f"{self.api}/{user_id}").json()
+
+    def update_points(self, user_id, amount):
+        data = {'value': amount}
+        return requests.post(f"{self.api}/{user_id}/update", json=data).json()

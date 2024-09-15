@@ -19,11 +19,12 @@ BEGIN
     ----------------------------------------------------------------
     -- points
     ----------------------------------------------------------------
-    CREATE TABLE IF NOT EXISTS points (
+    CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         discord_id VARCHAR(255) NOT NULL,
-        amount int NOT NULL
+        points int NOT NULL
     );
+    ALTER TABLE users ADD CONSTRAINT unique_discord_id UNIQUE (discord_id);
 
 
 END $$;
