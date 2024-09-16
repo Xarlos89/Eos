@@ -1,7 +1,9 @@
 import os
 import requests
+import logging
 import json
 
+logger = logging.getLogger(__name__)
 
 class API:
     def __init__(self):
@@ -54,14 +56,14 @@ class API:
     ##############################
 
     def add_user_to_points(self, user_id):
-        return requests.post(f"{self.api}/{user_id}/add").json()
+        return requests.post(f"{self.api}/points/{user_id}/add").json()
 
     def delete_user_from_points(self, user_id):
-        return requests.delete(f"{self.api}/{user_id}").json()
+        return requests.delete(f"{self.api}/points/{user_id}").json()
 
     def get_points(self, user_id):
-        return requests.get(f"{self.api}/{user_id}").json()
+        return requests.get(f"{self.api}/points/{user_id}").json()
 
     def update_points(self, user_id, amount):
         data = {'value': amount}
-        return requests.post(f"{self.api}/{user_id}/update", json=data).json()
+        return requests.post(f"{self.api}/points/{user_id}/update", json=data).json()

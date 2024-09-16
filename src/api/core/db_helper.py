@@ -3,7 +3,7 @@ import logging
 import psycopg
 from psycopg import OperationalError
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class DB:
@@ -27,7 +27,7 @@ class DB:
                 return {"status": "ok"}
 
         except OperationalError as err:
-            log.info(f"DB Healthcheck - 500 - {err}")
+            logger.info(f"DB Healthcheck - 500 - {err}")
             self.conn.close()
             return {"status": "unhealthy", "error": {err}}
 
@@ -40,7 +40,7 @@ class DB:
             result = self.cursor.fetchall()
             return {"status": "ok", "settings": result}
         except OperationalError as err:
-            log.error(f"Error fetching settings: {err}")
+            logger.error(f"Error fetching settings: {err}")
             return {"status": "error", "message": str(err)}
 
     def update_setting(self, setting_id, value):
@@ -49,7 +49,7 @@ class DB:
             self.conn.commit()
             return {"status": "ok", "message": "Setting updated successfully"}
         except OperationalError as err:
-            log.error(f"Error updating setting: {err}")
+            logger.error(f"Error updating setting: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
@@ -59,7 +59,7 @@ class DB:
             self.conn.commit()
             return {"status": "ok", "message": "New setting added successfully"}
         except OperationalError as err:
-            log.error(f"Error adding new setting: {err}")
+            logger.error(f"Error adding new setting: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
@@ -73,7 +73,7 @@ class DB:
             else:
                 return {"status": "not_found", "message": f"No setting found with ID {setting_id}"}
         except OperationalError as err:
-            log.error(f"Error deleting setting: {err}")
+            logger.error(f"Error deleting setting: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
@@ -82,11 +82,11 @@ class DB:
     ##################
     def get_points_for_user(self, user_id):
         try:
-            self.cursor.execute("SELECT * FROM users where discord_id =%s", (user_id,))
+            self.cursor.execute("SELECT points FROM users where discord_id =%s", (user_id,))
             result = self.cursor.fetchone()
             return {"status": "ok", "points": result}
         except OperationalError as err:
-            log.error(f"Error fetching points: {err}")
+            logger.error(f"Error fetching points: {err}")
             return {"status": "error", "message": str(err)}
 
     def update_points(self, user_id, value):
@@ -95,7 +95,7 @@ class DB:
             self.conn.commit()
             return {"status": "ok", "message": "points updated successfully"}
         except OperationalError as err:
-            log.error(f"Error updating points: {err}")
+            logger.error(f"Error updating points: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
@@ -108,7 +108,7 @@ class DB:
             self.conn.commit()
             return {"status": "ok", "message": "New user added to 'points' successfully"}
         except OperationalError as err:
-            log.error(f"Error adding new user: {err}")
+            logger.error(f"Error adding new user: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
@@ -122,6 +122,6 @@ class DB:
             else:
                 return {"status": "not_found", "message": f"No user found with ID: {user_id}"}
         except OperationalError as err:
-            log.error(f"Error deleting user: {err}")
+            logger.error(f"Error deleting user: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
