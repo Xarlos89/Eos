@@ -13,7 +13,16 @@ class Points(commands.Cog):
 
     @commands.hybrid_command()
     async def sync_users(self, ctx: commands.Context) -> None:
-        pass
+        for user in ctx.guild.members:
+            exists = 0
+            added = 0
+            try:
+                self.bot.api.get_points(user.id)
+                exists += 1
+            except:
+                self.bot.api.add_user_to_points(user.id)
+                added += 1
+        await ctx.reply(f"Added {added} users.\nThere are now {exists + added} users in the db.")
 
     @commands.hybrid_command()
     async def get_points(self, ctx: commands.Context, user: discord.Member) -> None:

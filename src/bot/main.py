@@ -58,8 +58,8 @@ async def on_ready() -> None:
     """
     logger.debug("Executing on_ready event.")
     await load_cogs(bot)
-    synced = await bot.tree.sync()
-    logger.info(f"Synced {len(synced)} command(s).")
+    # synced = await bot.tree.sync()
+    # logger.info(f"Synced {len(synced)} command(s).")
     logger.info(f"{bot.user.name} is online and ready to go.")
 
 
