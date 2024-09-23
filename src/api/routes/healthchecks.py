@@ -16,7 +16,6 @@ def api_health_check():
     """
     A simple healthcheck that returns an up status.
     """
-
     if request.method == 'GET':
         return jsonify({'status': 'ok'}, 200)
 

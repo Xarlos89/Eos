@@ -20,6 +20,7 @@ class DB:
     ## Healthchecks ##
     ##################
     def database_health_check(self):
+        logger.debug("API attempting to contact DB for healthcheck...")
         try:
             self.cursor.execute("SELECT 1")
             result = self.cursor.fetchone()
@@ -27,7 +28,7 @@ class DB:
                 return {"status": "ok"}
 
         except OperationalError as err:
-            logger.info(f"DB Healthcheck - 500 - {err}")
+            logger.critical(f"DB Healthcheck - 500 - {err}")
             self.conn.close()
             return {"status": "unhealthy", "error": {err}}
 
@@ -35,6 +36,7 @@ class DB:
     ##   Settings   ##
     ##################
     def get_settings(self):
+        logger.debug("API attempting to contact DB for get_settings...")
         try:
             self.cursor.execute("SELECT * FROM settings")
             result = self.cursor.fetchall()
@@ -44,6 +46,7 @@ class DB:
             return {"status": "error", "message": str(err)}
 
     def update_setting(self, setting_id, value):
+        logger.debug(f"API attempting to contact DB for update_setting with setting ID:{setting_id} - Value:{value}")
         try:
             self.cursor.execute("UPDATE settings SET value = %s WHERE id = %s", (value, setting_id))
             self.conn.commit()
@@ -54,6 +57,7 @@ class DB:
             return {"status": "error", "message": str(err)}
 
     def add_setting(self, name, value):
+        logger.debug(f"API attempting to contact DB for add_setting with name:{name} - Value:{value}")
         try:
             self.cursor.execute("INSERT INTO settings (name, value) VALUES (%s, %s)", (name, value))
             self.conn.commit()
@@ -64,6 +68,7 @@ class DB:
             return {"status": "error", "message": str(err)}
 
     def delete_setting(self, setting_id):
+        logger.debug(f"API attempting to contact DB for delete_setting with setting_ID:{setting_id}")
         try:
             self.cursor.execute("DELETE FROM settings WHERE id = %s", (setting_id,))
             affected_rows = self.cursor.rowcount

@@ -13,7 +13,7 @@ from core.db_helper import DB
 
 logger = logging.getLogger(__name__)
 setup_logger(
-    level=int(os.getenv("LOG_LEVEL"))
+    level=int(os.getenv("API_LOG_LEVEL"))
     , stream_logs=bool(os.getenv("STREAM_LOGS")))
 
 
