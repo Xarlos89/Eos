@@ -59,12 +59,17 @@ class Points(commands.Cog):
     async def top_10(self, ctx: commands.Context) -> None:
         top10 = self.bot.api.top_10()
         if top10['status'] == 'ok':
-            # TODO: receiving back " [['643393852723691533', 100200], ['212241077695021056', 0], ['219966967480582144', 0], ['309025661031415809', 0], ['346396197977718787', 0], ['566675530217291777', 0]]"
-            # Need to get the username out of this, and make it pretty.
+
+            data = []
+            for user in top10['message']:
+                user_obj = self.bot.get_user(int(user[0]))
+                data.append((user_obj.display_name, user[1]))
+
             await ctx.reply(
                 embed=embed_info(
                     "Top 10 Point Earners"
-                    , top10['message']
+                    , "\n".join([f"{index + 1}. {user_name} - {points}"
+                              for index, (user_name, points) in enumerate(data)])
                     , discord.Color.yellow()
                 )
             )
