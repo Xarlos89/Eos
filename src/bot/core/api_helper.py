@@ -33,7 +33,12 @@ class API:
     ##############################
     def flag_check(self, flag_id):
         logger.debug("Bot called flag_check endpoint.")
-        return requests.get(f"{self.api}/settings/{flag_id}").json()
+        flag = requests.get(f"{self.api}/setting/{flag_id}").json()[0]['settings'][2]
+        if flag == 'True':
+            return True
+        else:
+            return False
+
 
     def get_all_settings(self):
         """Retrieves all settings from the database"""
