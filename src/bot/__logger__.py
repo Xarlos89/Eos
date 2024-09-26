@@ -5,6 +5,9 @@ import logging
 
 def setup_logger(level: int = int(os.getenv("LOG_LEVEL")), stream_logs: bool = False) -> None:
     """
+    FOR LOGGING LEVELS
+    https://docs.python.org/3/library/logging.html#logging-levels
+
     Sets up the service logs
     Parameters
     ----------

@@ -3,23 +3,25 @@ import logging
 import psycopg
 from psycopg import OperationalError
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
 
 class DB:
     def __init__(self):
         self.conn = psycopg.connect(
-                dbname=os.getenv('POSTGRES_DB'),
-                user=os.getenv('POSTGRES_USER'),
-                password=os.getenv('POSTGRES_PASSWORD'),
-                host=os.getenv('POSTGRES_HOST')
-            )
+            dbname=os.getenv('POSTGRES_DB'),
+            user=os.getenv('POSTGRES_USER'),
+            password=os.getenv('POSTGRES_PASSWORD'),
+            host=os.getenv('POSTGRES_HOST')
+        )
+        self.conn.autocommit = True
         self.cursor = self.conn.cursor()
-
 
     ##################
     ## Healthchecks ##
     ##################
     def database_health_check(self):
+        logger.debug("API attempting to contact DB for healthcheck...")
         try:
             self.cursor.execute("SELECT 1")
             result = self.cursor.fetchone()
@@ -27,7 +29,7 @@ class DB:
                 return {"status": "ok"}
 
         except OperationalError as err:
-            log.info(f"DB Healthcheck - 500 - {err}")
+            logger.critical(f"DB Healthcheck - 500 - {err}")
             self.conn.close()
             return {"status": "unhealthy", "error": {err}}
 
@@ -35,35 +37,39 @@ class DB:
     ##   Settings   ##
     ##################
     def get_settings(self):
+        logger.debug("API attempting to contact DB for get_settings...")
         try:
             self.cursor.execute("SELECT * FROM settings")
             result = self.cursor.fetchall()
             return {"status": "ok", "settings": result}
         except OperationalError as err:
-            log.error(f"Error fetching settings: {err}")
+            logger.error(f"Error fetching settings: {err}")
             return {"status": "error", "message": str(err)}
 
     def update_setting(self, setting_id, value):
+        logger.debug(f"API attempting to contact DB for update_setting with setting ID:{setting_id} - Value:{value}")
         try:
             self.cursor.execute("UPDATE settings SET value = %s WHERE id = %s", (value, setting_id))
             self.conn.commit()
             return {"status": "ok", "message": "Setting updated successfully"}
         except OperationalError as err:
-            log.error(f"Error updating setting: {err}")
+            logger.error(f"Error updating setting: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     def add_setting(self, name, value):
+        logger.debug(f"API attempting to contact DB for add_setting with name:{name} - Value:{value}")
         try:
             self.cursor.execute("INSERT INTO settings (name, value) VALUES (%s, %s)", (name, value))
             self.conn.commit()
             return {"status": "ok", "message": "New setting added successfully"}
         except OperationalError as err:
-            log.error(f"Error adding new setting: {err}")
+            logger.error(f"Error adding new setting: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     def delete_setting(self, setting_id):
+        logger.debug(f"API attempting to contact DB for delete_setting with setting_ID:{setting_id}")
         try:
             self.cursor.execute("DELETE FROM settings WHERE id = %s", (setting_id,))
             affected_rows = self.cursor.rowcount
@@ -73,6 +79,68 @@ class DB:
             else:
                 return {"status": "not_found", "message": f"No setting found with ID {setting_id}"}
         except OperationalError as err:
-            log.error(f"Error deleting setting: {err}")
+            logger.error(f"Error deleting setting: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    ##################
+    ##    Points    ##
+    ##################
+    def get_points_for_user(self, user_id):
+        try:
+            self.cursor.execute("SELECT points FROM users where discord_id =%s", (user_id,))
+            result = self.cursor.fetchone()
+            if result is not None:
+                return {"status": "ok", "points": result}
+            else:
+                return {"status": "error", "points": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching points: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def update_points(self, user_id, value):
+        try:
+            self.cursor.execute("UPDATE users SET points = points + %s WHERE discord_id = %s", (value, user_id))
+            self.conn.commit()
+            return {"status": "ok", "message": "points updated successfully"}
+        except OperationalError as err:
+            logger.error(f"Error updating points: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def add_user_to_points(self, user_id):
+        try:
+            self.cursor.execute(
+                "INSERT INTO users (discord_id, points) VALUES (%s, 0) ON CONFLICT (discord_id) DO NOTHING;"
+                , (user_id,)
+            )
+            # self.conn.commit()
+            return {"status": "ok", "message": "New user added to 'points' successfully"}
+        except OperationalError as err:
+            logger.error(f"Error adding new user: {err}")
+            # self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def remove_user_from_points(self, user_id):
+        try:
+            self.cursor.execute("DELETE FROM users WHERE discord_id = %s", (user_id,))
+            affected_rows = self.cursor.rowcount
+            if affected_rows > 0:
+                self.conn.commit()
+                return {"status": "ok", "message": f"User with ID: {user_id} deleted successfully"}
+            else:
+                return {"status": "not_found", "message": f"No user found with ID: {user_id}"}
+        except OperationalError as err:
+            logger.error(f"Error deleting user: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def get_top_10(self):
+        try:
+            self.cursor.execute("SELECT discord_id, points FROM users ORDER BY points DESC LIMIT 10")
+            result = self.cursor.fetchall()
+            return {"status": "ok", "message": result}
+        except OperationalError as err:
+            logger.error(f"Error deleting user: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}

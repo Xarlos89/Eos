@@ -1,6 +1,9 @@
 from flask import Blueprint, jsonify, request
 from flask import current_app as eos
+import logging
 
+
+logger = logging.getLogger(__name__)
 
 # Define a Blueprint
 settings = Blueprint('settings', __name__)

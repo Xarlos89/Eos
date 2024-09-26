@@ -1,6 +1,10 @@
 
 from flask import Blueprint, jsonify, request
 from flask import current_app as eos
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 # Define a Blueprint
@@ -12,7 +16,6 @@ def api_health_check():
     """
     A simple healthcheck that returns an up status.
     """
-
     if request.method == 'GET':
         return jsonify({'status': 'ok'}, 200)
 
