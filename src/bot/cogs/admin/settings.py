@@ -52,18 +52,6 @@ class Settings(commands.Cog):
        else:
            await ctx.send(f"Failed to update setting: {result['message']}")
 
-    @commands.hybrid_command()
-    async def delete_setting(self, ctx: commands.Context, setting_id: int):
-       """
-       Delete a setting.
-       """
-       result = self.bot.api.delete_setting(setting_id)[0]
-       if result["status"] == "ok":
-           await ctx.send(f"Successfully deleted setting ID {setting_id}: {result['message']}")
-       elif result["status"] == "not_found":
-           await ctx.send(f"No setting found with ID {setting_id}. Please try again.")
-       else:
-           await ctx.send(f"Failed to delete setting: {result['message']}")
 
 async def setup(bot: commands.Bot) -> None:
    await bot.add_cog(Settings(bot))
