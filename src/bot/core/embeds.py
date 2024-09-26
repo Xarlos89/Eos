@@ -2,6 +2,9 @@ from datetime import datetime
 import discord
 
 
+#### Documentation
+# For Embed Colors: https://discordpy.readthedocs.io/en/stable/api.html?highlight=embed#discord.Colour
+
 def embed_info(title, message, color):
     """
     Embedding for avatar change alerts.

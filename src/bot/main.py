@@ -9,15 +9,10 @@ from core.api_helper import API
 
 
 logger = logging.getLogger(__name__)
-setup_logger(
-    level=int(os.getenv("LOG_LEVEL"))
-    , stream_logs=bool(os.getenv("STREAM_LOGS")))
+setup_logger(level=int(os.getenv("LOG_LEVEL")), stream_logs=bool(os.getenv("STREAM_LOGS")))
 
 intents = discord.Intents.all()
-intents.message_content = True
-bot = commands.Bot(
-    command_prefix=os.getenv("PREFIX")
-    , intents=intents)
+bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
 bot.api = API()
 
 
@@ -29,12 +24,11 @@ async def load_cogs(robot: commands.Bot) -> None:
     We do not load files starting with _ and the templates folder.
     """
     logger.info("Loading Cogs...")
-    logger.debug(os.getcwd())
     for directory in os.listdir("cogs"):
-        if not directory.startswith("_") and directory != "templates":
+        if not directory.startswith("_"):
             for file in os.listdir(f"cogs/{directory}"):
                 if file.endswith('.py') and not file.startswith("_"):
-                    logger.info(f"Loading Cog: \\{directory}\\{file}")
+                    logger.info(f"\\{directory}\\{file}")
                     try:
                         await robot.load_extension(f"cogs.{directory}.{file[:-3]}")
                     except Exception as e:

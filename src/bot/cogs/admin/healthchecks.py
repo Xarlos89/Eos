@@ -2,7 +2,7 @@ import logging
 import discord
 from discord.ext import commands
 
-from core.embeds import embed_info, embed_hc
+from core.embeds import embed_hc
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ class Health(commands.Cog):
         logger.debug("healthcheck command used.")
 
         hc_api = self.bot.api.api_health_check()
+        logger.debug(hc_api)
         try:
             status_api = hc_api[0]['status']
             status_code_api = hc_api[1]
@@ -30,6 +31,7 @@ class Health(commands.Cog):
                 }
 
         hc_db = self.bot.api.database_health_check()
+        logger.debug(hc_db)
         try:
             status_db = hc_db[0]['status']
             status_code_db = hc_db[1]
