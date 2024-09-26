@@ -28,16 +28,6 @@ class Settings(commands.Cog):
 
        await ctx.send(embed=embed)
 
-    # @commands.hybrid_command()
-    # async def add_setting(self, ctx: commands.Context, name: str, value: str):
-    #    """
-    #    Add a new setting.
-    #    """
-    #    result = self.bot.api.add_new_setting(name, value)
-    #    if result["status"] == "ok":
-    #        await ctx.send(f"Successfully added setting: {result['message']}")
-    #    else:
-    #        await ctx.send(f"Failed to add setting: {result['message']}")
 
     @commands.hybrid_command()
     async def update_setting(self, ctx: commands.Context, setting_id: int, new_value: str = None):
