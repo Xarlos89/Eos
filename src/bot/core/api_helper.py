@@ -80,3 +80,7 @@ class API:
         logger.debug(f"Bot called the update_points endpoint. User ID: {user_id} - Points: {amount}")
         data = {'value': amount}
         return requests.post(f"{self.api}/points/{user_id}/update", json=data).json()
+
+    def top_10(self):
+        logger.debug("Bot called the top_10 endpoint.")
+        return requests.get(f"{self.api}/points/top10").json()

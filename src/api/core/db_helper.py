@@ -14,6 +14,7 @@ class DB:
             password=os.getenv('POSTGRES_PASSWORD'),
             host=os.getenv('POSTGRES_HOST')
         )
+        self.conn.autocommit = True
         self.cursor = self.conn.cursor()
 
     ##################
@@ -89,7 +90,10 @@ class DB:
         try:
             self.cursor.execute("SELECT points FROM users where discord_id =%s", (user_id,))
             result = self.cursor.fetchone()
-            return {"status": "ok", "points": result}
+            if result is not None:
+                return {"status": "ok", "points": result}
+            else:
+                return {"status": "error", "points": result}
         except OperationalError as err:
             logger.error(f"Error fetching points: {err}")
             return {"status": "error", "message": str(err)}
@@ -110,11 +114,11 @@ class DB:
                 "INSERT INTO users (discord_id, points) VALUES (%s, 0) ON CONFLICT (discord_id) DO NOTHING;"
                 , (user_id,)
             )
-            self.conn.commit()
+            # self.conn.commit()
             return {"status": "ok", "message": "New user added to 'points' successfully"}
         except OperationalError as err:
             logger.error(f"Error adding new user: {err}")
-            self.conn.rollback()
+            # self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     def remove_user_from_points(self, user_id):
@@ -126,6 +130,16 @@ class DB:
                 return {"status": "ok", "message": f"User with ID: {user_id} deleted successfully"}
             else:
                 return {"status": "not_found", "message": f"No user found with ID: {user_id}"}
+        except OperationalError as err:
+            logger.error(f"Error deleting user: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def get_top_10(self):
+        try:
+            self.cursor.execute("SELECT discord_id, points FROM users ORDER BY points DESC LIMIT 10")
+            result = self.cursor.fetchall()
+            return {"status": "ok", "message": result}
         except OperationalError as err:
             logger.error(f"Error deleting user: {err}")
             self.conn.rollback()
