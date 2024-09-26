@@ -10,7 +10,7 @@ settings = Blueprint('settings', __name__)
 
 
 @settings.route('/setting/<setting_id>', methods=['GET'])
-def get_settings(setting_id):
+def get_setting(setting_id):
     """
     Retrieve one setting from the database.
     """
