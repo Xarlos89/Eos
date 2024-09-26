@@ -10,8 +10,14 @@ END $$;
 CREATE TABLE IF NOT EXISTS settings (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    value TEXT NOT NULL
+    value VARCHAR(255)
 );
+INSERT INTO settings (name, value)
+VALUES
+    ('points', 'True'),
+    ('logging', 'True'),
+    ('antispam', 'True');
+
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (

@@ -9,6 +9,17 @@ logger = logging.getLogger(__name__)
 settings = Blueprint('settings', __name__)
 
 
+@settings.route('/setting/<setting_id>', methods=['GET'])
+def get_settings(setting_id):
+    """
+    Retrieve one setting from the database.
+    """
+    if request.method == 'GET':
+        result = eos.db.get_setting(int(setting_id))
+        return jsonify(result, 200)
+
+    return jsonify({'message': 'improper request method'}, 405)
+
 @settings.route('/settings', methods=['GET'])
 def get_settings():
     """
