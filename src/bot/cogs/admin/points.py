@@ -33,7 +33,7 @@ class Points(commands.Cog):
                 embed=embed_info(
                     ""
                     , f"{user.display_name} has {points['points'][0]} points"
-                    , discord.Color.white()
+                    , discord.Color.lighter_gray()
                 )
             )
         else:
@@ -77,6 +77,31 @@ class Points(commands.Cog):
             await ctx.reply(f"Oopsie. Unexpected error. Check the logs.")
             logger.critical(top10)
 
+    @commands.Cog.listener()
+    async def on_message(self, message) -> None:
+        if message.author.bot:
+            return
+        msg = message.content.split()
+        logger.debug(f"Updating {len(msg)} points for {message.author.display_name} for sending a message.")
+        self.bot.api.update_points(message.author.id, int(len(msg)))
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message):
+        if message.author.bot:
+            return
+        msg = message.content.split()
+        logger.debug(f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message.")
+        self.bot.api.update_points(message.author.id, int(len(msg))*-1)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member) -> None:
+        logger.debug(f"Adding {member.display_name} to the points DB.")
+        self.bot.api.add_user_to_points(member.id)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member) -> None:
+        logger.debug(f"Removing {member.display_name} from the points DB.")
+        self.bot.api.delete_member(member.id)
 
     @update_points.error
     async def on_command_error(self, ctx: commands.Context, error):
@@ -87,8 +112,6 @@ class Points(commands.Cog):
                     , discord.Color.dark_gray()
                 )
             )
-
-
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Points(bot))
