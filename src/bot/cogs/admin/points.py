@@ -26,7 +26,7 @@ class Points(commands.Cog):
         self.bot = bot
 
     def feature_flagged(self):
-        return self.bot.api.flag_check(1)
+        return self.bot.api.get_one_setting(1)
 
     @commands.hybrid_command()
     async def sync_users(self, ctx: commands.Context) -> None:

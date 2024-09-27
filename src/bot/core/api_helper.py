@@ -31,9 +31,9 @@ class API:
     ##############################
     #           Settings         #
     ##############################
-    def flag_check(self, flag_id):
-        logger.debug("Bot called flag_check endpoint.")
-        flag = requests.get(f"{self.api}/setting/{flag_id}").json()[0]['settings'][2]
+    def get_one_setting(self, flag_id):
+        logger.debug("Bot called get_one_setting endpoint.")
+        flag = requests.get(f"{self.api}/settings/{flag_id}").json()[0]['settings'][2]
         if flag == 'True':
             return True
         else:
