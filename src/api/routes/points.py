@@ -35,10 +35,10 @@ def update_points(user_id):
             return jsonify({"status": "error", "message": "Missing required field: value"}), 400
 
         result = eos.db.update_points(user_id, data['value'])
-        return jsonify(result), 200
+        return jsonify(result), 201
     except ValueError as ve:
         logger.error(f"Invalid input: {ve}")
-        return jsonify({"status": "error", "message": str(ve)}), 400
+        return jsonify({"status": "error", "message": str(ve)}), 415
     except Exception as err:
         logger.error(f"Error updating points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400

@@ -36,6 +36,16 @@ class DB:
     ##################
     ##   Settings   ##
     ##################
+    def get_setting(self, setting_id):
+        logger.debug("API attempting to contact DB for get_setting...")
+        try:
+            self.cursor.execute("SELECT * FROM settings where id = %s", (setting_id,))
+            result = self.cursor.fetchone()
+            return {"status": "ok", "settings": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching settings: {err}")
+            return {"status": "error", "message": str(err)}
+
     def get_settings(self):
         logger.debug("API attempting to contact DB for get_settings...")
         try:
@@ -50,37 +60,27 @@ class DB:
         logger.debug(f"API attempting to contact DB for update_setting with setting ID:{setting_id} - Value:{value}")
         try:
             self.cursor.execute("UPDATE settings SET value = %s WHERE id = %s", (value, setting_id))
-            self.conn.commit()
             return {"status": "ok", "message": "Setting updated successfully"}
         except OperationalError as err:
             logger.error(f"Error updating setting: {err}")
-            self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     def add_setting(self, name, value):
         logger.debug(f"API attempting to contact DB for add_setting with name:{name} - Value:{value}")
         try:
             self.cursor.execute("INSERT INTO settings (name, value) VALUES (%s, %s)", (name, value))
-            self.conn.commit()
             return {"status": "ok", "message": "New setting added successfully"}
         except OperationalError as err:
             logger.error(f"Error adding new setting: {err}")
-            self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     def delete_setting(self, setting_id):
         logger.debug(f"API attempting to contact DB for delete_setting with setting_ID:{setting_id}")
         try:
             self.cursor.execute("DELETE FROM settings WHERE id = %s", (setting_id,))
-            affected_rows = self.cursor.rowcount
-            if affected_rows > 0:
-                self.conn.commit()
-                return {"status": "ok", "message": f"Setting with ID {setting_id} deleted successfully"}
-            else:
-                return {"status": "not_found", "message": f"No setting found with ID {setting_id}"}
+            return {"status": "ok", "message": f"Setting with ID {setting_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting setting: {err}")
-            self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     ##################

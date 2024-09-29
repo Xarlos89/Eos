@@ -45,15 +45,12 @@ There is also a `/src/bot/core/embeds.py`, however I might choose to depricate t
 - **Usage**: `>sync_users`
 - **Output**: An embedded message showing how many users were added to the points table.
 
-
-
 ### 2. `get_points`
 - **Description**: Retrieves and displays the points of a specific guild member.
 - **Arguments**:
   - `user`: A mention or reference to a Discord member.
 - **Usage**: `>get_points @user`
 - **Output**: An embedded message displaying the mentioned user's current points.
-
 
 ### 3. `update_points`
 - **Description**: Updates the points of a specific user by adding or subtracting a specified amount.
@@ -64,7 +61,6 @@ There is also a `/src/bot/core/embeds.py`, however I might choose to depricate t
   - To add points: `>update_points @user 100`
   - To remove points: `>update_points @user -50`
 - **Output**: An embedded message confirming the amount of points added or removed from the user.
-
 
 ### 4. `top_10`
 - **Description**: Fetches and displays the top 10 users with the most points in the guild.

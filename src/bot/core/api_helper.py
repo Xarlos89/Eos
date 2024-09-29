@@ -12,6 +12,7 @@ class API:
         self.headers = {'Content-Type': 'application/json'}
         logger.info("API initialized.")
 
+
     ##############################
     #        Health checks       #
     ##############################
@@ -30,6 +31,14 @@ class API:
     ##############################
     #           Settings         #
     ##############################
+    def get_one_setting(self, flag_id):
+        logger.debug("Bot called get_one_setting endpoint.")
+        flag = requests.get(f"{self.api}/settings/{flag_id}").json()[0]['settings'][2]
+        if flag == 'True':
+            return True
+        else:
+            return False
+
 
     def get_all_settings(self):
         """Retrieves all settings from the database"""
