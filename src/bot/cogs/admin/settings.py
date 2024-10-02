@@ -43,21 +43,21 @@ class Settings(commands.Cog):
     #    else:
     #        await ctx.send(f"Failed to add setting: {result['message']}")
 
-    # @commands.hybrid_command()
-    # async def update_setting(self, ctx: commands.Context, setting_id: int, new_value: str):
-    #    """
-    #    Update an existing setting.
+    @commands.hybrid_command()
+    async def update_setting(self, ctx: commands.Context, setting_id: int, new_value: str):
+       """
+       Update an existing setting.
 
-    #    >settings update setting_id new_value
-    #    """
-    #    result = self.bot.api.update_existing_setting(setting_id, new_value)
+       >update_setting setting_id new_value
+       """
+       result = self.bot.api.update_existing_setting(setting_id, new_value)
 
-    #    if result["status"] == "ok":
-    #        await ctx.send(f"Successfully updated setting ID {setting_id}: {result['message']}")
-    #    elif result["status"] == "not_found":
-    #        await ctx.send(f"No setting found with ID {setting_id}. Please try again.")
-    #    else:
-    #        await ctx.send(f"Failed to update setting: {result['message']}")
+       if result["status"] == "ok":
+           await ctx.send(f"Successfully updated setting ID {setting_id}: {result['message']}")
+       elif result["status"] == "not_found":
+           await ctx.send(f"No setting found with ID {setting_id}. Please try again.")
+       else:
+           await ctx.send(f"Failed to update setting: {result['message']}")
 
     # @commands.hybrid_command()
     # async def delete_setting(self, ctx: commands.Context, setting_id: int):
