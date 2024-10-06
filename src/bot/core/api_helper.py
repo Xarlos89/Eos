@@ -45,6 +45,11 @@ class API:
         logger.debug("Bot called the get_all_settings endpoint.")
         return requests.get(f"{self.api}/settings").json()
 
+    def get_log_settings(self):
+        """Retrieves all settings from the database"""
+        logger.debug("Bot called the get_log_settings endpoint.")
+        return requests.get(f"{self.api}/log_settings").json()
+
     def add_new_setting(self, name, value):
         """Adds a new setting to the database"""
         logger.debug(f"Bot called the add_new_setting endpoint. Setting to add: {name} - Setting value: {value}")
