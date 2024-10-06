@@ -93,6 +93,9 @@ class Dropdown(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         # TODO: This now needs to throw the new channel data back into the Database.
+        # Need to set up the bot API helper func
+        # Need to set up the API route
+        # Need to set up the DB update query
         value = self.values[0].split(":")
         logger.info(f'The {value[0]} setting was changed to: {value[1]}')
         await interaction.response.send_message(f'The {value[0]} will log to {value[1]}')
