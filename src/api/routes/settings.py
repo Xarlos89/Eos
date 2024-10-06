@@ -27,6 +27,16 @@ def get_settings(setting_id=None):
 
     return jsonify(result, 200)
 
+@settings.route('/log_settings', methods=['GET'])
+def get_all_log_settings():
+    """
+    Retrieve log settings from the database.
+
+    :return: JSON response with settings
+    """
+    result = eos.db.get_log_settings()
+
+    return jsonify(result, 200)
 
 @settings.route('/settings/<setting_id>', methods=['PUT'])
 def update_setting(setting_id):
