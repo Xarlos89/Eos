@@ -25,18 +25,12 @@ class Points(commands.Cog):
         """Initialization of the points Class"""
         self.bot = bot
 
-    def feature_flagged(self):
-        return self.bot.api.get_one_setting(1)
-
     @commands.hybrid_command()
     async def sync_users(self, ctx: commands.Context) -> None:
         """
         Synchronise users to the points table in the DB
         Users that exist in the DB will not be synced.
         """
-        if not self.feature_flagged():
-            logger.debug("Points are not currently activated.")
-            return
         added = 0
         for user in ctx.guild.members:
             self.bot.api.add_user_to_points(user.id)
@@ -54,10 +48,6 @@ class Points(commands.Cog):
         """
         Gets the points of a specific member. Takes a Mention, returns an embed.
         """
-        if not self.feature_flagged():
-            await ctx.reply("Points are not currently activated.")
-            return
-
         points = self.bot.api.get_points(user.id)
         if points['status'] == 'ok':
             await ctx.reply(
@@ -77,10 +67,6 @@ class Points(commands.Cog):
         Updates the points of a specific member. Takes a Mention and an amount, returns an embed.
         Amount can be a positive or negative integer
         """
-        if not self.feature_flagged():
-            await ctx.reply("Points are not currently activated.")
-            return
-
         update_points = self.bot.api.update_points(user.id, int(amount))
         if update_points['status'] == 'ok':
             await ctx.reply(
@@ -100,10 +86,6 @@ class Points(commands.Cog):
         Gets the top 10 users in the DB with the most points.
         Takes no args, returns an embed.
         """
-        if not self.feature_flagged():
-            await ctx.reply("Points are not currently activated.")
-            return
-
         top10 = self.bot.api.top_10()
         if top10['status'] == 'ok':
 
@@ -132,9 +114,6 @@ class Points(commands.Cog):
         """
         if message.author.bot:
             return
-        if not self.feature_flagged():
-            logger.debug("Points are not currently activated.")
-            return
         msg = message.content.split()
         logger.debug(f"Updating {len(msg)} points for {message.author.display_name} for sending a message.")
         self.bot.api.update_points(message.author.id, int(len(msg)))
@@ -147,9 +126,6 @@ class Points(commands.Cog):
         """
         if message.author.bot:
             return
-        if not self.feature_flagged():
-            logger.debug("Points are not currently activated.")
-            return
         msg = message.content.split()
         logger.debug(f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message.")
         self.bot.api.update_points(message.author.id, int(len(msg))*-1)
@@ -159,9 +135,6 @@ class Points(commands.Cog):
         """
         On user join, add them to the database
         """
-        if not self.feature_flagged():
-            logger.debug("Points are not currently activated.")
-            return
         logger.debug(f"Adding {member.display_name} to the points DB.")
         self.bot.api.add_user_to_points(member.id)
 
@@ -170,9 +143,6 @@ class Points(commands.Cog):
         """
         On user leave/kick/ban, remove them from the database
         """
-        if not self.feature_flagged():
-            logger.debug("Points are not currently activated.")
-            return
         logger.debug(f"Removing {member.display_name} from the points DB.")
         self.bot.api.delete_member(member.id)
 
