@@ -46,6 +46,16 @@ class DB:
             logger.error(f"Error fetching settings: {err}")
             return {"status": "error", "message": str(err)}
 
+    def get_log_settings(self):
+        logger.debug("API attempting to contact DB for get_setting...")
+        try:
+            self.cursor.execute("SELECT * FROM settings WHERE name LIKE '%%Log%%'") # case sensitive
+            result = self.cursor.fetchall()
+            return {"status": "ok", "settings": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching settings: {err}")
+            return {"status": "error", "message": str(err)}
+
     def get_settings(self):
         logger.debug("API attempting to contact DB for get_settings...")
         try:
