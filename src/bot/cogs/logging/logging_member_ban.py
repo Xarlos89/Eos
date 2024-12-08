@@ -49,13 +49,14 @@ class LoggingBans(commands.Cog):
         if channel[0]["status"] == "ok":
             logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
 
-
             if str(audit_log.action) == "AuditLogAction.ban":
                 if audit_log.target == member:
                     embed = embed_ban(member, audit_log)
 
                     await logs_channel.send(embed=embed)
                     return
+        else:
+            logger.critical(f"API error. API response not ok. -> {channel}")
 
 
 async def setup(bot: commands.Bot) -> None:

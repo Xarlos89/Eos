@@ -42,9 +42,9 @@ class LoggingLeaves(commands.Cog):
         if "Needs Approval" in [role.name for role in member.roles]:
             return
 
-        join_log = self.bot.api.get_one_setting("2") # Join_log
-        if join_log[0]["status"] == "ok":
-            logs_channel = await self.bot.fetch_channel(join_log[0]["settings"][2])
+        channel = self.bot.api.get_one_setting("2") # Join_log
+        if channel[0]["status"] == "ok":
+            logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
 
             audit_log = [entry async for entry in member.guild.audit_logs(limit=1)][0]
 
@@ -52,6 +52,8 @@ class LoggingLeaves(commands.Cog):
                 embed = embed_leave(member)
 
                 await logs_channel.send(embed=embed)
+        else:
+            logger.critical(f"API error. API response not ok. -> {channel}")
 
 
 

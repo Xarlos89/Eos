@@ -1,5 +1,5 @@
 """
-Logs when a member leaves.
+Logs when a member gets the boot.
 """
 import logging
 from datetime import datetime
@@ -46,9 +46,9 @@ class LoggingKicks(commands.Cog):
 
         audit_log = [entry async for entry in member.guild.audit_logs(limit=1)][0]
 
-        join_log = self.bot.api.get_one_setting("2") # Join_log
-        if join_log[0]["status"] == "ok":
-            logs_channel = await self.bot.fetch_channel(join_log[0]["settings"][2])
+        channel = self.bot.api.get_one_setting("2") # Join_log
+        if channel[0]["status"] == "ok":
+            logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
 
             if str(audit_log.action) == "AuditLogAction.kick":
                 if audit_log.target == member:
@@ -56,6 +56,8 @@ class LoggingKicks(commands.Cog):
 
                     await logs_channel.send(embed=embed)
                     return
+        else:
+            logger.critical(f"API error. API response not ok. -> {channel}")
 
 
 async def setup(bot: commands.Bot) -> None:

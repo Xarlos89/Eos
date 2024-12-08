@@ -54,6 +54,8 @@ class LoggingNameChanges(commands.Cog):
                 embed = embed_name_change(username_before, username_after)
 
                 await logs_channel.send(f"{username_after.mention}", embed=embed)
+            else:
+                logger.critical(f"API error. API response not ok. -> {channel}")
 
 
 

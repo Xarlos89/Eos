@@ -49,6 +49,8 @@ class LoggingAvatars(commands.Cog):
                 embed = embed_avatar(before, after)
 
                 await logs_channel.send(embed=embed)
+            else:
+                logger.critical(f"API error. API response not ok. -> {channel}")
 
 
 async def setup(bot: commands.Bot) -> None:

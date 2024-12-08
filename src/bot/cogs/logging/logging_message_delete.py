@@ -68,6 +68,8 @@ class LoggingMessageDelete(commands.Cog):
                 # Otherwise, the author deleted it.
                 username = message.author
                 await logs_channel.send(embed=embed_message_delete(username, message))
+        else:
+            logger.critical(f"API error. API response not ok. -> {channel}")
 
 
 async def setup(bot: commands.Bot) -> None:

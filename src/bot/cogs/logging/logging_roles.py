@@ -57,9 +57,9 @@ class LoggingRoles(commands.Cog):
             responsible_member = audit_log.user
 
             changed_roles = []
-            mod_log = self.bot.api.get_one_setting("5")
-            if mod_log[0]["status"] == "ok":
-                logs_channel = await self.bot.fetch_channel(mod_log[0]["settings"][2]) # Mod_log
+            channel = self.bot.api.get_one_setting("4") # User_log
+            if channel[0]["status"] == "ok":
+                logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
 
                 if len(before.roles) > len(after.roles):
                     for role in before.roles:
@@ -77,7 +77,7 @@ class LoggingRoles(commands.Cog):
                         embed = embed_role_add(target_member, responsible_member, item)
                         await logs_channel.send(embed=embed)
             else:
-                logger.critical(f"API error. API response not ok. -> {mod_log}")
+                logger.critical(f"API error. API response not ok. -> {channel}")
 
 
 
