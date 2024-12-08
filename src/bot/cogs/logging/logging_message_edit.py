@@ -75,7 +75,6 @@ class LoggingMessageEdit(commands.Cog):
                 author = message_after.author
 
                 embed = embed_message_edit(username, author, message_before, message_after)
-                logs_channel = await self.bot.fetch_channel(self.bot.server_settings.log_channel["chat_log"])
                 await logs_channel.send(embed=embed)
 
             else:
