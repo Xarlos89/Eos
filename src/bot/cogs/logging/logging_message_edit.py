@@ -62,8 +62,11 @@ class LoggingMessageEdit(commands.Cog):
             return
 
         elif message_before.content != message_after.content:
-            channel = self.bot.api.get_one_setting("4")  # User_log
+            channel = self.bot.api.get_one_setting("3")  # chat_log
             if channel[0]["status"] == "ok":
+                if channel[0]["settings"][2] == "0":
+                    return
+
                 logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
 
                 # This guy here makes sure we use the displayed name inside the guild.

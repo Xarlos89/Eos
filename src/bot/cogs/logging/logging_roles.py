@@ -59,6 +59,8 @@ class LoggingRoles(commands.Cog):
             changed_roles = []
             channel = self.bot.api.get_one_setting("4") # User_log
             if channel[0]["status"] == "ok":
+                if channel[0]["settings"][2] == "0":
+                    return
                 logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
 
                 if len(before.roles) > len(after.roles):
