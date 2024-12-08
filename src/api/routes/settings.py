@@ -28,7 +28,7 @@ def get_settings(setting_id=None):
     return jsonify(result, 200)
 
 @settings.route('/log_settings', methods=['GET'])
-def get_all_log_settings():
+def get_log_settings():
     """
     Retrieve log settings from the database.
 
