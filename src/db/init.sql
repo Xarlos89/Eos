@@ -15,13 +15,13 @@ CREATE TABLE IF NOT EXISTS settings (
 
 INSERT INTO settings (name, value)
 VALUES
-    ('Verification Log', '0000000000000000000'),
-    ('Join Log', '0000000000000000000'),
-    ('Chat Log', '0000000000000000000'),
-    ('User Log', '0000000000000000000'),
-    ('Mod Log', '0000000000000000000'),
-    ('Server Log', '0000000000000000000'),
-    ('Error Log', '0000000000000000000');
+    ('Verification Log', '0'),
+    ('Join Log', '0'),
+    ('Chat Log', '0'),
+    ('User Log', '0'),
+    ('Mod Log', '0'),
+    ('Server Log', '0'),
+    ('Error Log', '0');
 
 
 
