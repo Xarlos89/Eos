@@ -38,7 +38,6 @@ There is also a `/src/bot/core/embeds.py`, however I might choose to depricate t
 ---
 # Commands
 ## Points
-
 ### 1. `sync_users`
 - **Description**: Synchronizes all guild members with the points database. Members who are already present in the database are skipped.
 - **Arguments**: None.
@@ -68,6 +67,16 @@ There is also a `/src/bot/core/embeds.py`, however I might choose to depricate t
 - **Usage**: `>top_10`
 - **Output**: An embedded message showing the top 10 users and their respective points.
 
+## Settings
+### 5. `settings`
+- **Description**: Fetches and displays the current settings for the guild
+- **Arguments**: None.
+- **Usage**: `>settings`
+- **Output**: An embedded message showing the guild settings
 
-
+### 6. `update_settings`
+- **Description**: An interactive menu that allows a user to change guild settings
+- **Arguments**: None.
+- **Usage**: `>update_settings`
+- **Output**: An embedded message that first asks what kind of settings you wish to change, and then another based on what you select. 
 
