@@ -48,6 +48,7 @@ class LoggingBans(commands.Cog):
         channel = self.bot.api.get_one_setting("2") # Join_log
         if channel[0]["status"] == "ok":
             if channel[0]["settings"][2] == "0":
+                logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
                 return
             logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
 
