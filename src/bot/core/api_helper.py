@@ -32,13 +32,9 @@ class API:
     #           Settings         #
     ##############################
     def get_one_setting(self, flag_id):
+        """Retrieves one setting from the database"""
         logger.debug("Bot called get_one_setting endpoint.")
-        flag = requests.get(f"{self.api}/settings/{flag_id}").json()[0]['settings'][2]
-        if flag == 'True':
-            return True
-        else:
-            return False
-
+        return requests.get(f"{self.api}/settings/{flag_id}").json()
 
     def get_all_settings(self):
         """Retrieves all settings from the database"""
