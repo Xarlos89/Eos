@@ -12,7 +12,7 @@ services:
       - eos
     depends_on:
       - bot
-    restart: always
+    restart: unless-stopped
 
   bot:
     container_name: bot
@@ -25,6 +25,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
 
   postgres:
     container_name: db
@@ -44,6 +45,7 @@ services:
       - "5432:5432"
     networks:
       - eos
+    restart: unless-stopped
 
 networks:
   eos:
