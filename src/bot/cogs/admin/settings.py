@@ -8,9 +8,16 @@ logger = logging.getLogger(__name__)
 
 
 def sanitize_string(input_string):
-    # Necessary because not all channel names
-    # have ASCII characters, and Discord dropdown values dont like non ASCII
+    """
+    Necessary because not all channel names
+    have ASCII characters, and Discord dropdown values don't like non ASCII
+    """
+
     return ''.join(char for char in input_string if ord(char) < 128)
+
+async def is_admin(ctx) -> bool:
+    """ Check if the context user has admin permissions"""
+    return ctx.message.author.guild_permissions.administrator
 
 
 class Settings(commands.Cog):
@@ -22,6 +29,8 @@ class Settings(commands.Cog):
         """Initialization of the points Class"""
         self.bot = bot
 
+    @commands.command(name="settings")
+    @commands.check(is_admin)
     @commands.hybrid_command()
     async def settings(self, ctx: commands.Context):
        """
@@ -48,6 +57,8 @@ class Settings(commands.Cog):
 
        await ctx.send(embed=embed)
 
+    @commands.command(name="update_settings")
+    @commands.check(is_admin)
     @commands.hybrid_command()
     async def update_settings(self, ctx: commands.Context):
         """

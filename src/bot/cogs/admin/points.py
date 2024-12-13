@@ -7,6 +7,11 @@ from core.embeds import embed_info
 logger = logging.getLogger(__name__)
 
 
+async def is_admin(ctx) -> bool:
+    """ Check if the context user has admin permissions"""
+    return ctx.message.author.guild_permissions.administrator
+
+
 class Points(commands.Cog):
     """
     This cog manages a points-based system for Discord guild members.
@@ -25,6 +30,8 @@ class Points(commands.Cog):
         """Initialization of the points Class"""
         self.bot = bot
 
+    @commands.command(name="sync_users")
+    @commands.check(is_admin)
     @commands.hybrid_command()
     async def sync_users(self, ctx: commands.Context) -> None:
         """
@@ -43,6 +50,7 @@ class Points(commands.Cog):
             )
         )
 
+    @commands.command(name="sync_users")
     @commands.hybrid_command()
     async def get_points(self, ctx: commands.Context, user: discord.Member) -> None:
         """
@@ -61,6 +69,8 @@ class Points(commands.Cog):
             await ctx.reply("Oopsie. Unexpected error. Check the logs.")
             logger.critical(points)
 
+    @commands.command(name="update_points")
+    @commands.check(is_admin)
     @commands.hybrid_command()
     async def update_points(self, ctx: commands.Context, user: discord.User, amount) -> None:
         """
