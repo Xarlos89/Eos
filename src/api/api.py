@@ -8,7 +8,7 @@ from __logger__ import setup_logger
 from routes.healthchecks import health_checks
 from routes.settings import settings
 from routes.points import points
-from routes.roles import roles
+from routes.roles import role
 
 from core.db_helper import DB
 
@@ -25,7 +25,7 @@ app.db = DB()
 app.register_blueprint(health_checks)
 app.register_blueprint(settings)
 app.register_blueprint(points)
-app.register_blueprint(roles)
+app.register_blueprint(role)
 
 # Error handlers
 @app.errorhandler(Exception)
