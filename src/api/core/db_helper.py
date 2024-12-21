@@ -94,6 +94,56 @@ class DB:
             return {"status": "error", "message": str(err)}
 
     ##################
+    ##   roles   ##
+    ##################
+    def get_role(self, role_id):
+        logger.debug("API attempting to contact DB for get_role...")
+        try:
+            self.cursor.execute("SELECT * FROM roles where id = %s", (role_id,))
+            result = self.cursor.fetchone()
+            return {"status": "ok", "roles": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching roles: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def get_roles(self):
+        logger.debug("API attempting to contact DB for get_roles...")
+        try:
+            self.cursor.execute("SELECT * FROM roles")
+            result = self.cursor.fetchall()
+            return {"status": "ok", "roles": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching roles: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def update_role(self, role_id, value):
+        logger.debug(f"API attempting to contact DB for update_role with role ID:{role_id} - Value:{value}")
+        try:
+            self.cursor.execute("UPDATE roles SET value = %s WHERE id = %s", (value, role_id))
+            return {"status": "ok", "message": "role updated successfully"}
+        except OperationalError as err:
+            logger.error(f"Error updating role: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def add_role(self, name, value):
+        logger.debug(f"API attempting to contact DB for add_role with name:{name} - Value:{value}")
+        try:
+            self.cursor.execute("INSERT INTO roles (name, value) VALUES (%s, %s)", (name, value))
+            return {"status": "ok", "message": "New role added successfully"}
+        except OperationalError as err:
+            logger.error(f"Error adding new role: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def delete_role(self, role_id):
+        logger.debug(f"API attempting to contact DB for delete_role with role_ID:{role_id}")
+        try:
+            self.cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))
+            return {"status": "ok", "message": f"role with ID {role_id} deleted successfully"}
+        except OperationalError as err:
+            logger.error(f"Error deleting role: {err}")
+            return {"status": "error", "message": str(err)}
+
+    ##################
     ##    Points    ##
     ##################
     def get_points_for_user(self, user_id):
