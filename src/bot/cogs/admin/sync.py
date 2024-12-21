@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 async def is_admin(ctx) -> bool:
+    """ Check if the context user has admin permissions"""
     return ctx.message.author.guild_permissions.administrator
-
 
 class CommandSync(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
