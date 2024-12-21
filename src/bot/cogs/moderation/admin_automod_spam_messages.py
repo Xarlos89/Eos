@@ -4,13 +4,46 @@ from datetime import datetime, timedelta
 import discord.errors
 from discord.ext import commands
 
-from zorak.utilities.cog_helpers._embeds import (
-    # TODO: Move embeds into functions here in the file.
-    embed_spammer,  # pylint: disable=E0401
-    embed_spammer_warn  # pylint: disable=E0401
-)
 
 logger = logging.getLogger(__name__)
+
+
+def embed_spammer_warn(channel1, channel2):
+    """
+    Embedding warn for detected spam messages.
+    """
+    embed = discord.Embed(
+        title='Warning'
+        , description='When you send the same message **three times**, you get the quarantine.\n'
+        , color=discord.Color.red()
+        , timestamp=datetime.utcnow()
+    )
+    report = f"Detected the same message in {channel1.mention} and {channel2.mention}"
+    embed.add_field(name="What happened?", value=report, inline=True)
+    embed.add_field(
+        name="What should you do?"
+        , value="Don't panic, and be patent."
+                " Someone will answer you as soon as they can."
+        , inline=True)
+    embed.set_footer(text="In the meantime... Maybe make sure your question contains your code, as well as the output.")
+    return embed
+
+def embed_spammer(spammer, message_to_report=None, file_url=None):
+    """
+    Embedding for detected spam messages.
+    """
+    embed = discord.Embed(
+        title='Firewall has been triggered'
+        , description=f'When you send the same message three times, {spammer.mention}, you get the quarantine.'
+                      f' Wait for the staff to come let you out.'
+        , color=discord.Color.red()
+        , timestamp=datetime.utcnow()
+    )
+    if message_to_report:
+        embed.add_field(name='Message:', value=message_to_report, inline=True)
+    if file_url:
+        embed.add_field(name="Image:", value=file_url, inline=True)
+    return embed
 
 
 class ModerationSpamMessages(commands.Cog):
@@ -21,7 +54,7 @@ class ModerationSpamMessages(commands.Cog):
     Upon detecting repeated messages, it takes moderation actions such as warning or
     quarantining the user and deleting spam messages.
     """
-
+    # TODO: Images currently get entered into memory as a blank string. We can use the message.attachment to fix that.
     def __init__(self, bot):
         """
         Initializes the cog with the bot instance.
