@@ -154,7 +154,7 @@ class Points(commands.Cog):
         On user leave/kick/ban, remove them from the database
         """
         logger.debug(f"Removing {member.display_name} from the points DB.")
-        self.bot.api.delete_member(member.id)
+        self.bot.api.delete_user_from_points(member.id)
 
     @update_points.error
     async def on_command_error(self, ctx: commands.Context, error):
