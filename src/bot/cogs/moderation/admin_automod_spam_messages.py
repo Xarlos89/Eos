@@ -192,11 +192,11 @@ class ModerationSpamMessages(commands.Cog):
     #     }
 
 
-def setup(bot):
+async def setup(bot) -> None:
     """
     Adds the ModerationSpamMessages cog to the bot.
 
     Args:
         bot (commands.Bot): The bot instance to which the cog is added.
     """
-    bot.add_cog(ModerationSpamMessages(bot))
+    await bot.add_cog(ModerationSpamMessages(bot))
