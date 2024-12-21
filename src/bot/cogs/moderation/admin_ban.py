@@ -22,6 +22,14 @@ def embed_info(message):
     )
     return embed
 
+
+async def is_moderator(ctx) -> bool:
+    """
+    Check if the context user has moderator permissions
+    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.ban_members
+    """
+    return ctx.message.author.guild_permissions.ban_members
+
 class AdminBan(commands.Cog):
     """
     Command to ban a user. Takes in a name, and a reason.
@@ -30,10 +38,9 @@ class AdminBan(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.check(is_moderator)
     @commands.command(description="Ban a user.")
     @commands.has_permissions(ban_members=True)
-    # TODO: DATABASE ROLES.
-    # @commands.has_role("Staff")
     async def ban_member(self, ctx, target: discord.Member, reason):
         """
         Take in a user mention, and a string reason.
@@ -65,6 +72,9 @@ class AdminBan(commands.Cog):
             await ctx.channel.send(embed=embed_info(
                 f"User was not found, please check the name and use a mention."))
 
+        if isinstance(error, commands.CheckFailure):
+            await ctx.channel.send(embed=embed_info(
+                f"{ctx.author.mention}, you dont have permission to ban users. The staff has been notified."))
 
 async def setup(bot) -> None:
     """

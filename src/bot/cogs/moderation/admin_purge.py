@@ -7,6 +7,28 @@ from discord.ext import commands
 
 logger = logging.getLogger(__name__)
 
+
+def embed_info(message):
+    """
+    Embedding for general things
+    """
+    embed = discord.Embed(
+        title=''
+        , description=message
+        , color=discord.Color.red()
+        , timestamp=datetime.utcnow()
+    )
+    return embed
+
+async def is_moderator(ctx) -> bool:
+    """
+    Check if the context user has moderator permissions
+    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.manage_messages
+    """
+    return ctx.message.author.guild_permissions.manage_messages
+
+
+
 class AdminPurge(commands.Cog):
     """
     We are limited to 100 messages per command by Discord API
@@ -16,10 +38,8 @@ class AdminPurge(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.check(is_moderator)
     @commands.command(description="Removes up to 100 messages from channel.")
-    @commands.has_permissions(manage_messages=True)
-    # TODO: DATABASE ROLES.
-    # @commands.has_role("Staff")
     async def purge_messages(self, ctx, number_messages):
         """
         We currently have permissions on this command set,
@@ -39,21 +59,11 @@ class AdminPurge(commands.Cog):
         else:
             logger.critical("API error while purging. Status is NOT ok.")
 
-    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        """
-        Handles errors for this cog
-        """
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.channel.send(
-                f"Sorry, {ctx.author.name}, you dont have the " f"correct permissions to use this command!",
-                reference=ctx.message,
-            )
-
-        if isinstance(error, commands.MissingRole):
-            await ctx.channel.send(
-                f"Sorry, {ctx.author.name}, you do not have the correct role to use this command!",
-                reference=ctx.message,
-            )
+    @purge_messages.error
+    async def purge_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            await ctx.channel.send(embed=embed_info(
+                f"{ctx.author.mention}, you dont have permission to purge messages. The staff has been notified."))
 
 
 async def setup(bot) -> None:
