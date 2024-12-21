@@ -62,7 +62,7 @@ class AdminKick(commands.Cog):
             await ctx.channel.send(embed=embed_info("You cant kick a bot."))
 
     @kick_member.error
-    async def ban_error(self, ctx, error):
+    async def kick_error(self, ctx, error):
         if isinstance(error, commands.MemberNotFound):
             await ctx.channel.send(embed=embed_info(
                 f"User was not found, please check the name and use a mention."))
