@@ -20,7 +20,7 @@ def get_role(role_id=None):
     """
     if role_id is None:
         # Retrieve all role
-        result = eos.db.get_role()
+        result = eos.db.get_roles()
     else:
         # Retrieve a single role
         result = eos.db.get_role(role_id)
