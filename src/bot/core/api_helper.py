@@ -69,6 +69,42 @@ class API:
         logger.debug(f"Bot called the delete_setting endpoint. Setting ID: {setting_id}")
         return requests.delete(f"{self.api}/settings/{setting_id}").json()
 
+    ##############################
+    #            Roles           #
+    ##############################
+    def get_one_role(self, flag_id):
+        """Retrieves one role from the database"""
+        logger.debug("Bot called get_one_role endpoint.")
+        return requests.get(f"{self.api}/role/{flag_id}").json()
+
+    def get_all_roles(self):
+        """Retrieves all roles from the database"""
+        logger.debug("Bot called the get_all_roles endpoint.")
+        return requests.get(f"{self.api}/role").json()
+
+    def add_new_role(self, name, value):
+        """Adds a new role to the database"""
+        logger.debug(f"Bot called the add_new_role endpoint. role to add: {name} - role value: {value}")
+        data = {
+            'name': name,
+            'value': value
+        }
+        return requests.post(f"{self.api}/role", json=data).json()
+
+    def update_existing_role(self, role_id, new_value):
+        """Updates an existing role in the database"""
+        logger.debug(f"Bot called the update_existing_role endpoint. role ID: {role_id} - New value: {new_value}")
+
+        data = {
+            'value': new_value
+        }
+        return requests.put(f"{self.api}/role/{role_id}", json=data).json()
+
+    def delete_role(self, role_id):
+        """Deletes a role from the database"""
+        logger.debug(f"Bot called the delete_role endpoint. role ID: {role_id}")
+        return requests.delete(f"{self.api}/role/{role_id}").json()
+
 
     ##############################
     #            Points          #
