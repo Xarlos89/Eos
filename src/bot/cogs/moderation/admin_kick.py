@@ -11,9 +11,9 @@ from discord.ext import commands
 logger = logging.getLogger(__name__)
 
 
-def embed_cant_do_that(message):
+def embed_info(message):
     """
-    Embedding for things you cant do.
+    Embedding for general things
     """
     embed = discord.Embed(
         title=''
@@ -43,6 +43,7 @@ class AdminKick(commands.Cog):
         if not target.bot:
             if not target.guild_permissions.administrator:
                 # Message the user, informing them of their fate
+                # TODO: Guild specific settings like the contact email
                 await target.send(
                     f"## You were kicked by {ctx.author.name}.\n"
                     f"**Reason:** {reason}\n"
@@ -53,12 +54,12 @@ class AdminKick(commands.Cog):
                 await target.kick(reason=f"{ctx.author.name} - {reason}")
                 logger.info("{%s} kicked {%s}. Reason: {%s}", ctx.author.name, target.name, reason)
                 # Then we publicly announce what happened.
-                await ctx.respond(embed=embed_cant_do_that(f"**{ctx.author.name}** kicked **{target.name}**" f"\n**Reason:** {reason}"))
+                await ctx.channel.send(embed=embed_info(f"**{ctx.author.name}** kicked **{target.name}**" f"\n**Reason:** {reason}"))
 
             else:
-                await ctx.respond(embed=embed_cant_do_that("You can't kick an Admin."), ephemeral=True)
+                await ctx.channel.send(embed=embed_info("You can't kick an Admin."), ephemeral=True)
         else:
-            await ctx.respond(embed=embed_cant_do_that("You cant kick a bot."), ephemeral=True)
+            await ctx.channel.send(embed=embed_info("You cant kick a bot."), ephemeral=True)
 
 
 async def setup(bot) -> None:
