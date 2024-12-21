@@ -23,6 +23,22 @@ VALUES
     ('Server Log', '0'),
     ('Error Log', '0');
 
+-- Create roles table
+CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    value VARCHAR(255)
+);
+
+INSERT INTO roles (name, value)
+VALUES
+    ('Owner', '0'),
+    ('Admin', '0'),
+    ('Staff', '0'),
+    ('Privileged', '0'),
+    ('Ping', '0'),
+    ('Verified', '0'),
+    ('Quarantine', '0');
 
 
 -- Create users table
