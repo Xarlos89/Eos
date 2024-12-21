@@ -26,19 +26,18 @@ class AdminPurge(commands.Cog):
         which throws an error when the user does not have the correct perms.
         We handle this with an error_handler block
         """
-
-        # removes the need for a response
-        await ctx.defer()
         channel = self.bot.api.get_one_setting("3")  # chat_log
-        logs_channel = await self.bot.fetch_channel(channel)
-
         if channel[0]["status"] == "ok":
-            # Do the purge
+            logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
             await ctx.channel.purge(limit=int(number_messages))
 
-            if channel[0]["settings"][2] == "0":
-                # Log the purge
-                await logs_channel.send(f"{number_messages} messages purged" f" from {ctx.channel.mention}" f" by {ctx.author.mention}.")
+            if channel[0]["settings"][2] != "0":
+                logger.info(f"{ctx.author.name} is purging {number_messages} from the {channel[0]["settings"][1]}")
+                await logs_channel.respond(f"{number_messages} messages purged" f" from {ctx.channel.mention}" f" by {ctx.author.mention}.")
+            else:
+                logger.warning(f"Purge command was used by {ctx.author.name}, but logging for the chat log was turned off.")
+        else:
+            logger.critical("API error while purging. Status is NOT ok.")
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         """
@@ -57,8 +56,8 @@ class AdminPurge(commands.Cog):
             )
 
 
-def setup(bot):
+async def setup(bot) -> None:
     """
     required by all cogs.
     """
-    bot.add_cog(AdminPurge(bot))
+    await bot.add_cog(AdminPurge(bot))
