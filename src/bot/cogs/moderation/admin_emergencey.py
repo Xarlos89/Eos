@@ -1,7 +1,4 @@
-# pylint: skip-file
-# import discord
-# from discord import default_permissions
-
+import logging
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
@@ -30,5 +27,5 @@ class admin_emergencey(commands.Cog, command_attrs=dict(hidden=True)):
             await channel.send(f"***{channel.name} has been unlocked.***")
 
 
-def setup(bot):
-    bot.add_cog(admin_emergencey(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(admin_emergencey(bot))
