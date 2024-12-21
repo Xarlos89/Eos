@@ -51,18 +51,21 @@ class AdminKick(commands.Cog):
                     " contact PracticalPythonStaff@gmail.com"
                 )
                 # Then we do the kick
-                try:
-                    await target.kick(reason=f"{ctx.author.name} - {reason}")
-                    logger.info("{%s} kicked {%s}. Reason: {%s}", ctx.author.name, target.name, reason)
-                    # Then we publicly announce what happened.
-                    await ctx.channel.send(embed=embed_info(f"**{ctx.author.name}** kicked **{target.name}**" f"\n**Reason:** {reason}"))
-                except discord.ext.commands.errors.MemberNotFound as woopsie:
-                    await ctx.channel.send(embed=embed_info(f"{target.name} was not found, please check the name and use a mention.\nError: {woopsie}"))
+                await target.kick(reason=f"{ctx.author.name} - {reason}")
+                logger.info("{%s} kicked {%s}. Reason: {%s}", ctx.author.name, target.name, reason)
+                # Then we publicly announce what happened.
+                await ctx.channel.send(embed=embed_info(f"**{ctx.author.name}** kicked **{target.name}**" f"\n**Reason:** {reason}"))
 
             else:
-                await ctx.channel.send(embed=embed_info("You can't kick an Admin."), ephemeral=True)
+                await ctx.channel.send(embed=embed_info("You can't kick an Admin."))
         else:
-            await ctx.channel.send(embed=embed_info("You cant kick a bot."), ephemeral=True)
+            await ctx.channel.send(embed=embed_info("You cant kick a bot."))
+
+    @kick_member.error
+    async def ban_error(self, ctx, error):
+        if isinstance(error, commands.MemberNotFound):
+            await ctx.channel.send(embed=embed_info(
+                f"User was not found, please check the name and use a mention."))
 
 
 async def setup(bot) -> None:
