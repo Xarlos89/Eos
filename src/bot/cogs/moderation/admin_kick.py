@@ -51,10 +51,13 @@ class AdminKick(commands.Cog):
                     " contact PracticalPythonStaff@gmail.com"
                 )
                 # Then we do the kick
-                await target.kick(reason=f"{ctx.author.name} - {reason}")
-                logger.info("{%s} kicked {%s}. Reason: {%s}", ctx.author.name, target.name, reason)
-                # Then we publicly announce what happened.
-                await ctx.channel.send(embed=embed_info(f"**{ctx.author.name}** kicked **{target.name}**" f"\n**Reason:** {reason}"))
+                try:
+                    await target.kick(reason=f"{ctx.author.name} - {reason}")
+                    logger.info("{%s} kicked {%s}. Reason: {%s}", ctx.author.name, target.name, reason)
+                    # Then we publicly announce what happened.
+                    await ctx.channel.send(embed=embed_info(f"**{ctx.author.name}** kicked **{target.name}**" f"\n**Reason:** {reason}"))
+                except discord.ext.commands.errors.MemberNotFound as woopsie:
+                    await ctx.channel.send(embed=embed_info(f"{target.name} was not found, please check the name and use a mention.\nError: {woopsie}"))
 
             else:
                 await ctx.channel.send(embed=embed_info("You can't kick an Admin."), ephemeral=True)
