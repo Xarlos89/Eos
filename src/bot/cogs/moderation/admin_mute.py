@@ -31,7 +31,7 @@ class AdminMute(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(description="Time is in minutes to mute a user.")
+    @commands.command(description="Time is in minutes to mute a user.")
     @commands.has_permissions(moderate_members=True)
     # TODO: DATABASE ROLES.
     # @commands.has_role("Staff")

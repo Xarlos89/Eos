@@ -30,7 +30,7 @@ class AdminBan(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(description="Ban a user.")
+    @commands.command(description="Ban a user.")
     @commands.has_permissions(ban_members=True)
     # TODO: DATABASE ROLES.
     # @commands.has_role("Staff")

@@ -31,7 +31,7 @@ class AdminKick(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(description="Kick a user.")
+    @commands.command(description="Kick a user.")
     @commands.has_permissions(kick_members=True)
     # TODO: DATABASE ROLES.
     # @commands.has_role("Staff")

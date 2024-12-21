@@ -1,8 +1,11 @@
 """
 Admin command to remove messages in bulk.
 """
+import logging
 from discord.ext import commands
 
+
+logger = logging.getLogger(__name__)
 
 class AdminPurge(commands.Cog):
     """
@@ -13,7 +16,7 @@ class AdminPurge(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(description="Removes up to 100 messages from channel.")
+    @commands.command(description="Removes up to 100 messages from channel.")
     @commands.has_permissions(manage_messages=True)
     # TODO: DATABASE ROLES.
     # @commands.has_role("Staff")
