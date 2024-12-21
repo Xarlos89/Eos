@@ -63,11 +63,11 @@ class UtilityRunCode(commands.Cog):
             # Check for input() args and calls to input() function
             if "input(" in codeblock and not args:
                 value = (
-                    "I am happy to run your script but I do not want to interact with you. You can "
-                    "remove your input() functions, however if you insist on keeping them, please "
-                    "put your input values in order on separate lines after the codeblock:\n\n"
-                    '\`\`\`py \nx = input("What is your first input: ")\ny = input("What is '
-                    'your second input: ")\nprint(x)\nprint(y)\n\`\`\`\nmy_first_input\nmy_second_input'
+                    r"I am happy to run your script but I do not want to interact with you. You can "
+                    r"remove your input() functions, however if you insist on keeping them, please "
+                    r"put your input values in order on separate lines after the codeblock:\n\n"
+                    r"```py \nx = input(\"What is your first input: \")\ny = input(\"What is "
+                    r"your second input: \")\nprint(x)\nprint(y)\n```\nmy_first_input\nmy_second_input"
                 )
 
             else:
@@ -80,11 +80,11 @@ class UtilityRunCode(commands.Cog):
                 # Check for EOFError
                 if all(item in runcode for item in ("Traceback", "EOFError:")):
                     value = (
-                        "The function input() was called more times than the number of input strings "
-                        " provided. Make sure you have the correct number of input strings after the "
-                        "codeblock.\n(Each input string should be separated by a new line)\n\n"
-                        '\`\`\`py \nx = input("What is your first input: ")\ny = input("What is '
-                        'your second input: ")\nprint(x)\nprint(y)\n\`\`\`\nmy_first_input\nmy_second_input'
+                        r"The function input() was called more times than the number of input strings "
+                        r" provided. Make sure you have the correct number of input strings after the "
+                        r"codeblock.\n(Each input string should be separated by a new line)\n\n"
+                        r"```py \nx = input(\"What is your first input: \")\ny = input(\"What is "
+                        r"your second input: \")\nprint(x)\nprint(y)\n```\nmy_first_input\nmy_second_input"
                     )
 
                 # Code execution successful without EOFError
@@ -96,13 +96,13 @@ class UtilityRunCode(commands.Cog):
         # Check for single quotes instead of codeblocks
         elif codeblock.startswith("'''") or codeblock.endswith("'''"):
             value = (
-                "Did you mean to use a \` instead of a ' ?\n\n"
-                "\`\`\`py \nx = 'like this'\nprint(x) \n\`\`\`"
+                r"Did you mean to use a ` instead of a ' ?\n\n"
+                r"```py \nx = 'like this'\nprint(x) \n```"
             )
         else:
             value = (
-                "Please place your code inside a code block. (between \`\`\`py "
-                "and \`\`\`)\n\n\`\`\`py \nx = 'like this'\nprint(x) \n\`\`\`"
+                r"Please place your code inside a code block. (between ```py "
+                r"and ```)\n\n```py \nx = 'like this'\nprint(x) \n```"
             )
 
         # Output error message
