@@ -23,6 +23,13 @@ def embed_info(message):
     )
     return embed
 
+async def is_moderator(ctx) -> bool:
+    """
+    Check if the context user has moderator permissions
+    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.kick_members
+    """
+    return ctx.message.author.guild_permissions.kick_members
+
 class AdminKick(commands.Cog):
     """
     Command to kick a user. Takes in a name, and a reason.
@@ -30,11 +37,9 @@ class AdminKick(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
+    @commands.check(is_moderator)
     @commands.command(description="Kick a user.")
     @commands.has_permissions(kick_members=True)
-    # TODO: DATABASE ROLES.
-    # @commands.has_role("Staff")
     async def kick_member(self, ctx, target: discord.Member, reason):
         """
         Take in a user mention, and a string reason.
@@ -66,6 +71,10 @@ class AdminKick(commands.Cog):
         if isinstance(error, commands.MemberNotFound):
             await ctx.channel.send(embed=embed_info(
                 f"User was not found, please check the name and use a mention."))
+
+        if isinstance(error, commands.CheckFailure):
+            await ctx.channel.send(embed=embed_info(
+                f"{ctx.author.mention}, you dont have permission to kick users. The staff has been notified."))
 
 
 async def setup(bot) -> None:

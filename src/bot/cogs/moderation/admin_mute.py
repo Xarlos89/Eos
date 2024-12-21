@@ -13,6 +13,26 @@ logger = logging.getLogger(__name__)
 
 def embed_info(message):
     """
+    Embedding for general things
+    """
+    embed = discord.Embed(
+        title=''
+        , description=message
+        , color=discord.Color.red()
+        , timestamp=datetime.utcnow()
+    )
+    return embed
+
+async def is_moderator(ctx) -> bool:
+    """
+    Check if the context user has moderator permissions
+    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.mute_members
+    """
+    return ctx.message.author.guild_permissions.mute_members
+
+
+def embed_info(message):
+    """
     Embedding for generl things
     """
     embed = discord.Embed(
@@ -31,10 +51,9 @@ class AdminMute(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.check(is_moderator)
     @commands.command(description="Time is in minutes to mute a user.")
     @commands.has_permissions(moderate_members=True)
-    # TODO: DATABASE ROLES.
-    # @commands.has_role("Staff")
     async def mute_member(self, ctx, target: discord.Member, time, reason):
         """
         Take in a user mention, and a string reason.
@@ -63,6 +82,11 @@ class AdminMute(commands.Cog):
         if isinstance(error, commands.MemberNotFound):
             await ctx.channel.send(embed=embed_info(
                 f"User was not found, please check the name and use a mention."))
+
+        if isinstance(error, commands.CheckFailure):
+            await ctx.channel.send(embed=embed_info(
+                f"{ctx.author.mention}, you dont have permission to mute users. The staff has been notified."))
+
 
 
 async def setup(bot) -> None:

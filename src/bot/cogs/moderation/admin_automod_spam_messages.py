@@ -151,45 +151,45 @@ class ModerationSpamMessages(commands.Cog):
             await message.author.timeout(until=datetime.utcnow() + timedelta(seconds=15))
             logger.info("%s was timed out (2/3 messages)", message.author.name)
 
-    # async def quarantine_user(self, message, record):
-    #     # TODO: DATABASE ROLES.
-    #     # We cannot yet set roles in the settings, so we cannot use commands that query roles.
-    #     """
-    #     Quarantines the user for sending three repeated messages and deletes the spam messages.
-    #
-    #     Args:
-    #         message (discord.Message): The triggering message object.
-    #         record (dict): The user's message record.
-    #     """
-    #     naughty_role = message.author.guild.get_role(self.bot.server_settings.user_roles["bad"]["naughty"])
-    #     verified_role = message.author.guild.get_role(self.bot.server_settings.verified_role['verified'])
-    #     quarantine_channel = await self.bot.fetch_channel(
-    #         self.bot.server_settings.channels["moderation"]["quarantine_channel"]
-    #     )
-    #
-    #     await message.author.timeout(until=datetime.utcnow() + timedelta(seconds=30))
-    #     await message.author.remove_roles(verified_role)
-    #     await message.author.add_roles(naughty_role)
-    #
-    #     await quarantine_channel.send(
-    #         embed=embed_spammer(message.author, message.content, record["messages"][-1]["file_url"])
-    #     )
-    #
-    #     for msg in record["messages"]:
-    #         channel = await self.bot.fetch_channel(msg["channel_id"])
-    #         msg_to_delete = await channel.fetch_message(msg["message_id"])
-    #         await msg_to_delete.delete()
-    #
-    #     self.records[message.author.id] = {
-    #         "last_message": message.content if message.content else message.attachments[0].filename,
-    #         "occurrence": 1,
-    #         "messages": [{
-    #             "message_id": message.id,
-    #             "channel_id": message.channel.id,
-    #             "file_name": message.attachments[0].filename if not message.content else None,
-    #             "file_url": message.attachments[0].url if not message.content else None
-    #         }]
-    #     }
+    async def quarantine_user(self, message, record):
+        """
+        Quarantines the user for sending three repeated messages and deletes the spam messages.
+
+        Args:
+            message (discord.Message): The triggering message object.
+            record (dict): The user's message record.
+        """
+        naughty_role = self.bot.api.get_one_role("7")
+        verified_role = self.bot.api.get_one_role("6")
+        # TODO: We dont have any way to set a quarantine channel yet.
+        # quarantine_channel = await self.bot.fetch_channel(
+        #     self.bot.server_settings.channels["moderation"]["quarantine_channel"]
+        # )
+
+        await message.author.timeout(until=datetime.utcnow() + timedelta(seconds=30))
+        await message.author.remove_roles(verified_role)
+        await message.author.add_roles(naughty_role)
+
+        # await quarantine_channel.send(
+        #     embed=embed_spammer(message.author, message.content, record["messages"][-1]["file_url"])
+        # )
+
+        for msg in record["messages"]:
+            channel = await self.bot.fetch_channel(msg["channel_id"])
+            msg_to_delete = await channel.fetch_message(msg["message_id"])
+            await msg_to_delete.delete()
+
+        self.records[message.author.id] = {
+            "last_message": message.content if message.content else message.attachments[0].filename,
+            "occurrence": 1,
+            "messages": [{
+                "message_id": message.id,
+                "channel_id": message.channel.id,
+                "file_name": message.attachments[0].filename if not message.content else None,
+                "file_url": message.attachments[0].url if not message.content else None
+            }]
+        }
+
 
 
 async def setup(bot) -> None:
