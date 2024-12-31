@@ -1,17 +1,24 @@
-from __future__ import annotations
-import os
-import logging
-
-
-def setup_logger(level: int = int(os.getenv("LOG_LEVEL")), stream_logs: bool = False) -> None:
+def setup_logger(level, stream_logs) -> None:
     """
-    Sets up the service logs
+    Configures the logging for the service.
+
+    This function sets up the logging configuration for the service, allowing
+    logs to be output to the console if specified. It formats the logs with a
+    specific format and sets the logging level.
+
     Parameters
     ----------
     level : int
-        Level to log in the main logs
+        The logging level to be set for the logs. This determines the severity
+        of the messages that will be logged.
     stream_logs : bool
-        Flag to stream the logs to the console
+        A flag indicating whether to stream the logs to the console. If True,
+        logs will be output to the console.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
     """
     log_formatter = logging.Formatter(
         ":: %(asctime)s :: %(levelname)s :: %(filename)s line %(lineno)s --- %(message)s"

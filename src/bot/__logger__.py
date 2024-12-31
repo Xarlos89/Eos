@@ -3,18 +3,28 @@ import os
 import logging
 
 
-def setup_logger(level: int = int(os.getenv("LOG_LEVEL")), stream_logs: bool = False) -> None:
+def setup_logger(level, stream_logs) -> None:
     """
-    FOR LOGGING LEVELS
-    https://docs.python.org/3/library/logging.html#logging-levels
+    Configures the logging system for the application.
 
-    Sets up the service logs
+    This function sets up the logging configuration for the application,
+    allowing logs to be written to the console based on the specified
+    logging level and whether streaming to the console is enabled.
+
     Parameters
     ----------
     level : int
-        Level to log in the main logs
+        The logging level to be used for the main logs. This determines
+        the severity of messages that will be logged.
     stream_logs : bool
-        Flag to stream the logs to the console
+        A flag indicating whether logs should be streamed to the console.
+        If True, logs will be output to the console; otherwise, they will
+        not be streamed.
+
+    Returns
+    -------
+    None
+        This function does not return any value.
     """
     log_formatter = logging.Formatter(
         ":: %(asctime)s :: %(levelname)s :: %(filename)s line %(lineno)s --- %(message)s"

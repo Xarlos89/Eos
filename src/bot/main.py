@@ -9,7 +9,7 @@ from core.api_helper import API
 
 
 logger = logging.getLogger(__name__)
-setup_logger(level=int(os.getenv("LOG_LEVEL")), stream_logs=bool(os.getenv("STREAM_LOGS")))
+setup_logger(level=int(os.getenv("BOT_LOG_LEVEL")), stream_logs=bool(os.getenv("STREAM_LOGS")))
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
@@ -18,10 +18,17 @@ bot.api = API()
 
 async def load_cogs(robot: commands.Bot) -> None:
     """
-    Loads the directories under the /cogs/ folder,
-    then digs through those directories and loads the cogs.
+    Loads all the cog extensions from the directories under the /cogs/ folder into the bot.
 
-    We do not load files starting with _ and the templates folder.
+    This function iterates through each directory within the /cogs/ folder, excluding those
+    that start with an underscore. It then attempts to load each Python file as a cog extension,
+    provided the file does not start with an underscore.
+
+    Parameters:
+    robot (commands.Bot): The instance of the bot to which the cogs will be loaded.
+
+    Returns:
+    None: This function does not return any value.
     """
     logger.info("Loading Cogs...")
     for directory in os.listdir("cogs"):
@@ -40,7 +47,17 @@ async def load_cogs(robot: commands.Bot) -> None:
 @bot.event
 async def setup_hook() -> None:
     """
-    The setup_hook executes before the bot logs in.
+    Executes custom setup logic before the bot logs in.
+
+    This function is called before the bot connects to Discord and logs in. 
+    It can be used to perform any necessary setup tasks that need to be 
+    completed before the bot becomes operational.
+
+    Parameters:
+    None
+
+    Returns:
+    None: This function does not return any value.
     """
     logger.debug("Executing set up hook...")
 
