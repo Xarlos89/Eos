@@ -1,9 +1,16 @@
-FROM python:3.12.6
+FROM python:3.12.8-slim-bullseye
 
 WORKDIR /api
 
 COPY /api /api
+
+# for integration with pyscopg
+RUN apt update && \
+    apt upgrade -y &&  \
+    apt install libpq5=13.18-0+deb11u1  -y
+
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r /api/requirements-api.txt
+
 
 EXPOSE 5000
 CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]

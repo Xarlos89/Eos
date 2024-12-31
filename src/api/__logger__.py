@@ -1,3 +1,6 @@
+import logging
+
+
 def setup_logger(level, stream_logs) -> None:
     """
     Configures the logging for the service.
