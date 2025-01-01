@@ -5,13 +5,13 @@ import json
 
 logger = logging.getLogger(__name__)
 
+
 class API:
     def __init__(self):
         logger.info("Initializing API...")
         self.api = os.getenv('FLASK_URL')
         self.headers = {'Content-Type': 'application/json'}
         logger.info("API initialized.")
-
 
     ##############################
     #        Health checks       #
@@ -26,7 +26,6 @@ class API:
         """Returns the healthcheck status of the API"""
         logger.debug("Bot called database healthcheck endpoint.")
         return requests.get(f"{self.api}/hc_db").json()
-
 
     ##############################
     #           Settings         #
@@ -57,7 +56,8 @@ class API:
 
     def update_existing_setting(self, setting_id, new_value):
         """Updates an existing setting in the database"""
-        logger.debug(f"Bot called the update_existing_setting endpoint. Setting ID: {setting_id} - New value: {new_value}")
+        logger.debug(
+            f"Bot called the update_existing_setting endpoint. Setting ID: {setting_id} - New value: {new_value}")
 
         data = {
             'value': new_value
@@ -104,7 +104,6 @@ class API:
         """Deletes a role from the database"""
         logger.debug(f"Bot called the delete_role endpoint. role ID: {role_id}")
         return requests.delete(f"{self.api}/role/{role_id}").json()
-
 
     ##############################
     #            Points          #

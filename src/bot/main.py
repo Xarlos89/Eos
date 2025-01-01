@@ -97,6 +97,5 @@ def boink() -> None:
         return
 
 
-
 if __name__ == '__main__':
     boink()

@@ -1,11 +1,22 @@
 import logging
+from datetime import datetime
 import discord
 from discord.ext import commands
 
-from core.embeds import embed_info
-
 logger = logging.getLogger(__name__)
 
+
+def embed_info(title, message, color):
+    """
+    Embedding for avatar change alerts.
+    """
+    embed = discord.Embed(
+        title=f'{title}'
+        , description=f'{message}'
+        , color=color
+        , timestamp=datetime.utcnow()
+    )
+    return embed
 
 async def is_admin(ctx) -> bool:
     """ Check if the context user has admin permissions"""
