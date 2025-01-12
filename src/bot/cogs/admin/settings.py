@@ -37,20 +37,34 @@ class Settings(commands.Cog):
 
        >settings
        """
-       all_settings = self.bot.api.get_all_settings()
+       server_settings = self.bot.api.get_all_settings()
+       log_settings = self.bot.api.get_all_log_settings()
 
-       if all_settings[0]["status"] != "ok":
-           await ctx.send(f"Failed to retrieve settings: {all_settings['message']}")
+       if server_settings[0]["status"] != "ok":
+           await ctx.send(f"Failed to retrieve settings: {server_settings['message']}")
+           return
+       if log_settings[0]["status"] != "ok":
+           await ctx.send(f"Failed to retrieve settings: {log_settings['message']}")
            return
 
        embed = discord.Embed(title="-- Settings --",
                       description="Here, you can see the current settings for the server.",
                       colour=0x000000,
                       timestamp=datetime.now())
-       for setting in all_settings[0]["settings"]:
-           embed.add_field(name=f"-- {setting[1]}"
-                           , value=f"{setting[2] if setting[2] != '0' else 'Off'}"
+
+       for setting in server_settings[0]["setting"]:
+           value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
+           embed.add_field(name=""
+                           , value=f"**{setting[1]}**:{value}"
                            , inline=False)
+
+       for setting in log_settings[0]["logging"]:
+           value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
+           embed.add_field(name=f""
+                           , value=f"**{setting[1]}**:{value}"
+                           , inline=False)
+
+
        embed.set_footer(text=ctx.guild.name,
                         icon_url=ctx.guild.icon)
 
@@ -63,22 +77,26 @@ class Settings(commands.Cog):
         Produces a dropdown of all available settings to change.
         """
         # Make the database calls to get the current data.
-        channel_settings = self.bot.api.get_log_settings()
+        channel_settings = self.bot.api.get_all_log_settings()
         role_settings = self.bot.api.get_all_roles()
+        server_settings = self.bot.api.get_all_settings()
 
         # Pull the names out of the returned JSON
-        logging_types = [item for item in channel_settings[0]['settings']]
+        logging_types = [item for item in channel_settings[0]['logging']]
         role_types = [role for role in role_settings[0]['roles']]
+        setting_types = [setting for setting in server_settings[0]['setting']]
 
         # Get the names of the available channels and roles to map
         channels = [channel for channel in ctx.guild.text_channels if "log" in channel.name]
         roles = [role for role in reversed(ctx.guild.roles)][:24] # TODO: Find a way to handle more than 25 roles
-
+        settings = [channel for channel in ctx.guild.text_channels[:24] if "log" not in channel.name] # TODO: Find a way to handle more than 25 channels
         # Pass a tuple. Index 0 is the title, index 2 is the view
         # Relevant in the prompt callback.
         menu = [
+            # Views take context, bot, values of dropdowns, names of dropdowns
             ((log[1], LoggingDropdownView(ctx, self.bot, channels, log)) for log in logging_types),
-            ((role[1], RoleDropdownView(ctx, self.bot, roles, role)) for role in role_types)
+            ((role[1], RoleDropdownView(ctx, self.bot, roles, role)) for role in role_types),
+            ((setting[1], ServerDropdownView(ctx, self.bot, settings, setting)) for setting in setting_types)
         ]
 
         prompt = PromptDropdownView(menu)
@@ -93,8 +111,10 @@ class PromptDropdown(discord.ui.Select):
     def __init__(self, main_menu: list[tuple]):
         self.main_menu = list(main_menu) if not isinstance(main_menu, list) else main_menu
         options = [
+            # The order here matters in the callback.
             discord.SelectOption(label='Logging', description='Edit the logging settings', emoji='➡️', value="logging"),
-            discord.SelectOption(label='Roles', description='Edit the role settings', emoji='➡️', value="roles"),
+            discord.SelectOption(label='Roles', description='Edit the role settings', emoji='➡️', value="roles")     ,
+            discord.SelectOption(label='Server Settings', description='Edit the server settings', emoji='➡️', value="server")
         ]
         super().__init__(placeholder='Choose an option...', min_values=1, max_values=1, options=options)
 
@@ -127,6 +147,17 @@ Please select the server roles you'd like to configure for the positions availab
             )
             for title, view in self.main_menu[1]:
                 await interaction.channel.send(f"### **{title}**", view=view)
+
+        if self.values[0] == 'server':
+            await interaction.response.send_message(
+"""
+# -- Server Settings --
+"""
+            )
+            for title, view in self.main_menu[2]:
+                await interaction.channel.send(f"### **{title}**", view=view)
+
+
 class PromptDropdownView(discord.ui.View):
     def __init__(self, logging_view):
         super().__init__()
@@ -173,7 +204,7 @@ class LoggingDropdown(discord.ui.Select):
         # value[1] will be the name of the setting... i.e. "Chat Log"
         # value[2] will be the Discord ID of the channel
         value = self.values[0].split(":")
-        self.bot.api.update_existing_setting(value[0], value[2])
+        self.bot.api.update_existing_log_setting(value[0], value[2])
 
         logger.info(f'The {value[1]} setting was changed to: {value[2]}')
         await interaction.response.send_message(
@@ -226,6 +257,53 @@ class RoleDropdown(discord.ui.Select):
             f'The {value[1]} role will be tied to <@&{value[2]}>' if value[2]!="0" else f'The {value[1]} role will not be linked to anything.'
         )
 
+class ServerDropdown(discord.ui.Select):
+    def __init__(self, ctx: commands.Context, bot, channels: list, purpose: str):
+        self.bot = bot
+        self.guild = ctx.guild
+        self.channels = channels
+        self.dropdown_options = [
+            discord.SelectOption(
+                label="Turn off feature."
+                , description="..."
+                , emoji="🔴"
+                # Special formatting that uses : as a delimiter.
+                # Kind of abusing the "value" option with this.
+                # See the callback
+                , value=f"{purpose[0]}:{purpose[1]}:0")
+        ]
+
+        for guild_channel in self.channels:
+            logging.debug(f'Length of dropdown options: {len(self.channels)}') # Maximum 25!
+            self.dropdown_options.append(
+                discord.SelectOption(
+                    label=f"#{sanitize_string(guild_channel.name)}"
+                    , description=guild_channel.topic[:100] if guild_channel.topic is not None else None
+                    , emoji="➡️"
+                    # Special formatting that uses : as a delimiter.
+                    # Kind of abusing the "value" option with this.
+                    # See the callback
+                    , value=f"{purpose[0]}:{purpose[1]}:{guild_channel.id}"
+                )
+            )
+            logger.debug(f"SelectOption value: {purpose}:{guild_channel.id}")
+
+        super().__init__(placeholder="Select a channel.", min_values=1, max_values=1, options=self.dropdown_options)
+
+    async def callback(self, interaction: discord.Interaction):
+        # The special handling from above.
+        # value[0] will be the Database ID of the channel
+        # value[1] will be the name of the setting... i.e. "Chat Log"
+        # value[2] will be the Discord ID of the channel
+        value = self.values[0].split(":")
+        self.bot.api.update_existing_setting(value[0], value[2])
+
+        logger.info(f'The {value[1]} setting was changed to: {value[2]}')
+        await interaction.response.send_message(
+            f'The {value[1]} is set to <#{value[2]}>' if value[2]!="0" else f'The {value[1]} is not set.'
+        )
+
+
 class LoggingDropdownView(discord.ui.View):
     def __init__(self, ctx: commands.Context, bot, channels: list, purpose: str):
         super().__init__()
@@ -237,6 +315,12 @@ class RoleDropdownView(discord.ui.View):
         super().__init__()
         # Adds the dropdown to our view object.
         self.add_item(RoleDropdown(ctx, bot, roles, purpose))
+
+class ServerDropdownView(discord.ui.View):
+    def __init__(self, ctx: commands.Context, bot, channels: list, purpose: str):
+        super().__init__()
+        # Adds the dropdown to our view object.
+        self.add_item(ServerDropdown(ctx, bot, channels, purpose))
 
 
 async def setup(bot: commands.Bot) -> None:
