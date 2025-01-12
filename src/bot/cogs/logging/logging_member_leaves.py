@@ -37,9 +37,8 @@ class LoggingLeaves(commands.Cog):
         First we don't log leaves for unapproved people.
         then we grab the guild, and from there read the last entry in the audit log.
         """
-        # TODO: Verification
-        # This needs to be toggle-able once verification is added to settings.
-        if "Needs Approval" in [role.name for role in member.roles]:
+        verification_role = self.bot.api.get_one_role('6')[0]['roles'][2] # Verification role ID
+        if verification_role in [role.id for role in member.roles]:
             return
 
         channel = self.bot.api.get_one_log_setting("2") # Join_log
