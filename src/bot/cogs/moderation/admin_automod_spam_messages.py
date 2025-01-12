@@ -1,3 +1,4 @@
+import os
 import logging
 from datetime import datetime, timedelta
 
@@ -75,6 +76,13 @@ class ModerationSpamMessages(commands.Cog):
             message (discord.Message): The message object representing the user's message.
         """
         if message.author.bot or isinstance(message.channel, discord.DMChannel):
+            # don't track bot, or DM's
+            return
+        if message.author.guild_permissions.ban_members:
+            # Don't track the staff man.
+            return
+        if message.content.startswith(os.getenv('PREFIX')):
+            # Don't track bot commands
             return
 
         author_id = message.author.id
@@ -120,10 +128,12 @@ class ModerationSpamMessages(commands.Cog):
             record (dict): The user's message record containing repeated messages.
         """
         if record["occurrence"] == 2:
+            logger.info(f"{message.author.name} hit the firewall (2 messages). Message: {message.content}")
             await self.warn_user(message, record)
 
-        # elif record["occurrence"] == 3:
-        #     await self.quarantine_user(message, record)
+        elif record["occurrence"] == 3:
+            logger.info(f"{message.author.name} triggered the firewall (3 messages). Message: {message.content}")
+            await self.quarantine_user(message, record)
 
     async def warn_user(self, message, record):
         """
@@ -148,7 +158,8 @@ class ModerationSpamMessages(commands.Cog):
                 f"You already posted this in {first_channel.mention}"
             )
         finally:
-            await message.author.timeout(until=datetime.utcnow() + timedelta(seconds=15))
+            fifteen_seconds = datetime.now().astimezone() + timedelta(seconds=15)
+            await message.author.timeout(fifteen_seconds, reason="Sending the same message multiple times.")
             logger.info("%s was timed out (2/3 messages)", message.author.name)
 
     async def quarantine_user(self, message, record):
@@ -161,18 +172,16 @@ class ModerationSpamMessages(commands.Cog):
         """
         naughty_role = self.bot.api.get_one_role("7")
         verified_role = self.bot.api.get_one_role("6")
-        # TODO: We dont have any way to set a quarantine channel yet.
-        # quarantine_channel = await self.bot.fetch_channel(
-        #     self.bot.server_settings.channels["moderation"]["quarantine_channel"]
-        # )
-
-        await message.author.timeout(until=datetime.utcnow() + timedelta(seconds=30))
+        quarantine_channel = self.bot.api.get_one_setting("2")
+        quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
+        thirty_seconds = datetime.now().astimezone() + timedelta(seconds=30)
+        await message.author.timeout(thirty_seconds, reason="Sending the same message multiple times.")
         await message.author.remove_roles(verified_role)
         await message.author.add_roles(naughty_role)
 
-        # await quarantine_channel.send(
-        #     embed=embed_spammer(message.author, message.content, record["messages"][-1]["file_url"])
-        # )
+        await quarantine_channel.send(
+            embed=embed_spammer(message.author, message.content, record["messages"][-1]["file_url"])
+        )
 
         for msg in record["messages"]:
             channel = await self.bot.fetch_channel(msg["channel_id"])
