@@ -5,15 +5,29 @@ BEGIN
     END IF;
 END $$;
 
-
--- Create settings table
-CREATE TABLE IF NOT EXISTS settings (
+-- Create serversettings table
+CREATE TABLE IF NOT EXISTS serversettings (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     value VARCHAR(255)
 );
 
-INSERT INTO settings (name, value)
+INSERT INTO serversettings (name, value)
+VALUES
+    ('Verification Channel', '0'),
+    ('Quarantine Channel', '0'),
+    ('Staff Channel', '0'),
+    ('Bot Spam Channel', '0');
+
+
+-- Create logging table
+CREATE TABLE IF NOT EXISTS logging (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    value VARCHAR(255)
+);
+
+INSERT INTO logging (name, value)
 VALUES
     ('Verification Log', '0'),
     ('Join Log', '0'),
