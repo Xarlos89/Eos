@@ -6,6 +6,7 @@ from werkzeug.exceptions import HTTPException
 from __logger__ import setup_logger
 
 from routes.healthchecks import health_checks
+from routes.logging import logs
 from routes.settings import settings
 from routes.points import points
 from routes.roles import role
@@ -23,6 +24,7 @@ app.db = DB()
 
 # API routes
 app.register_blueprint(health_checks)
+app.register_blueprint(logs)
 app.register_blueprint(settings)
 app.register_blueprint(points)
 app.register_blueprint(role)

@@ -11,14 +11,14 @@ settings = Blueprint('settings', __name__)
 
 @settings.route('/settings', methods=['GET'])
 @settings.route('/settings/<int:setting_id>', methods=['GET'])
-def get_settings(setting_id=None):
+def get_setting(setting_id):
     """
     Retrieve settings from the database.
 
     :param setting_id: Optional integer ID of a specific setting
-    :return: JSON response with settings
+    :return: JSON response with setting
     """
-    if setting_id is None:
+    if setting_id is 0:
         # Retrieve all settings
         result = eos.db.get_settings()
     else:
@@ -27,16 +27,6 @@ def get_settings(setting_id=None):
 
     return jsonify(result, 200)
 
-@settings.route('/log_settings', methods=['GET'])
-def get_log_settings():
-    """
-    Retrieve log settings from the database.
-
-    :return: JSON response with settings
-    """
-    result = eos.db.get_log_settings()
-
-    return jsonify(result, 200)
 
 @settings.route('/settings/<setting_id>', methods=['PUT'])
 def update_setting(setting_id):
