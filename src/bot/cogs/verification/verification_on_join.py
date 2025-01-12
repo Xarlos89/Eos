@@ -19,11 +19,11 @@ class LoggingVerification(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.join_log = self.bot.api.get_one_setting('4')[0]['logging'][2]
         self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
         self.verification_log = self.bot.api.get_one_log_setting('4')[0]['logging'][2]
-        self.verified_role = self.bot.api.get_one_role_setting('6')[0]['roles'][2]
-        self.naughty_role = self.bot.api.get_one_role_setting('7')[0]['roles'][2]
+        self.join_log = self.bot.api.get_one_log_setting('4')[0]['logging'][2]
+        self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
+        self.naughty_role = self.bot.api.get_one_role('7')[0]['roles'][2]
 
     async def log_unverified_join(self, member, logging_channel):
         await logging_channel.send(f"<@{member.id}> joined, but has not verified.")
@@ -35,7 +35,7 @@ class LoggingVerification(commands.Cog):
 
             We are very happy that you have decided to join us.
             Before you are allowed to chat, you need to verify that you are NOT a bot.\n
-            Dont worry, it's easy.
+            Dont worry... it's easy.
             Just go to {self.bot.get_channel(self.verification_log).mention}
             and use the **{os.getenv('PREFIX')}verify** command.
 
@@ -58,7 +58,7 @@ class LoggingVerification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
-        logs_channel = await self.bot.fetch_channel(self.join_log) # Join log
+        logs_channel = await self.bot.fetch_channel(self.join_log)  # Join log
 
         await self.log_unverified_join(member, logs_channel)
         await self.send_welcome_message(guild, member)
@@ -69,8 +69,11 @@ class LoggingVerification(commands.Cog):
         """
         Keep verification clean again
         """
-        if message.channel.id == self.verification_channel:
-            if not message.author.bot:
+        if message.channel.id == int(self.verification_channel):
+            if not message.author.bot and not message.author.guild_permissions.manage_roles:
+                if "verify" in message.content:
+                    # user might be doing it right
+                    return
 
                 channel_message = await message.channel.send(
                     f"You need to use the **{os.getenv('PREFIX')}verify** command.")
@@ -81,7 +84,6 @@ class LoggingVerification(commands.Cog):
                     f"{message.author} is failing at life in {self.bot.get_channel(self.verification_log).mention}")
 
                 if channel_message:
-                    print("sleeping")
                     await sleep(10)  # wait 10 seconds, and then we delete the message in the channel
 
                     async for msg in message.channel.history(limit=5):
