@@ -49,7 +49,7 @@ class AdminPurge(commands.Cog):
         channel = self.bot.api.get_one_log_setting("3")  # chat_log
         if channel[0]["status"] == "ok":
             logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
-            await ctx.channel.purge(limit=int(number_messages))
+            await ctx.channel.purge(limit=int(number_messages)+1)
 
             if channel[0]["logging"][2] != "0":
                 logger.info(f"{ctx.author.name} is purging {number_messages} from the {channel[0]["logging"][1]}")
