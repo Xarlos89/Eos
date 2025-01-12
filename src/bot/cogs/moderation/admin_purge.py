@@ -46,7 +46,7 @@ class AdminPurge(commands.Cog):
         which throws an error when the user does not have the correct perms.
         We handle this with an error_handler block
         """
-        channel = self.bot.api.get_one_setting("3")  # chat_log
+        channel = self.bot.api.get_one_log_setting("3")  # chat_log
         if channel[0]["status"] == "ok":
             logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
             await ctx.channel.purge(limit=int(number_messages))

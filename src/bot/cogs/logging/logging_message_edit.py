@@ -62,7 +62,7 @@ class LoggingMessageEdit(commands.Cog):
             return
 
         elif message_before.content != message_after.content:
-            channel = self.bot.api.get_one_setting("3")  # chat_log
+            channel = self.bot.api.get_one_log_setting("3")  # chat_log
             if channel[0]["status"] == "ok":
                 if channel[0]["logging"][2] == "0":
                     logger.debug(f"log was triggered, but logging is disabled. API: {channel}")

@@ -45,7 +45,7 @@ class LoggingBans(commands.Cog):
 
         audit_log = [entry async for entry in member.guild.audit_logs(limit=1)][0]
 
-        channel = self.bot.api.get_one_setting("2") # Join_log
+        channel = self.bot.api.get_one_log_setting("2") # Join_log
         if channel[0]["status"] == "ok":
             if channel[0]["logging"][2] == "0":
                 logger.debug(f"log was triggered, but logging is disabled. API: {channel}")

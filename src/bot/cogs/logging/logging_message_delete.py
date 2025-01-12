@@ -55,7 +55,7 @@ class LoggingMessageDelete(commands.Cog):
         If a mod deletes, take the audit log event. If a user deletes, handle it normally.
         """
         audit_log = [entry async for entry in message.guild.audit_logs(limit=1)][0]
-        channel = self.bot.api.get_one_setting("3") # chat_log
+        channel = self.bot.api.get_one_log_setting("3") # chat_log
         if channel[0]["status"] == "ok":
             if channel[0]["logging"][2] == "0":
                 logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
