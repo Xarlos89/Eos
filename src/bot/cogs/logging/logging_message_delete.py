@@ -57,10 +57,10 @@ class LoggingMessageDelete(commands.Cog):
         audit_log = [entry async for entry in message.guild.audit_logs(limit=1)][0]
         channel = self.bot.api.get_one_setting("3") # chat_log
         if channel[0]["status"] == "ok":
-            if channel[0]["settings"][2] == "0":
+            if channel[0]["logging"][2] == "0":
                 logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
                 return
-            logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
+            logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
 
             if str(audit_log.action) == 'AuditLogAction.message_delete':
                 # Then a moderator deleted a message.

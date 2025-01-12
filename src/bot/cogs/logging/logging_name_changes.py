@@ -49,10 +49,10 @@ class LoggingNameChanges(commands.Cog):
         if before.nick != after.nick and before.nick is not None:
             channel = self.bot.api.get_one_setting("4") # User_log
             if channel[0]["status"] == "ok":
-                if channel[0]["settings"][2] == "0":
+                if channel[0]["logging"][2] == "0":
                     logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
                     return
-                logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
+                logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
 
                 embed = embed_name_change(username_before, username_after)
 

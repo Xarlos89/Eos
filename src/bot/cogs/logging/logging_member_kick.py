@@ -48,10 +48,10 @@ class LoggingKicks(commands.Cog):
 
         channel = self.bot.api.get_one_setting("2") # Join_log
         if channel[0]["status"] == "ok":
-            if channel[0]["settings"][2] == "0":
+            if channel[0]["logging"][2] == "0":
                 logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
                 return
-            logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
+            logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
 
             if str(audit_log.action) == "AuditLogAction.kick":
                 if audit_log.target == member:
