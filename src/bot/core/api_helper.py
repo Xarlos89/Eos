@@ -29,6 +29,44 @@ class API:
 
 
     ##############################
+    #           Logging          #
+    ##############################
+    def get_one_log_setting(self, flag_id):
+        """Retrieves one log setting from the database"""
+        logger.debug("Bot called get_one_log_setting endpoint.")
+        return requests.get(f"{self.api}/logging/{flag_id}").json()
+
+    def get_all_log_settings(self):
+        """Retrieves all log settings from the database"""
+        logger.debug("Bot called the get_all_log_settings endpoint.")
+        return requests.get(f"{self.api}/logging").json()
+
+
+    def add_new_log_setting(self, name, value):
+        """Adds a new log setting to the database"""
+        logger.debug(f"Bot called the add_new_log_setting endpoint. Log setting to add: {name} - Log setting value: {value}")
+        data = {
+            'name': name,
+            'value': value
+        }
+        return requests.post(f"{self.api}/logging", json=data).json()
+
+    def update_existing_log_setting(self, log_id, new_value):
+        """Updates an existing log setting in the database"""
+        logger.debug(f"Bot called the update_existing_log_setting endpoint. Log setting ID: {log_id} - New value: {new_value}")
+
+        data = {
+            'value': new_value
+        }
+        return requests.put(f"{self.api}/logging/{log_id}", json=data).json()
+
+    def delete_log_setting(self, log_id):
+        """Deletes a log setting from the database"""
+        logger.debug(f"Bot called the delete_log_setting endpoint. Log setting ID: {log_id}")
+        return requests.delete(f"{self.api}/logging/{log_id}").json()
+
+
+    ##############################
     #           Settings         #
     ##############################
     def get_one_setting(self, flag_id):
@@ -39,12 +77,7 @@ class API:
     def get_all_settings(self):
         """Retrieves all settings from the database"""
         logger.debug("Bot called the get_all_settings endpoint.")
-        return requests.get(f"{self.api}/settings").json()
-
-    def get_log_settings(self):
-        """Retrieves all settings from the database"""
-        logger.debug("Bot called the get_log_settings endpoint.")
-        return requests.get(f"{self.api}/log_settings").json()
+        return requests.get(f"{self.api}/settings/0").json()
 
     def add_new_setting(self, name, value):
         """Adds a new setting to the database"""
