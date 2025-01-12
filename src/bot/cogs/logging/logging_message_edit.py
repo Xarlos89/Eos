@@ -51,10 +51,12 @@ class LoggingMessageEdit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before, message_after):
-        # TODO: Do not log in Staff channels.
-
         # Ignore any bot messages
         if message_before.author.bot or message_after.author.bot:
+            return
+        staff_channel = self.bot.api.get_one_setting('3')[0]['setting'][2] # Staff Channel ID
+        if message_before.channel.id == staff_channel:
+            logger.debug("Message edit in staff channel was ignored.")
             return
 
         # IGNORE /run, since we will set up an on_message_edit handler there with opposite logic
