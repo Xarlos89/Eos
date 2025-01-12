@@ -48,11 +48,11 @@ class AdminPurge(commands.Cog):
         """
         channel = self.bot.api.get_one_setting("3")  # chat_log
         if channel[0]["status"] == "ok":
-            logs_channel = await self.bot.fetch_channel(channel[0]["settings"][2])
+            logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
             await ctx.channel.purge(limit=int(number_messages))
 
-            if channel[0]["settings"][2] != "0":
-                logger.info(f"{ctx.author.name} is purging {number_messages} from the {channel[0]["settings"][1]}")
+            if channel[0]["logging"][2] != "0":
+                logger.info(f"{ctx.author.name} is purging {number_messages} from the {channel[0]["logging"][1]}")
                 await logs_channel.respond(f"{number_messages} messages purged" f" from {ctx.channel.mention}" f" by {ctx.author.mention}.")
             else:
                 logger.warning(f"Purge command was used by {ctx.author.name}, but logging for the chat log was turned off.")
