@@ -32,7 +32,7 @@ class VerificationSelector(discord.ui.Select):
     def __init__(self, bot):
         self.bot = bot
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
-        self.verification_channel = self.bot.api.get_one_log_setting('1')[0]['setting'][2]
+        self.verification_channel = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
 
         self.robot = [discord.SelectOption(
             label="I'm a robot."
