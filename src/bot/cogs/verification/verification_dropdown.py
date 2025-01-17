@@ -32,6 +32,7 @@ class VerificationSelector(discord.ui.Select):
     def __init__(self, bot):
         self.bot = bot
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
+        self.join_log = self.bot.api.get_one_log_setting('4')[0]['logging'][2]
         self.verification_channel = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
 
         self.robot = [discord.SelectOption(
@@ -58,21 +59,23 @@ class VerificationSelector(discord.ui.Select):
         if self.values[0] == "not_robot":
             you_win = interaction.guild.get_role(int(self.verified_role))
             verification_log = self.bot.get_channel(int(self.verification_channel))
+            join_log = await self.bot.fetch_channel(self.join_log)
             try:
                 await interaction.user.add_roles(you_win)
-                await verification_log.send(
+                await join_log.send(
                     embed=embed_verified_success(interaction.user.display_name, interaction.guild.member_count))
                 logger.info(f"{interaction.user.display_name} has verified!")
                 await interaction.response.defer()
 
             except AttributeError as no_role_set:
-                # TODO: ALERT THE STAFF!
+                await verification_log.send(f"{interaction.user.display_name} is trying to verify, but there is no "
+                                            f"verification role set!")
                 logger.critical(no_role_set)
                 logger.critical("Someone is verifying, but there is no verification role set!")
         else:
             msg = await interaction.response.send_message(f'You are a robot? Nice try.')
             sleep(3)
-            await interaction.user.kick(reason="Did not verify")
+            await interaction.user.kick(reason="User admitted to being a robot.")
             await msg.delete()
 
 

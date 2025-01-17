@@ -58,11 +58,12 @@ class LoggingVerification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
-        logs_channel = await self.bot.fetch_channel(self.join_log)  # Join log
+        join_log = await self.bot.fetch_channel(self.join_log)  # Join log
+        verification_log = await self.bot.fetch_channel(self.verification_log)
 
-        await self.log_unverified_join(member, logs_channel)
+        await self.log_unverified_join(member, verification_log)
         await self.send_welcome_message(guild, member)
-        await self.kick_if_not_verified(member, 3600, logs_channel)
+        await self.kick_if_not_verified(member, 3600, verification_log)
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -70,9 +71,11 @@ class LoggingVerification(commands.Cog):
         Keep verification clean again
         """
         if message.channel.id == int(self.verification_channel):
-            if not message.author.bot and not message.author.guild_permissions.manage_roles:
-                if "verify" in message.content:
-                    # user might be doing it right
+            if not message.author.bot:
+                if f"{os.getenv('PREFIX')}verify" == message.content:
+                    # user is doing it right
+                    await sleep(3)
+                    await message.delete()
                     return
 
                 channel_message = await message.channel.send(
