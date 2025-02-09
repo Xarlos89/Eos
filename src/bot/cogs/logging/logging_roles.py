@@ -6,7 +6,6 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -43,6 +42,7 @@ class LoggingRoles(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -57,12 +57,11 @@ class LoggingRoles(commands.Cog):
             responsible_member = audit_log.user
 
             changed_roles = []
-            channel = self.bot.api.get_one_log_setting("4") # User_log
-            if channel[0]["status"] == "ok":
-                if channel[0]["logging"][2] == "0":
-                    logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
+            if self.mod_log[0]["status"] == "ok":
+                if self.mod_log[0]["logging"][2] == "0":
+                    logger.debug(f"log was triggered, but logging is disabled. API: {self.mod_log}")
                     return
-                logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
 
                 if len(before.roles) > len(after.roles):
                     for role in before.roles:
@@ -80,8 +79,7 @@ class LoggingRoles(commands.Cog):
                         embed = embed_role_add(target_member, responsible_member, item)
                         await logs_channel.send(embed=embed)
             else:
-                logger.critical(f"API error. API response not ok. -> {channel}")
-
+                logger.critical(f"API error. API response not ok. -> {self.mod_log}")
 
 
 async def setup(bot: commands.Bot) -> None:
