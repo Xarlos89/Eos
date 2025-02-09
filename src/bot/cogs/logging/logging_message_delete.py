@@ -6,7 +6,6 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -16,15 +15,17 @@ def embed_message_delete(some_member, some_message, some_moderator=None):
     """
     embed = discord.Embed(
         title=f'<:red_circle:1043616578744357085> Deleted Message'
-        , description=f'{some_moderator.mention if some_moderator is not None else some_member.mention} deleted a message'
-                      f'\nIn {some_message.channel}\nMessage '
-                      f'author: {some_member.mention}'
+        ,
+        description=f'{some_moderator.mention if some_moderator is not None else some_member.mention} deleted a message'
+                    f'\nIn {some_message.channel}\nMessage '
+                    f'author: {some_member.mention}'
         , color=discord.Color.red()
         , timestamp=datetime.utcnow()
     )
 
     embed.set_thumbnail(
-        url=some_member.avatar if some_moderator is None else some_moderator.avatar  # the person who DELETED the message
+        url=some_member.avatar if some_moderator is None else some_moderator.avatar
+        # the person who DELETED the message
     )
     if len(some_message.content) > 1020:
         the_message = some_message.content[0:1020] + '...'
@@ -47,24 +48,24 @@ class LoggingMessageDelete(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.staff_channel = self.bot.api.get_one_setting('3')[0]['setting'][2]  # Staff Channel ID
+        self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
         """
         If a mod deletes, take the audit log event. If a user deletes, handle it normally.
         """
-        staff_channel = self.bot.api.get_one_setting('3')[0]['setting'][2] # Staff Channel ID
-        if message.channel.id == staff_channel:
+        if message.channel.id == self.staff_channel:
             logger.debug("Message delete in staff channel was ignored.")
             return
 
         audit_log = [entry async for entry in message.guild.audit_logs(limit=1)][0]
-        channel = self.bot.api.get_one_log_setting("3") # chat_log
-        if channel[0]["status"] == "ok":
-            if channel[0]["logging"][2] == "0":
-                logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
+        if self.chat_log[0]["status"] == "ok":
+            if self.chat_log[0]["logging"][2] == "0":
+                logger.debug(f"log was triggered, but logging is disabled. API: {self.chat_log}")
                 return
-            logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
+            logs_channel = await self.bot.fetch_channel(self.chat_log[0]["logging"][2])
 
             if str(audit_log.action) == 'AuditLogAction.message_delete':
                 # Then a moderator deleted a message.
@@ -76,7 +77,7 @@ class LoggingMessageDelete(commands.Cog):
                 username = message.author
                 await logs_channel.send(embed=embed_message_delete(username, message))
         else:
-            logger.critical(f"API error. API response not ok. -> {channel}")
+            logger.critical(f"API error. API response not ok. -> {self.chat_log}")
 
 
 async def setup(bot: commands.Bot) -> None:

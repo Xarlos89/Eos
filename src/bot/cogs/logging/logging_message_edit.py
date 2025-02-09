@@ -2,6 +2,7 @@
 Logging for message edits
 """
 import logging
+import os
 from datetime import datetime
 import discord
 from discord.ext import commands
@@ -48,29 +49,29 @@ class LoggingMessageEdit(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.staff_channel = self.bot.api.get_one_setting('3')[0]['setting'][2] # Staff Channel ID
+        self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before, message_after):
         # Ignore any bot messages
         if message_before.author.bot or message_after.author.bot:
             return
-        staff_channel = self.bot.api.get_one_setting('3')[0]['setting'][2] # Staff Channel ID
-        if message_before.channel.id == staff_channel:
+        if message_before.channel.id == self.staff_channel:
             logger.debug("Message edit in staff channel was ignored.")
             return
 
         # IGNORE /run, since we will set up an on_message_edit handler there with opposite logic
-        if message_before.content.startswith('/run') or message_after.content.startswith('/run'):
+        if message_before.content.startswith(f'{os.getenv("PREFIX")}run') or message_after.content.startswith(f'{os.getenv("PREFIX")}run'):
             return
 
         elif message_before.content != message_after.content:
-            channel = self.bot.api.get_one_log_setting("3")  # chat_log
-            if channel[0]["status"] == "ok":
-                if channel[0]["logging"][2] == "0":
-                    logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
+            if self.chat_log[0]["status"] == "ok":
+                if self.chat_log[0]["logging"][2] == "0":
+                    logger.debug(f"log was triggered, but logging is disabled. API: {self.chat_log}")
                     return
 
-                logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(self.chat_log[0]["logging"][2])
 
                 # This guy here makes sure we use the displayed name inside the guild.
                 if message_after.author.nick is None:
@@ -84,7 +85,7 @@ class LoggingMessageEdit(commands.Cog):
                 await logs_channel.send(embed=embed)
 
             else:
-                logger.critical(f"API error. API response not ok. -> {channel}")
+                logger.critical(f"API error. API response not ok. -> {self.chat_log}")
 
 
 async def setup(bot: commands.Bot) -> None:

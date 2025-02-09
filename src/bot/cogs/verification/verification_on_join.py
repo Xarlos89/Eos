@@ -20,8 +20,8 @@ class LoggingVerification(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
-        self.verification_log = self.bot.api.get_one_log_setting('4')[0]['logging'][2]
-        self.join_log = self.bot.api.get_one_log_setting('4')[0]['logging'][2]
+        self.verification_log = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
+        self.join_log = self.bot.api.get_one_log_setting('2')[0]['logging'][2]
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
         self.naughty_role = self.bot.api.get_one_role('7')[0]['roles'][2]
 
@@ -58,7 +58,6 @@ class LoggingVerification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
-        join_log = await self.bot.fetch_channel(self.join_log)  # Join log
         verification_log = await self.bot.fetch_channel(self.verification_log)
 
         await self.log_unverified_join(member, verification_log)
@@ -74,6 +73,7 @@ class LoggingVerification(commands.Cog):
             if not message.author.bot:
                 if f"{os.getenv('PREFIX')}verify" == message.content:  # keep it exact
                     # user is doing it right, and the verification_dropdown is triggered
+                    logger.debug(f"{message.author.name} started verification.")
                     await sleep(3)
                     await message.delete()  # cleanup correct verification calls
                     return
@@ -84,7 +84,7 @@ class LoggingVerification(commands.Cog):
 
                     logs_channel = await self.bot.fetch_channel(self.verification_log)
                     await logs_channel.send(
-                        f"{message.author} is failing at life in {self.bot.get_channel(self.verification_log).mention}")
+                        f"{message.author} is failing at life in {self.bot.get_channel(self.verification_channel).mention}")
 
                     await sleep(8)
                     bot_message.delete()  # remove the message to correct people after 8? seconds

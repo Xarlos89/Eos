@@ -32,6 +32,8 @@ class LoggingKicks(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.verification_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
+        self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -39,18 +41,17 @@ class LoggingKicks(commands.Cog):
         First we don't log kicks for unapproved people.
         then we grab the guild, and from there read the last entry in the audit log.
         """
-        verification_role = self.bot.api.get_one_role('6')[0]['roles'][2] # Verification role ID
-        if verification_role in [role.id for role in member.roles]:
+
+        if self.verification_role in [role.id for role in member.roles]:
             return
 
         audit_log = [entry async for entry in member.guild.audit_logs(limit=1)][0]
 
-        channel = self.bot.api.get_one_log_setting("2") # Join_log
-        if channel[0]["status"] == "ok":
-            if channel[0]["logging"][2] == "0":
-                logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
+        if self.mod_log[0]["status"] == "ok":
+            if self.mod_log[0]["logging"][2] == "0":
+                logger.debug(f"log was triggered, but logging is disabled. API: {self.mod_log}")
                 return
-            logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
+            logs_channel = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
 
             if str(audit_log.action) == "AuditLogAction.kick":
                 if audit_log.target == member:
@@ -59,7 +60,7 @@ class LoggingKicks(commands.Cog):
                     await logs_channel.send(embed=embed)
                     return
         else:
-            logger.critical(f"API error. API response not ok. -> {channel}")
+            logger.critical(f"API error. API response not ok. -> {self.mod_log}")
 
 
 async def setup(bot: commands.Bot) -> None:

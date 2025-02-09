@@ -6,7 +6,6 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -30,6 +29,7 @@ class LoggingNameChanges(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.user_log = self.bot.api.get_one_log_setting("4")  # User_log
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -47,19 +47,17 @@ class LoggingNameChanges(commands.Cog):
             username_after = after.nick
 
         if before.nick != after.nick and before.nick is not None:
-            channel = self.bot.api.get_one_log_setting("4") # User_log
-            if channel[0]["status"] == "ok":
-                if channel[0]["logging"][2] == "0":
-                    logger.debug(f"log was triggered, but logging is disabled. API: {channel}")
+            if self.user_log[0]["status"] == "ok":
+                if self.user_log[0]["logging"][2] == "0":
+                    logger.debug(f"log was triggered, but logging is disabled. API: {self.user_log}")
                     return
-                logs_channel = await self.bot.fetch_channel(channel[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(self.user_log[0]["logging"][2])
 
                 embed = embed_name_change(username_before, username_after)
 
                 await logs_channel.send(f"{username_after.mention}", embed=embed)
             else:
-                logger.critical(f"API error. API response not ok. -> {channel}")
-
+                logger.critical(f"API error. API response not ok. -> {self.user_log}")
 
 
 async def setup(bot: commands.Bot) -> None:
