@@ -32,8 +32,9 @@ class VerificationSelector(discord.ui.Select):
     def __init__(self, bot):
         self.bot = bot
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
-        self.join_log = self.bot.api.get_one_log_setting('4')[0]['logging'][2]
-        self.verification_channel = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
+        self.join_log = self.bot.api.get_one_log_setting('2')[0]['logging'][2]
+        self.verification_log = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
+        self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
 
         self.robot = [discord.SelectOption(
             label="I'm a robot."
@@ -56,9 +57,10 @@ class VerificationSelector(discord.ui.Select):
         super().__init__(placeholder='Choose something.', min_values=1, max_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
+        verification_log = self.bot.get_channel(int(self.verification_log))
+
         if self.values[0] == "not_robot":
             you_win = interaction.guild.get_role(int(self.verified_role))
-            verification_log = self.bot.get_channel(int(self.verification_channel))
             join_log = await self.bot.fetch_channel(self.join_log)
             try:
                 await interaction.user.add_roles(you_win)
@@ -74,6 +76,7 @@ class VerificationSelector(discord.ui.Select):
                 logger.critical("Someone is verifying, but there is no verification role set!")
         else:
             msg = await interaction.response.send_message(f'You are a robot? Nice try.')
+            await verification_log.send(f"{interaction.user.display_name} admitted to being a robot, and was kicked. ")
             sleep(3)
             await interaction.user.kick(reason="User admitted to being a robot.")
             await msg.delete()
