@@ -82,23 +82,23 @@ class AdminQuarantine(commands.Cog):
         Take in a user mention, and an int amount of messages to remove.
         """
         # Cant ban bots or admins.
-        logger.debug(f"{ctx.author.name} used the quarantine command on {target.name}")
+        logger.info(f"{ctx.author.name} used the quarantine command on {target.name}")
         if not target.bot:
             if not target.guild_permissions.administrator:
                 message_counter = 0
                 number_messages = int(number_of_messages_to_remove)
 
                 mod_log = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
-                verified_role = get(ctx.guild.roles, id=self.verified_role)
-                naughty_role = get(ctx.guild.roles, id=self.naughty_role)
+                verified_role = get(ctx.guild.roles, id=int(self.verified_role))
+                naughty_role = get(ctx.guild.roles, id=int(self.naughty_role))
 
                 try:
                     await target.remove_roles(verified_role)
                     await target.add_roles(naughty_role)
-                    await ctx.respond(f"Quarantining {target.name}...", ephemeral=True)
+                    await ctx.reply(f"{target.name} has been quarantined.", ephemeral=True)
 
                 except Exception as notification1:
-                    await ctx.respond("There was an issue with the command.", ephemeral=True)
+                    await ctx.reply("There was an issue with the command.", ephemeral=True)
                     logger.critical(f"There was an error in the Quarantine command...\n{notification1}")
 
                     # remove messages, if that was specified.
@@ -121,7 +121,7 @@ class AdminQuarantine(commands.Cog):
                 await mod_log.send(embed=embed_quarantine(ctx.author, target, message_counter))
 
             else:
-                await ctx.respond(embed=embed_cant_do_that("You can't quarantine an Admin."), ephemeral=True)
+                await ctx.send(embed=embed_cant_do_that("You can't quarantine an Admin."), ephemeral=True)
         else:
             await ctx.respond(embed=embed_cant_do_that("You cant quarantine a bot."), ephemeral=True)
 
@@ -129,22 +129,22 @@ class AdminQuarantine(commands.Cog):
     @commands.has_permissions(moderate_members=True)
     @commands.check(is_moderator)
     async def release(self, ctx, target: discord.Member):
-        logger.debug(f"{ctx.author.name} used the release command on {target.name}")
+        logger.info(f"{ctx.author.name} used the release command on {target.name}")
         if not target.bot:
             mod_log = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
-            verified_role = get(ctx.guild.roles, id=self.verified_role)
-            naughty_role = get(ctx.guild.roles, id=self.naughty_role)
+            verified_role = get(ctx.guild.roles, id=int(self.verified_role))
+            naughty_role = get(ctx.guild.roles, id=int(self.naughty_role))
 
             try:
                 await target.add_roles(verified_role)
                 await target.remove_roles(naughty_role)
-                await ctx.respond(f"Released {target.name} from quarantine", ephemeral=True)
+                await ctx.reply(f"{ctx.author.mention} released {target.mention} from quarantine", ephemeral=True)
                 await mod_log.send(
-                    embed=embed_info(f'{ctx.author.name} released {target} from quarantine')
+                    embed=embed_info(f'{ctx.author.mention} released {target.mention} from quarantine')
                 )
 
             except Exception as notification1:
-                await ctx.respond("There was an issue with the command.", ephemeral=True)
+                await ctx.reply("There was an issue with the command.", ephemeral=True)
                 logger.critical(f"There was an error in the release command...\n{notification1}")
 
     @quarantine.error
