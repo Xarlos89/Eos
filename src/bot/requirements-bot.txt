@@ -10,7 +10,7 @@ frozenlist==1.4.1
 idna==3.6
 itsdangerous==2.1.2
 Jinja2==3.1.5
-MarkupSafe==2.1.4
+MarkupSafe==2.1.5
 multidict>=6.0.4
 pistonapi
 requests==2.31.0
