@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
         self.bot = bot
 
     @commands.check(is_administrator)
-    @commands.command(name="lockdown")
+    @app_commands.command(name="locks down the server.")
     @commands.has_permissions(manage_channels=True)
     async def lockdown(self, ctx):
         logger.warning(f"{ctx.guild.name} is going into lockdown mode!")
@@ -42,7 +43,7 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
             await channel.send(f"***{channel.name} is now in lockdown.***")
 
     @commands.check(is_administrator)
-    @commands.command(name="unlock")
+    @app_commands.command(name="unlocks the server after a lockdown")
     @commands.has_permissions(manage_channels=True)
     async def unlock(self, ctx):
         logger.warning(f"{ctx.guild.name} is coming out of lockdown mode!")
