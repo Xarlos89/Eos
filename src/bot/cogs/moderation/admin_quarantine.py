@@ -6,6 +6,7 @@ from datetime import datetime
 import logging
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import get
 
@@ -74,77 +75,77 @@ class AdminQuarantine(commands.Cog):
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
-    @commands.command(description="Quarantine a user.")
+    @app_commands.command(description="Quarantine a user.")
     @commands.check(is_moderator)
     @commands.has_permissions(moderate_members=True)
-    async def quarantine(self, ctx, target: discord.Member, number_of_messages_to_remove=0):
+    async def quarantine(self, interaction: discord.Interaction, target: discord.Member,
+                         number_of_messages_to_remove: str):
         """
         Take in a user mention, and an int amount of messages to remove.
         """
         # Cant ban bots or admins.
-        logger.info(f"{ctx.author.name} used the quarantine command on {target.name}")
+        await interaction.response.defer()
+        logger.info(f"{interaction.user.name} used the quarantine command on {target.name}")
         if not target.bot:
             if not target.guild_permissions.administrator:
                 message_counter = 0
                 number_messages = int(number_of_messages_to_remove)
 
                 mod_log = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
-                verified_role = get(ctx.guild.roles, id=int(self.verified_role))
-                naughty_role = get(ctx.guild.roles, id=int(self.naughty_role))
+                verified_role = get(interaction.guild.roles, id=int(self.verified_role))
+                naughty_role = get(interaction.guild.roles, id=int(self.naughty_role))
 
                 try:
                     await target.remove_roles(verified_role)
                     await target.add_roles(naughty_role)
-                    await ctx.reply(f"{target.name} has been quarantined.", ephemeral=True)
+                    await interaction.followup.send(f"{target.name} has been quarantined.", ephemeral=True)
 
                 except Exception as notification1:
-                    await ctx.reply("There was an issue with the command.", ephemeral=True)
+                    await interaction.followup.send("There was an issue with the command.", ephemeral=True)
                     logger.critical(f"There was an error in the Quarantine command...\n{notification1}")
 
                     # remove messages, if that was specified.
-                    await ctx.send_followup(content=f"Removing {number_messages} messages by {target.name}...",
-                                            ephemeral=True)
-
-                    await ctx.defer()  # Necessary, as this process may take a bit.
+                    await interaction.followup.send(content=f"Removing {number_messages} messages by {target.name}...",
+                                                    ephemeral=True)
 
                 if number_messages > 0:
-                    async for message in ctx.channel.history(limit=50):
+                    async for message in interaction.channel.history(limit=50):
                         if int(number_of_messages_to_remove) > message_counter:
                             if message.author.name == target.name:
                                 await message.delete()
                                 message_counter += 1
                                 time.sleep(.2)  # Avoiding rate limits.
 
-                await ctx.send_followup(
-                    content=f"{target.name} has been quarantined, and {number_messages} messages have been removed.",
-                    ephemeral=True)
-                await mod_log.send(embed=embed_quarantine(ctx.author, target, message_counter))
+                await mod_log.send(embed=embed_quarantine(interaction.user, target, message_counter))
 
             else:
-                await ctx.send(embed=embed_cant_do_that("You can't quarantine an Admin."), ephemeral=True)
+                await interaction.followup.send(embed=embed_cant_do_that("You can't quarantine an Admin."),
+                                                ephemeral=True)
         else:
-            await ctx.respond(embed=embed_cant_do_that("You cant quarantine a bot."), ephemeral=True)
+            await interaction.followup.send(embed=embed_cant_do_that("You cant quarantine a bot."), ephemeral=True)
 
-    @commands.command(description="Release a user from quarantine.")
+    @app_commands.command(description="Release a user from quarantine.")
     @commands.has_permissions(moderate_members=True)
     @commands.check(is_moderator)
-    async def release(self, ctx, target: discord.Member):
-        logger.info(f"{ctx.author.name} used the release command on {target.name}")
+    async def release(self, interaction: discord.Interaction, target: discord.Member):
+        await interaction.response.defer()
+        logger.info(f"{interaction.user.name} used the release command on {target.name}")
         if not target.bot:
             mod_log = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
-            verified_role = get(ctx.guild.roles, id=int(self.verified_role))
-            naughty_role = get(ctx.guild.roles, id=int(self.naughty_role))
+            verified_role = get(interaction.guild.roles, id=int(self.verified_role))
+            naughty_role = get(interaction.guild.roles, id=int(self.naughty_role))
 
             try:
                 await target.add_roles(verified_role)
                 await target.remove_roles(naughty_role)
-                await ctx.reply(f"{ctx.author.mention} released {target.mention} from quarantine", ephemeral=True)
+                await interaction.followup.send(f"{interaction.user.mention} released {target.mention} from quarantine",
+                                                ephemeral=True)
                 await mod_log.send(
-                    embed=embed_info(f'{ctx.author.mention} released {target.mention} from quarantine')
+                    embed=embed_info(f'{interaction.user.mention} released {target.mention} from quarantine')
                 )
 
             except Exception as notification1:
-                await ctx.reply("There was an issue with the command.", ephemeral=True)
+                await interaction.followup.send("There was an issue with the command.", ephemeral=True)
                 logger.critical(f"There was an error in the release command...\n{notification1}")
 
     @quarantine.error
