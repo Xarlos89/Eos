@@ -6,6 +6,7 @@ from datetime import datetime
 import logging
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from discord.utils import get
 
@@ -74,10 +75,10 @@ class AdminQuarantine(commands.Cog):
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
-    @commands.command(description="Quarantine a user.")
+    @app_commands.command(description="Quarantine a user.")
     @commands.check(is_moderator)
     @commands.has_permissions(moderate_members=True)
-    async def quarantine(self, ctx, target: discord.Member, number_of_messages_to_remove=0):
+    async def quarantine(self, ctx, target: discord.Member, number_of_messages_to_remove: str):
         """
         Take in a user mention, and an int amount of messages to remove.
         """
@@ -125,7 +126,7 @@ class AdminQuarantine(commands.Cog):
         else:
             await ctx.respond(embed=embed_cant_do_that("You cant quarantine a bot."), ephemeral=True)
 
-    @commands.command(description="Release a user from quarantine.")
+    @app_commands.command(description="Release a user from quarantine.")
     @commands.has_permissions(moderate_members=True)
     @commands.check(is_moderator)
     async def release(self, ctx, target: discord.Member):
