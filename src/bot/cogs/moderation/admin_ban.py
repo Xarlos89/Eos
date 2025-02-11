@@ -43,7 +43,7 @@ class AdminBan(commands.Cog):
     @commands.check(is_moderator)
     @commands.has_permissions(ban_members=True)
     @app_commands.command(description="Ban a user.")
-    async def ban_member(self, interaction: discord.interaction, target: discord.Member, reason: str):
+    async def ban_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):
         """
         Take in a user mention, and a string reason.
         """

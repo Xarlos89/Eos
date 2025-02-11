@@ -63,7 +63,7 @@ class AdminKick(commands.Cog):
                 await target.kick(reason=f"{interaction.user.name} - {reason}")
                 logger.info("{%s} kicked {%s}. Reason: {%s}", interaction.user.name, target.name, reason)
                 # Then we publicly announce what happened.
-                await interaction.channel.send(
+                await interaction.followup.send(
                     embed=embed_info(f"**{interaction.user.name}** kicked **{target.name}**" f"\n**Reason:** {reason}"))
 
             else:

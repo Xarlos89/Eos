@@ -4,6 +4,7 @@ This cog allows us to create tickets.
 import logging
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
@@ -17,13 +18,14 @@ class AddTicketButton(commands.Cog):
     def __init__(self, eos):
         self.eos = eos
 
-    @commands.command(description="Make a ticket and contact the Staff.")
-    async def ticket(self, ctx):
+    @app_commands.command(description="Make a ticket and contact the Staff.")
+    async def ticket(self, interaction: discord.Interaction):
         """
         A simple command with a view.
         """
-        logger.info("%s used the %s command.", ctx.author.name, ctx.command)
-        await ctx.send(
+        logger.info("%s used the %s command.", interaction.user.name, interaction.command.name)
+        await interaction.response.defer()
+        await interaction.followup.send(
             "Do you need help, or do you have a question for the Staff?",
             view=MakeATicket(self.eos),
             ephemeral=True,
@@ -65,7 +67,7 @@ class MakeATicket(discord.ui.View):
                 await ticket.add_user(person)
 
         await ticket.add_user(interaction.user)
-        interaction.delete_original_response()
+        await interaction.delete_original_response()
         await ticket.send(f"**{interaction.user.mention}, we have received your ticket.**")
         await ticket.send("To better help you, please describe your issue.")
 
