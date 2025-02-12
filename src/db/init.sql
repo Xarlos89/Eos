@@ -54,6 +54,27 @@ VALUES
     ('Verified', '0'),
     ('Quarantine', '0');
 
+-- Create roles table
+CREATE TABLE IF NOT EXISTS reaction_roles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    value VARCHAR(255)
+);
+
+INSERT INTO reaction_roles (name, value)
+VALUES
+    ('Ping', '1', '0'),
+    ('Beginner', '2', '0'),
+    ('Intermediate', '2', '0'),
+    ('Professional', '2', '0'),
+    ('North America', '3', '0'),
+    ('South America', '3', '0'),
+    ('Europe', '3', '0'),
+    ('Africa', '3', '0'),
+    ('Oceana', '3', '0'),
+    ('Asia', '3', '0');
+
 
 -- Create users table
 CREATE TABLE IF NOT EXISTS users (
