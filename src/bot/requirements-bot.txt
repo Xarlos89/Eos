@@ -5,7 +5,7 @@ blinker==1.9.0
 certifi==2023.11.17
 charset-normalizer==3.3.2
 click==8.1.8
-discord.py==2.3.2
+discord.py==2.4.0
 frozenlist==1.4.1
 idna==3.6
 itsdangerous==2.1.2
