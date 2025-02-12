@@ -54,26 +54,26 @@ VALUES
     ('Verified', '0'),
     ('Quarantine', '0');
 
--- Create roles table
+-- Create reaction roles table
 CREATE TABLE IF NOT EXISTS reaction_roles (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    category VARCHAR(255) NOT NULL,
-    value VARCHAR(255)
+    name VARCHAR(255) NOT NULL, -- name of the role
+    category VARCHAR(255) NOT NULL, -- How we are grouping roles. All roles in a category can be chosen with 1 dropdown
+    value VARCHAR(255) -- the Discord Role ID tied to this role
 );
 
 INSERT INTO reaction_roles (name, value)
 VALUES
-    ('Ping', '1', '0'),
-    ('Beginner', '2', '0'),
-    ('Intermediate', '2', '0'),
-    ('Professional', '2', '0'),
-    ('North America', '3', '0'),
-    ('South America', '3', '0'),
-    ('Europe', '3', '0'),
-    ('Africa', '3', '0'),
-    ('Oceana', '3', '0'),
-    ('Asia', '3', '0');
+    ('Ping', '1', '0'),  -- Server Notifications
+    ('Beginner', '2', '0'), -- Skill
+    ('Intermediate', '2', '0'), -- Skill
+    ('Professional', '2', '0'), -- Skill
+    ('North America', '3', '0'),  -- Location
+    ('South America', '3', '0'),  -- Location
+    ('Europe', '3', '0'),  -- Location
+    ('Africa', '3', '0'),  -- Location
+    ('Oceana', '3', '0'),  -- Location
+    ('Asia', '3', '0');  -- Location
 
 
 -- Create users table
