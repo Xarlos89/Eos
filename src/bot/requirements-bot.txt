@@ -16,4 +16,4 @@ pistonapi
 requests==2.31.0
 urllib3==2.1.0
 Werkzeug==3.1.3
-yarl==1.9.4
+yarl==1.18.3
