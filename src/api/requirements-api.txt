@@ -6,7 +6,7 @@ click==8.1.8
 Flask==3.1.0
 frozenlist==1.5.0
 idna==3.10
-itsdangerous==2.1.2
+itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.2
 multidict>=6.0.4
