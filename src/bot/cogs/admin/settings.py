@@ -18,7 +18,7 @@ def sanitize_string(input_string):
 
 async def is_master_guild(ctx) -> bool:
     """ Check if the context user is in the master guild"""
-    return ctx.guild.id == os.getenv("MASTER_GUILD")
+    return ctx.guild.id == int(os.getenv("MASTER_GUILD"))
 
 async def is_admin(ctx) -> bool:
     """ Check if the context user has admin permissions"""
@@ -43,10 +43,6 @@ class Settings(commands.Cog):
 
        >settings
        """
-       if not is_master_guild(ctx):
-           await ctx.send(f"You cant use the settings command because this server is not the home server.")
-           return
-
        server_settings = self.bot.api.get_all_settings()
        log_settings = self.bot.api.get_all_log_settings()
 

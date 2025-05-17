@@ -31,7 +31,7 @@ async def is_administrator(ctx) -> bool:
 
 async def is_master_guild(ctx) -> bool:
     """ Check if the context user is in the master guild"""
-    return ctx.guild.id == os.getenv("MASTER_GUILD")
+    return ctx.guild.id == int(os.getenv("MASTER_GUILD"))
 
 
 class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):

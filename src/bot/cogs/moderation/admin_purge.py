@@ -34,7 +34,7 @@ async def is_moderator(ctx) -> bool:
 
 async def is_master_guild(ctx) -> bool:
     """ Check if the context user is in the master guild"""
-    return ctx.guild.id == os.getenv("MASTER_GUILD")
+    return ctx.guild.id == int(os.getenv("MASTER_GUILD"))
 
 
 def api_request_is_ok(request):
