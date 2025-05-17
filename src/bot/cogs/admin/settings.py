@@ -1,3 +1,4 @@
+import os
 import logging
 from datetime import datetime
 import discord
@@ -15,13 +16,17 @@ def sanitize_string(input_string):
 
     return ''.join(char for char in input_string if ord(char) < 128)
 
+async def is_master_guild(ctx) -> bool:
+    """ Check if the context user is in the master guild"""
+    return ctx.guild.id == os.getenv("MASTER_GUILD")
+
 async def is_admin(ctx) -> bool:
     """ Check if the context user has admin permissions"""
     return ctx.message.author.guild_permissions.administrator
 
 
 class Settings(commands.Cog):
-    """
+    """1
     Settings is made up of a "view". (Docs: https://discordpy.readthedocs.io/en/stable/interactions/api.html?highlight=ui%20view#select)
     This view uses a DropdownView, which contains a "dropdown", that is made up of many "SelectOption" objects.
     """
@@ -29,6 +34,7 @@ class Settings(commands.Cog):
         """Initialization of the points Class"""
         self.bot = bot
 
+    @commands.check(is_master_guild)
     @commands.check(is_admin)
     @commands.hybrid_command()
     async def settings(self, ctx: commands.Context):
@@ -37,6 +43,10 @@ class Settings(commands.Cog):
 
        >settings
        """
+       if not is_master_guild(ctx):
+           await ctx.send(f"You cant use the settings command because this server is not the home server.")
+           return
+
        server_settings = self.bot.api.get_all_settings()
        log_settings = self.bot.api.get_all_log_settings()
 
@@ -70,6 +80,7 @@ class Settings(commands.Cog):
 
        await ctx.send(embed=embed)
 
+    @commands.check(is_master_guild)
     @commands.check(is_admin)
     @commands.hybrid_command()
     async def update_settings(self, ctx: commands.Context):
@@ -101,6 +112,18 @@ class Settings(commands.Cog):
 
         prompt = PromptDropdownView(menu)
         await ctx.send(f"# Eos settings.\nWhich settings would you like to change?", view=prompt)
+
+    @settings.error
+    async def settings_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
+            await ctx.send('For one reason, or another, YOU cannot use this command.')
+
+    @update_settings.error
+    async def update_settings_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
+            await ctx.send('For one reason, or another, YOU cannot use this command.')
 
 class PromptDropdown(discord.ui.Select):
     """
@@ -321,6 +344,9 @@ class ServerDropdownView(discord.ui.View):
         super().__init__()
         # Adds the dropdown to our view object.
         self.add_item(ServerDropdown(ctx, bot, channels, purpose))
+
+
+
 
 
 async def setup(bot: commands.Bot) -> None:
