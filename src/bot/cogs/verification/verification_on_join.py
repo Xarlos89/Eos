@@ -36,7 +36,7 @@ class LoggingVerification(commands.Cog):
             We are very happy that you have decided to join us.
             Before you are allowed to chat, you need to verify that you are NOT a bot.\n
             Dont worry... it's easy.
-            Just go to {self.bot.get_channel(self.verification_log).mention}
+            Just go to {self.bot.get_channel(self.verification_log) if self.verification_log is not None else 'the verification channel'}
             and use the **{os.getenv('PREFIX')}verify** command.
 
             After you do, all of {guild.name} is available to you. Have a great time :-)
