@@ -1,6 +1,7 @@
 """
 Admin command for kicking a user.
 """
+import os
 import time
 from datetime import datetime
 import logging
@@ -9,6 +10,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from discord.utils import get
+
+from .._checks import is_master_guild, is_moderator
+
 
 logger = logging.getLogger(__name__)
 
@@ -56,14 +60,6 @@ def embed_quarantine(moderator, some_member, number_of_removed_messages):
     return embed
 
 
-async def is_moderator(ctx) -> bool:
-    """
-    Check if the context user has moderator permissions
-    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.moderate_members
-    """
-    return ctx.message.author.guild_permissions.moderate_members
-
-
 class AdminQuarantine(commands.Cog):
     """
     Command to quarantine a user.
@@ -76,7 +72,8 @@ class AdminQuarantine(commands.Cog):
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
     @app_commands.command(description="Quarantine a user.")
-    @commands.check(is_moderator)
+    @is_moderator()
+    @is_master_guild()
     @commands.has_permissions(moderate_members=True)
     async def quarantine(self, interaction: discord.Interaction, target: discord.Member,
                          number_of_messages_to_remove: str):
@@ -126,7 +123,8 @@ class AdminQuarantine(commands.Cog):
 
     @app_commands.command(description="Release a user from quarantine.")
     @commands.has_permissions(moderate_members=True)
-    @commands.check(is_moderator)
+    @is_moderator()
+    @is_master_guild()
     async def release(self, interaction: discord.Interaction, target: discord.Member):
         await interaction.response.defer()
         logger.info(f"{interaction.user.name} used the release command on {target.name}")

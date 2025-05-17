@@ -7,7 +7,6 @@ from discord.ext import commands
 from __logger__ import setup_logger
 from core.api_helper import API
 
-
 logger = logging.getLogger(__name__)
 setup_logger(level=int(os.getenv("BOT_LOG_LEVEL")), stream_logs=bool(os.getenv("STREAM_LOGS")))
 

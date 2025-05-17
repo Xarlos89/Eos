@@ -1,11 +1,15 @@
 """
 Admin command to remove messages in bulk.
 """
+import os
 import logging
 from datetime import datetime
 import discord
 from discord.ext import commands
 from discord import app_commands
+
+from .._checks import is_master_guild, is_moderator
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +25,6 @@ def embed_info(message):
         , timestamp=datetime.utcnow()
     )
     return embed
-
-
-async def is_moderator(ctx) -> bool:
-    """
-    Check if the context user has moderator permissions
-    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.manage_messages
-    """
-    return ctx.message.author.guild_permissions.manage_messages
 
 
 def api_request_is_ok(request):
@@ -53,7 +49,8 @@ class AdminPurge(commands.Cog):
         self.bot = bot
         self.log_channel_req = self.bot.api.get_one_log_setting("3")  # chat_log
 
-    @commands.check(is_moderator)
+    @is_moderator()
+    @is_master_guild()
     @app_commands.command(description="Removes up to 100 messages from channel.")
     async def purge_messages(self, interaction: discord.Interaction, number_messages: str):
         """

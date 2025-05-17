@@ -1,8 +1,8 @@
 """
 Logging for message edits
 """
-import logging
 import os
+import logging
 from datetime import datetime
 import discord
 from discord.ext import commands
@@ -54,6 +54,10 @@ class LoggingMessageEdit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before, message_after):
+        if message_before.guild.id != int(os.getenv("MASTER_GUILD")):
+            logger.warning(">> on_message_edit fired, but not in master guild. Ignoring event.")
+            return
+
         # Ignore any bot messages
         if message_before.author.bot or message_after.author.bot:
             return

@@ -1,6 +1,7 @@
 """
 Logs when a member leaves.
 """
+import os
 import logging
 from datetime import datetime
 import discord
@@ -38,6 +39,10 @@ class LoggingLeaves(commands.Cog):
         First we don't log leaves for unapproved people.
         then we grab the guild, and from there read the last entry in the audit log.
         """
+        if member.guild.id != int(os.getenv("MASTER_GUILD")):
+            logger.warning(">> on_member_remove fired, but not in master guild. Ignoring event.")
+            return
+
         if self.verification_role in [role.id for role in member.roles]:
             return
 

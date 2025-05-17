@@ -36,7 +36,7 @@ class LoggingVerification(commands.Cog):
             We are very happy that you have decided to join us.
             Before you are allowed to chat, you need to verify that you are NOT a bot.\n
             Dont worry... it's easy.
-            Just go to {self.bot.get_channel(self.verification_log).mention}
+            Just go to {self.bot.get_channel(self.verification_log) if self.verification_log is not None else 'the verification channel'}
             and use the **{os.getenv('PREFIX')}verify** command.
 
             After you do, all of {guild.name} is available to you. Have a great time :-)
@@ -58,6 +58,10 @@ class LoggingVerification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
+        if guild.id != int(os.getenv("MASTER_GUILD")):
+            logger.warning("on_member_join fired, but not in master guild. Ignoring event.")
+            return
+
         verification_log = await self.bot.fetch_channel(self.verification_log)
 
         await self.log_unverified_join(member, verification_log)
@@ -69,6 +73,10 @@ class LoggingVerification(commands.Cog):
         """
         Keep verification clean again
         """
+        if message.guild.id != int(os.getenv("MASTER_GUILD")):
+            logger.warning("on_message in verification fired, but not in master guild. Ignoring event.")
+            return
+
         if message.channel.id == int(self.verification_channel):
             if not message.author.bot:
                 if f"{os.getenv('PREFIX')}verify" == message.content:  # keep it exact
