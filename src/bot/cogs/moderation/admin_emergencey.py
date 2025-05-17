@@ -29,10 +29,9 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
-    @is_admin()
     @is_master_guild()
-    @commands.has_permissions(manage_channels=True)
-    @app_commands.command(name="lockdown", description="locks down the server.")
+    @is_admin()
+    @commands.hybrid_command()
     async def lockdown(self, interaction: discord.Interaction):
         await interaction.response.defer()
         logger.warning(f"{interaction.guild.name} is going into lockdown mode!")
@@ -41,10 +40,9 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
             await channel.send(f"***{channel.name} is now in lockdown.***")
         await interaction.followup.send(f"{interaction.guild.name} is now in lockdown. When ready, use **unlock**")
 
-    @is_admin()
     @is_master_guild()
-    @commands.has_permissions(manage_channels=True)
-    @app_commands.command(name="unlock", description="unlocks the server after a lockdown")
+    @is_admin()
+    @commands.hybrid_command()
     async def unlock(self, interaction: discord.Interaction):
         await interaction.response.defer()
         logger.warning(f"{interaction.guild.name} is coming out of lockdown mode!")
