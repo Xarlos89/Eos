@@ -35,8 +35,8 @@ class AdminBan(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.check(is_moderator)
-    @commands.check(is_master_guild)
+    @is_moderator()
+    @is_master_guild()
     @commands.has_permissions(ban_members=True)
     @app_commands.command(description="Ban a user.")
     async def ban_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):

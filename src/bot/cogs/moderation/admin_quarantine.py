@@ -72,8 +72,8 @@ class AdminQuarantine(commands.Cog):
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
     @app_commands.command(description="Quarantine a user.")
-    @commands.check(is_moderator)
-    @commands.check(is_master_guild)
+    @is_moderator()
+    @is_master_guild()
     @commands.has_permissions(moderate_members=True)
     async def quarantine(self, interaction: discord.Interaction, target: discord.Member,
                          number_of_messages_to_remove: str):
@@ -123,8 +123,8 @@ class AdminQuarantine(commands.Cog):
 
     @app_commands.command(description="Release a user from quarantine.")
     @commands.has_permissions(moderate_members=True)
-    @commands.check(is_moderator)
-    @commands.check(is_master_guild)
+    @is_moderator()
+    @is_master_guild()
     async def release(self, interaction: discord.Interaction, target: discord.Member):
         await interaction.response.defer()
         logger.info(f"{interaction.user.name} used the release command on {target.name}")

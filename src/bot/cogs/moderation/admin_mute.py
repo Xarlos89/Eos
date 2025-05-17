@@ -48,8 +48,8 @@ class AdminMute(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.check(is_moderator)
-    @commands.check(is_master_guild)
+    @is_moderator()
+    @is_master_guild()
     @app_commands.command(description="Time is in minutes to mute a user.")
     @commands.has_permissions(moderate_members=True)
     async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: str, reason: str):

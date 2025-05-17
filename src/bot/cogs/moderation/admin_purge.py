@@ -49,8 +49,8 @@ class AdminPurge(commands.Cog):
         self.bot = bot
         self.log_channel_req = self.bot.api.get_one_log_setting("3")  # chat_log
 
-    @commands.check(is_moderator)
-    @commands.check(is_master_guild)
+    @is_moderator()
+    @is_master_guild()
     @app_commands.command(description="Removes up to 100 messages from channel.")
     async def purge_messages(self, interaction: discord.Interaction, number_messages: str):
         """

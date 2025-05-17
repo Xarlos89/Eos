@@ -40,8 +40,8 @@ class Points(commands.Cog):
         """Initialization of the points Class"""
         self.bot = bot
 
-    @commands.check(is_admin)
-    @commands.check(is_master_guild)
+    @is_admin()
+    @is_master_guild()
     @commands.hybrid_command()
     async def sync_users(self, ctx: commands.Context) -> None:
         """
@@ -78,8 +78,8 @@ class Points(commands.Cog):
             await ctx.reply("Oopsie. Unexpected error. Check the logs.")
             logger.critical(points)
 
-    @commands.check(is_admin)
-    @commands.check(is_master_guild)
+    @is_admin()
+    @is_master_guild()
     @commands.hybrid_command()
     async def update_points(self, ctx: commands.Context, user: discord.User, amount) -> None:
         """

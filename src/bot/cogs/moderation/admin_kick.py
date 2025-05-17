@@ -36,8 +36,8 @@ class AdminKick(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.check(is_moderator)
-    @commands.check(is_master_guild)
+    @is_moderator()
+    @is_master_guild()
     @app_commands.command(description="Kick a user.")
     @commands.has_permissions(kick_members=True)
     async def kick_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):

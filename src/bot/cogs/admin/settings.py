@@ -25,8 +25,9 @@ class Settings(commands.Cog):
         """Initialization of the points Class"""
         self.bot = bot
 
-    @commands.check(is_master_guild)
-    @commands.check(is_admin)
+
+    @is_master_guild()
+    @is_admin()
     @commands.hybrid_command()
     async def settings(self, ctx: commands.Context):
        """
@@ -67,8 +68,8 @@ class Settings(commands.Cog):
 
        await ctx.send(embed=embed)
 
-    @commands.check(is_master_guild)
-    @commands.check(is_admin)
+    @is_master_guild()
+    @is_admin()
     @commands.hybrid_command()
     async def update_settings(self, ctx: commands.Context):
         """
