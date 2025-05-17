@@ -11,6 +11,9 @@ from discord import app_commands
 from discord.ext import commands
 from discord.utils import get
 
+from .._checks import is_master_guild, is_moderator
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -55,19 +58,6 @@ def embed_quarantine(moderator, some_member, number_of_removed_messages):
         embed.add_field(name="Messages removed:", value=f"{str(number_of_removed_messages)} messages.")
 
     return embed
-
-
-async def is_moderator(ctx) -> bool:
-    """
-    Check if the context user has moderator permissions
-    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.moderate_members
-    """
-    return ctx.message.author.guild_permissions.moderate_members
-
-
-async def is_master_guild(ctx) -> bool:
-    """ Check if the context user is in the master guild"""
-    return ctx.guild.id == int(os.getenv("MASTER_GUILD"))
 
 
 class AdminQuarantine(commands.Cog):

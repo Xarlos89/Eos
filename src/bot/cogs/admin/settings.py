@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 import discord
 from discord.ext import commands
-
+from .._checks import is_master_guild, is_admin
 
 logger = logging.getLogger(__name__)
 
@@ -15,15 +15,6 @@ def sanitize_string(input_string):
     """
 
     return ''.join(char for char in input_string if ord(char) < 128)
-
-async def is_master_guild(ctx) -> bool:
-    """ Check if the context user is in the master guild"""
-    return ctx.guild.id == int(os.getenv("MASTER_GUILD"))
-
-async def is_admin(ctx) -> bool:
-    """ Check if the context user has admin permissions"""
-    return ctx.message.author.guild_permissions.administrator
-
 
 class Settings(commands.Cog):
     """1

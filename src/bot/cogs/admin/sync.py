@@ -2,17 +2,9 @@ import os
 import logging
 from discord.ext import commands
 
+from .._checks import is_master_guild, is_admin
 
 logger = logging.getLogger(__name__)
-
-
-async def is_admin(ctx) -> bool:
-    """ Check if the context user has admin permissions"""
-    return ctx.message.author.guild_permissions.administrator
-
-async def is_master_guild(ctx) -> bool:
-    """ Check if the context user is in the master guild"""
-    return ctx.guild.id == int(os.getenv("MASTER_GUILD"))
 
 
 class CommandSync(commands.Cog):

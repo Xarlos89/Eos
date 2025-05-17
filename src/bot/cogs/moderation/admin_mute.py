@@ -9,6 +9,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
+from .._checks import is_master_guild, is_moderator
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,19 +25,6 @@ def embed_info(message):
         , timestamp=datetime.utcnow()
     )
     return embed
-
-
-async def is_moderator(ctx) -> bool:
-    """
-    Check if the context user has moderator permissions
-    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.mute_members
-    """
-    return ctx.message.author.guild_permissions.mute_members
-
-
-async def is_master_guild(ctx) -> bool:
-    """ Check if the context user is in the master guild"""
-    return ctx.guild.id == int(os.getenv("MASTER_GUILD"))
 
 
 def embed_info(message):
