@@ -1,3 +1,4 @@
+import os
 import logging
 from datetime import datetime
 import discord
@@ -22,6 +23,10 @@ async def is_admin(ctx) -> bool:
     """ Check if the context user has admin permissions"""
     return ctx.message.author.guild_permissions.administrator
 
+async def is_master_guild(ctx) -> bool:
+    """ Check if the context user is in the master guild"""
+    return ctx.guild.id == os.getenv("MASTER_GUILD")
+
 
 class Points(commands.Cog):
     """
@@ -42,6 +47,7 @@ class Points(commands.Cog):
         self.bot = bot
 
     @commands.check(is_admin)
+    @commands.check(is_master_guild)
     @commands.hybrid_command()
     async def sync_users(self, ctx: commands.Context) -> None:
         """
@@ -79,6 +85,7 @@ class Points(commands.Cog):
             logger.critical(points)
 
     @commands.check(is_admin)
+    @commands.check(is_master_guild)
     @commands.hybrid_command()
     async def update_points(self, ctx: commands.Context, user: discord.User, amount) -> None:
         """
@@ -176,6 +183,18 @@ class Points(commands.Cog):
                     , discord.Color.dark_gray()
                 )
             )
+
+    @sync_users.error
+    async def sync_users_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
+            await ctx.send('For one reason, or another, YOU cannot use this command.')
+
+    @update_points.error
+    async def update_points_command_error(self, ctx, error):
+        if isinstance(error, commands.CheckFailure):
+            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
+            await ctx.send('For one reason, or another, YOU cannot use this command.')
 
 async def setup(bot: commands.Bot) -> None:
     """boink"""
