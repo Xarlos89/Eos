@@ -20,6 +20,7 @@ class CommandSync(commands.Cog):
         self.bot = bot
 
     @commands.command(name="sync")
+    @commands.check(is_master_guild)
     @commands.check(is_admin)
     async def sync(self, ctx):
         synced = await self.bot.tree.sync()
