@@ -1,6 +1,7 @@
 """
 Admin command for kicking a user.
 """
+import os
 import logging
 from datetime import datetime
 
@@ -32,6 +33,10 @@ async def is_moderator(ctx) -> bool:
     return ctx.message.author.guild_permissions.ban_members
 
 
+async def is_master_guild(ctx) -> bool:
+    """ Check if the context user is in the master guild"""
+    return ctx.guild.id == os.getenv("MASTER_GUILD")
+
 class AdminBan(commands.Cog):
     """
     Command to ban a user. Takes in a name, and a reason.
@@ -41,6 +46,7 @@ class AdminBan(commands.Cog):
         self.bot = bot
 
     @commands.check(is_moderator)
+    @commands.check(is_master_guild)
     @commands.has_permissions(ban_members=True)
     @app_commands.command(description="Ban a user.")
     async def ban_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):

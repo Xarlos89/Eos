@@ -1,6 +1,7 @@
 """
 Admin command for kicking a user.
 """
+import os
 import logging
 from datetime import datetime, timedelta
 
@@ -32,6 +33,11 @@ async def is_moderator(ctx) -> bool:
     return ctx.message.author.guild_permissions.mute_members
 
 
+async def is_master_guild(ctx) -> bool:
+    """ Check if the context user is in the master guild"""
+    return ctx.guild.id == os.getenv("MASTER_GUILD")
+
+
 def embed_info(message):
     """
     Embedding for generl things
@@ -54,6 +60,7 @@ class AdminMute(commands.Cog):
         self.bot = bot
 
     @commands.check(is_moderator)
+    @commands.check(is_master_guild)
     @app_commands.command(description="Time is in minutes to mute a user.")
     @commands.has_permissions(moderate_members=True)
     async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: str, reason: str):

@@ -1,6 +1,7 @@
 """
 Admin command for kicking a user.
 """
+import os
 import logging
 from datetime import datetime
 
@@ -31,6 +32,10 @@ async def is_moderator(ctx) -> bool:
     """
     return ctx.message.author.guild_permissions.kick_members
 
+async def is_master_guild(ctx) -> bool:
+    """ Check if the context user is in the master guild"""
+    return ctx.guild.id == os.getenv("MASTER_GUILD")
+
 
 class AdminKick(commands.Cog):
     """
@@ -41,6 +46,7 @@ class AdminKick(commands.Cog):
         self.bot = bot
 
     @commands.check(is_moderator)
+    @commands.check(is_master_guild)
     @app_commands.command(description="Kick a user.")
     @commands.has_permissions(kick_members=True)
     async def kick_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):

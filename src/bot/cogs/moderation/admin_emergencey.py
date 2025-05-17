@@ -1,3 +1,4 @@
+import os
 import logging
 from datetime import datetime
 
@@ -28,12 +29,17 @@ async def is_administrator(ctx) -> bool:
     """
     return ctx.message.author.guild_permissions.administrator
 
+async def is_master_guild(ctx) -> bool:
+    """ Check if the context user is in the master guild"""
+    return ctx.guild.id == os.getenv("MASTER_GUILD")
+
 
 class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.check(is_administrator)
+    @commands.check(is_master_guild)
     @commands.has_permissions(manage_channels=True)
     @app_commands.command(name="lockdown", description="locks down the server.")
     async def lockdown(self, interaction: discord.Interaction):
@@ -45,6 +51,7 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
         await interaction.followup.send(f"{interaction.guild.name} is now in lockdown. When ready, use **unlock**")
 
     @commands.check(is_administrator)
+    @commands.check(is_master_guild)
     @commands.has_permissions(manage_channels=True)
     @app_commands.command(name="unlock", description="unlocks the server after a lockdown")
     async def unlock(self, interaction: discord.Interaction):

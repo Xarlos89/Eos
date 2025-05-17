@@ -1,6 +1,7 @@
 """
 Admin command for kicking a user.
 """
+import os
 import time
 from datetime import datetime
 import logging
@@ -64,6 +65,11 @@ async def is_moderator(ctx) -> bool:
     return ctx.message.author.guild_permissions.moderate_members
 
 
+async def is_master_guild(ctx) -> bool:
+    """ Check if the context user is in the master guild"""
+    return ctx.guild.id == os.getenv("MASTER_GUILD")
+
+
 class AdminQuarantine(commands.Cog):
     """
     Command to quarantine a user.
@@ -77,6 +83,7 @@ class AdminQuarantine(commands.Cog):
 
     @app_commands.command(description="Quarantine a user.")
     @commands.check(is_moderator)
+    @commands.check(is_master_guild)
     @commands.has_permissions(moderate_members=True)
     async def quarantine(self, interaction: discord.Interaction, target: discord.Member,
                          number_of_messages_to_remove: str):
@@ -127,6 +134,7 @@ class AdminQuarantine(commands.Cog):
     @app_commands.command(description="Release a user from quarantine.")
     @commands.has_permissions(moderate_members=True)
     @commands.check(is_moderator)
+    @commands.check(is_master_guild)
     async def release(self, interaction: discord.Interaction, target: discord.Member):
         await interaction.response.defer()
         logger.info(f"{interaction.user.name} used the release command on {target.name}")
