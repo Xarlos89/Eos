@@ -2,6 +2,7 @@
 Logs user avatar changes.
 TODO: Would be cool to add an API that detects nasty images here.
 """
+import os
 import logging
 from datetime import datetime
 import discord
@@ -42,6 +43,10 @@ class LoggingAvatars(commands.Cog):
         """
         if the avatar before is != to the avatar after, do stuff.
         """
+        if before.guild.id != int(os.getenv("MASTER_GUILD")):
+            logger.warning(">> Avatar update fired, but not in master guild. Ignoring event.")
+            return
+
         if before.avatar != after.avatar:
             if self.user_log[0]["status"] == "ok":
                 if self.user_log[0]["logging"][2] == "0":

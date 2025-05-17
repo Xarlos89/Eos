@@ -1,6 +1,7 @@
 """
 Logging for message deletes
 """
+import os
 import logging
 from datetime import datetime
 import discord
@@ -56,6 +57,10 @@ class LoggingMessageDelete(commands.Cog):
         """
         If a mod deletes, take the audit log event. If a user deletes, handle it normally.
         """
+        if message.guild.id != int(os.getenv("MASTER_GUILD")):
+            logger.warning(">> on_message_delete fired, but not in master guild. Ignoring event.")
+            return
+
         if message.channel.id == self.staff_channel:
             logger.debug("Message delete in staff channel was ignored.")
             return

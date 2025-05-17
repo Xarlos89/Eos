@@ -1,6 +1,7 @@
 """
 Logging for role changes. Logs the user who did the changing, the target user and the role.
 """
+import os
 import logging
 from datetime import datetime
 import discord
@@ -50,6 +51,10 @@ class LoggingRoles(commands.Cog):
         Checks what roles were changed, and logs it in the log channel.
         Can be quite spammy.
         """
+        if before.guild.id != int(os.getenv("MASTER_GUILD")):
+            logger.warning("on_member_update fired, but not in master guild. Ignoring event.")
+            return
+
         audit_log = [entry async for entry in before.guild.audit_logs(limit=1)][0]
 
         if str(audit_log.action) == "AuditLogAction.member_role_update":
