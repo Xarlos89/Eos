@@ -40,7 +40,8 @@ class LoggingBans(commands.Cog):
         First we don't log bans for unapproved people.
         then we grab the guild, and from there read the last entry in the audit log.
         """
-        if member.guild.id != int(os.getenv("MASTER_GUILD")):
+        if member.guild.id != int(os.getenv("MASTER_GUILD")) or \
+                member.guild.id is None:
             logger.warning(">> on_member_remove fired, but not in master guild. Ignoring event.")
             return
 

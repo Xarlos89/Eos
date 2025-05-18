@@ -43,7 +43,8 @@ class LoggingAvatars(commands.Cog):
         """
         if the avatar before is != to the avatar after, do stuff.
         """
-        if before.guild.id != int(os.getenv("MASTER_GUILD")):
+        if before.guild.id != int(os.getenv("MASTER_GUILD")) or \
+                before.guild.id is None:
             logger.warning(">> Avatar update fired, but not in master guild. Ignoring event.")
             return
 

@@ -37,7 +37,8 @@ class LoggingNameChanges(commands.Cog):
         """
         Just checking if the name before is != to the name after.
         """
-        if before.guild.id != int(os.getenv("MASTER_GUILD")):
+        if before.guild.id != int(os.getenv("MASTER_GUILD")) or \
+                before.guild.id is None:
             logger.warning("on_member_update fired, but not in master guild. Ignoring event.")
             return
 

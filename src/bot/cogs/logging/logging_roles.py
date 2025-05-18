@@ -51,7 +51,8 @@ class LoggingRoles(commands.Cog):
         Checks what roles were changed, and logs it in the log channel.
         Can be quite spammy.
         """
-        if before.guild.id != int(os.getenv("MASTER_GUILD")):
+        if before.guild.id != int(os.getenv("MASTER_GUILD")) or \
+                before.guild.id is None:
             logger.warning("on_member_update fired, but not in master guild. Ignoring event.")
             return
 
