@@ -58,7 +58,8 @@ class LoggingVerification(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
-        if guild.id != int(os.getenv("MASTER_GUILD")):
+
+        if member.guild.id != int(os.getenv("MASTER_GUILD")):
             logger.warning("on_member_join fired, but not in master guild. Ignoring event.")
             return
 
@@ -92,7 +93,7 @@ class LoggingVerification(commands.Cog):
 
                     logs_channel = await self.bot.fetch_channel(self.verification_log)
                     await logs_channel.send(
-                        f"{message.author} is failing at life in {self.bot.get_channel(self.verification_channel).mention}")
+                        f"{message.author} is failing at life in {self.bot.get_channel(self.verification_channel)}")
 
                     await sleep(8)
                     bot_message.delete()  # remove the message to correct people after 8? seconds
