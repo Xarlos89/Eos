@@ -43,10 +43,11 @@ class LoggingAvatars(commands.Cog):
         """
         if the avatar before is != to the avatar after, do stuff.
         """
-        if before.guild.id != int(os.getenv("MASTER_GUILD")) or \
-                before.guild.id is None:
-            logger.warning(">> Avatar update fired, but not in master guild. Ignoring event.")
-            return
+        # TODO: This does not work because before and after are discord.User objects.
+        # if before.guild.id != int(os.getenv("MASTER_GUILD")) or \
+        #         before.guild.id is None:
+        #     logger.warning(">> Avatar update fired, but not in master guild. Ignoring event.")
+        #     return
 
         if before.avatar != after.avatar:
             if self.user_log[0]["status"] == "ok":
