@@ -68,7 +68,7 @@ class LoggingVerification(commands.Cog):
 
         await self.log_unverified_join(member, verification_log)
         await self.send_welcome_message(guild, member)
-        await self.kick_if_not_verified(member, 3600, verification_log)
+        # await self.kick_if_not_verified(member, 3600, verification_log)
 
     # @commands.Cog.listener()
     # async def on_message(self, message):
