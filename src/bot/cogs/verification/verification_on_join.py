@@ -74,7 +74,7 @@ class LoggingVerification(commands.Cog):
         """
         Keep verification clean again
         """
-        if message.guild.id != int(os.getenv("MASTER_GUILD")):
+        if message.author.guild.id != int(os.getenv("MASTER_GUILD")):
             logger.warning("on_message in verification fired, but not in master guild. Ignoring event.")
             return
 
