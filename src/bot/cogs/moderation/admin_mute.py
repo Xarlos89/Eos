@@ -1,12 +1,15 @@
 """
 Admin command for kicking a user.
 """
+import os
 import logging
 from datetime import datetime, timedelta
 
 import discord
 from discord.ext import commands
 from discord import app_commands
+
+from .._checks import is_master_guild, is_moderator
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +25,6 @@ def embed_info(message):
         , timestamp=datetime.utcnow()
     )
     return embed
-
-
-async def is_moderator(ctx) -> bool:
-    """
-    Check if the context user has moderator permissions
-    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.mute_members
-    """
-    return ctx.message.author.guild_permissions.mute_members
 
 
 def embed_info(message):
@@ -53,7 +48,8 @@ class AdminMute(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.check(is_moderator)
+    @is_moderator()
+    @is_master_guild()
     @app_commands.command(description="Time is in minutes to mute a user.")
     @commands.has_permissions(moderate_members=True)
     async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: str, reason: str):

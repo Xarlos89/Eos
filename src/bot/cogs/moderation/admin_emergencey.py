@@ -1,9 +1,13 @@
+import os
 import logging
 from datetime import datetime
 
 import discord
 from discord import app_commands
 from discord.ext import commands
+
+from .._checks import is_master_guild, is_admin
+
 
 logger = logging.getLogger(__name__)
 
@@ -21,21 +25,13 @@ def embed_info(message):
     return embed
 
 
-async def is_administrator(ctx) -> bool:
-    """
-    Check if the context user has moderator permissions
-    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.administrator
-    """
-    return ctx.message.author.guild_permissions.administrator
-
-
 class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.check(is_administrator)
-    @commands.has_permissions(manage_channels=True)
-    @app_commands.command(name="lockdown", description="locks down the server.")
+    @is_master_guild()
+    @is_admin()
+    @commands.hybrid_command()
     async def lockdown(self, interaction: discord.Interaction):
         await interaction.response.defer()
         logger.warning(f"{interaction.guild.name} is going into lockdown mode!")
@@ -44,9 +40,9 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
             await channel.send(f"***{channel.name} is now in lockdown.***")
         await interaction.followup.send(f"{interaction.guild.name} is now in lockdown. When ready, use **unlock**")
 
-    @commands.check(is_administrator)
-    @commands.has_permissions(manage_channels=True)
-    @app_commands.command(name="unlock", description="unlocks the server after a lockdown")
+    @is_master_guild()
+    @is_admin()
+    @commands.hybrid_command()
     async def unlock(self, interaction: discord.Interaction):
         await interaction.response.defer()
         logger.warning(f"{interaction.guild.name} is coming out of lockdown mode!")

@@ -1,12 +1,16 @@
 """
 Admin command for kicking a user.
 """
+import os
 import logging
 from datetime import datetime
 
 import discord
 from discord.ext import commands
 from discord import app_commands
+
+from .._checks import is_master_guild, is_moderator
+
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +28,6 @@ def embed_info(message):
     return embed
 
 
-async def is_moderator(ctx) -> bool:
-    """
-    Check if the context user has moderator permissions
-    https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild_permissions#discord.Permissions.kick_members
-    """
-    return ctx.message.author.guild_permissions.kick_members
-
-
 class AdminKick(commands.Cog):
     """
     Command to kick a user. Takes in a name, and a reason.
@@ -40,7 +36,8 @@ class AdminKick(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.check(is_moderator)
+    @is_moderator()
+    @is_master_guild()
     @app_commands.command(description="Kick a user.")
     @commands.has_permissions(kick_members=True)
     async def kick_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):
