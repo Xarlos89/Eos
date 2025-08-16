@@ -12,6 +12,12 @@ from ultra_piston import File, PistonClient
 
 logger = logging.getLogger(__name__)
 
+TRUNCATED_MESSAGE: str = "\n```\n```\nOutput too long. Message truncated.\n```"
+TRUNCATED_MESSAGE_LENGTH: int = len(TRUNCATED_MESSAGE)
+MAX_NEW_LINES: int = 6
+MAX_CHARACTERS: int = 1000 
+# Discord character limit is 4096, but to prevent spamming, we reduce it to 1K
+
 
 class UtilityRunCode(commands.Cog):
     """Uses PistonAPI to run code in the server."""
@@ -23,8 +29,6 @@ class UtilityRunCode(commands.Cog):
     def get_embed(
         self, title: str, output: str, is_error: bool, is_code: bool = True
     ) -> discord.Embed:
-        TRUNCATED_MESSAGE: str = "\n```\n```\nOutput too long. Message truncated.\n```"
-
         if is_error:
             embed = discord.Embed(colour=discord.Colour.red(), title=title)
         else:
@@ -37,13 +41,20 @@ class UtilityRunCode(commands.Cog):
             else:
                 output = f"```\n{output}\n```"
 
-                if len(output) > 4096:
+                if output.count("\n") > MAX_NEW_LINES:
+                    output_lines = output.split("\n")
                     output = (
-                        output[: 4096 - len(TRUNCATED_MESSAGE)] + TRUNCATED_MESSAGE + ""
+                        "\n".join(output_lines[: MAX_NEW_LINES + 1]) + TRUNCATED_MESSAGE
+                    )
+
+                elif len(output) > MAX_CHARACTERS:
+                    output = (
+                        output[: MAX_CHARACTERS - TRUNCATED_MESSAGE_LENGTH]
+                        + TRUNCATED_MESSAGE
+                        + ""
                     )
 
         embed.description = output
-
         return embed
 
     @commands.command()
@@ -140,7 +151,7 @@ class UtilityRunCode(commands.Cog):
     async def on_message_edit(self, before: Message, after: Message) -> None:
         if before.author.bot:
             return
-        
+
         if before.content.startswith(">run") or after.content.startswith(">run"):
             # Make sure we ONLY re-run messages that are /run commands
             channel = after.channel  # The channel that the edited message is in
