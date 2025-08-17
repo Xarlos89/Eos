@@ -8,7 +8,15 @@ logger = logging.getLogger(__name__)
 # Define a Blueprint
 logs = Blueprint('logging', __name__)
 
-ALLOWED_LOG_NAMES = ["chat", "moderation", "user", "join", "verification"]
+ALLOWED_LOG_NAMES = [
+    'Verification Log',
+    'Join Log',
+    'Chat Log',
+    'User Log',
+    'Mod Log',
+    'Server Log',
+    'Error Log'
+]
 
 @logs.route('/logging', methods=['GET'])
 def get_log_setting():
