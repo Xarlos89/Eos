@@ -176,8 +176,8 @@ class ModerationSpamMessages(commands.Cog):
         quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
         thirty_seconds = datetime.now().astimezone() + timedelta(seconds=30)
         await message.author.timeout(thirty_seconds, reason="Sending the same message multiple times.")
-        await message.author.remove_roles(verified_role)
-        await message.author.add_roles(naughty_role)
+        await message.author.remove_roles(verified_role[0]["roles"][2])
+        await message.author.add_roles(naughty_role[0]["roles"][2])
 
         await quarantine_channel.send(
             embed=embed_spammer(message.author, message.content, record["messages"][-1]["file_url"])
