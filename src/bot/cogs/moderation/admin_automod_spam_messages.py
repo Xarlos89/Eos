@@ -170,11 +170,13 @@ class ModerationSpamMessages(commands.Cog):
             message (discord.Message): The triggering message object.
             record (dict): The user's message record.
         """
-        naughty_role = self.bot.api.get_one_role("7")[0]["roles"][2]
-        verified_role = self.bot.api.get_one_role("6")[0]["roles"][2]
+        naughty_role = await message.guild.fetch_role(self.bot.api.get_one_role("7")[0]["roles"][2])
+        verified_role = await message.guild.fetch_role(self.bot.api.get_one_role("6")[0]["roles"][2])
+
         quarantine_channel = self.bot.api.get_one_setting("2")[0]["setting"][2]
         quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
         thirty_seconds = datetime.now().astimezone() + timedelta(seconds=30)
+
         await message.author.timeout(thirty_seconds, reason="Sending the same message multiple times.")
         await message.author.remove_roles(verified_role)
         await message.author.add_roles(naughty_role)
