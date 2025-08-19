@@ -49,7 +49,7 @@ class DB:
     def get_log_settings(self):
         logger.debug("API attempting to contact DB for get_log_settings...")
         try:
-            self.cursor.execute("SELECT * FROM logging") # case sensitive
+            self.cursor.execute("SELECT * FROM logging")  # case sensitive
             result = self.cursor.fetchall()
             return {"status": "ok", "logging": result}
         except OperationalError as err:
@@ -109,13 +109,12 @@ class DB:
     def get_settings(self):
         logger.debug("API attempting to contact DB for get_setting...")
         try:
-            self.cursor.execute("SELECT * FROM serversettings") # case sensitive
+            self.cursor.execute("SELECT * FROM serversettings")  # case sensitive
             result = self.cursor.fetchall()
             return {"status": "ok", "setting": result}
         except OperationalError as err:
             logger.error(f"Error fetching setting: {err}")
             return {"status": "error", "message": str(err)}
-
 
     def update_setting(self, setting_id, value):
         logger.debug(f"API attempting to contact DB for update_setting with setting ID:{setting_id} - Value:{value}")
@@ -143,7 +142,6 @@ class DB:
         except OperationalError as err:
             logger.error(f"Error deleting setting: {err}")
             return {"status": "error", "message": str(err)}
-
 
     ##################
     ##   roles   ##
@@ -188,6 +186,68 @@ class DB:
 
     def delete_role(self, role_id):
         logger.debug(f"API attempting to contact DB for delete_role with role_ID:{role_id}")
+        try:
+            self.cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))
+            return {"status": "ok", "message": f"role with ID {role_id} deleted successfully"}
+        except OperationalError as err:
+            logger.error(f"Error deleting role: {err}")
+            return {"status": "error", "message": str(err)}
+
+    ##################
+    ##reaction roles##
+    ##################
+    def get_reaction_role(self, role_id):
+        logger.debug("API attempting to contact DB for get_reaction_role...")
+        try:
+            self.cursor.execute("SELECT * FROM reaction_roles where id = %s", (role_id,))
+            result = self.cursor.fetchone()
+            return {"status": "ok", "roles": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching roles: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def get_all_reaction_roles(self):
+        logger.debug("API attempting to contact DB for get_reaction_roles...")
+        try:
+            self.cursor.execute("SELECT * FROM reaction_roles")
+            result = self.cursor.fetchall()
+            return {"status": "ok", "roles": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching roles: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def get_reaction_role_category(self, category_id):
+        logger.debug("API attempting to contact DB for get_reaction_role_category...")
+        try:
+            self.cursor.execute("SELECT * FROM reaction_roles where id = %s", (category_id,))
+            result = self.cursor.fetchall()
+            return {"status": "ok", "roles": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching roles: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def update_reaction_role(self, role_id, value):
+        logger.debug(f"API attempting to contact DB for update_reaction_role with role ID:{role_id} - Value:{value}")
+        try:
+            self.cursor.execute("UPDATE roles SET value = %s WHERE id = %s", (value, role_id))
+            return {"status": "ok", "message": "role updated successfully"}
+        except OperationalError as err:
+            logger.error(f"Error updating role: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def add_reaction_role(self, name, category, value):
+        logger.debug(
+            f"API attempting to contact DB for add_reaction_role with name: {name} - category: {category} - Value: {value}")
+        try:
+            self.cursor.execute("INSERT INTO reaction_roles (name, category, value) VALUES (%s, %s, %s)",
+                                (name, category, value))
+            return {"status": "ok", "message": "New role added successfully"}
+        except OperationalError as err:
+            logger.error(f"Error adding new role: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def delete_reaction_role(self, role_id):
+        logger.debug(f"API attempting to contact DB for delete_reaction_role with role_ID: {role_id}")
         try:
             self.cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))
             return {"status": "ok", "message": f"role with ID {role_id} deleted successfully"}
