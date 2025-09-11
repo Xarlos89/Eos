@@ -34,7 +34,9 @@ async def custom_status(bot: commands.Bot, *args: Any) -> tuple[str, ...]:
     return (
         f"{total_users} creatures",
         "your deepest darkest thoughts",
-        "your keyboard clicking..."
+        "your keyboard clicking...",
+        "Rick Astley",
+        "Lag lose points"
     )
 
 
@@ -90,7 +92,7 @@ async def setup_hook() -> None:
     UtilConfig.STATUS_COOLDOWN = 120
     # In seconds for how long each status will last for.
     
-    UtilConfig.BUG_REPORT_CHANNEL = 1314481784947212288
+    UtilConfig.BUG_REPORT_CHANNEL = 1415603918485979177 # TODO: Make me configurable in the settings cog
     # Configure the channel ID to whatever you wish.
     # This attribute needs to be defined before calling
     # the `dis_load_extension` function.
