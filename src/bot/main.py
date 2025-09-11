@@ -2,7 +2,11 @@ import os
 import sys
 import logging
 import discord
+
+from disckit import UtilConfig, CogEnum
+from disckit.cogs import dis_load_extension
 from discord.ext import commands
+from typing import Any
 
 from __logger__ import setup_logger
 from core.api_helper import API
@@ -13,6 +17,25 @@ setup_logger(level=int(os.getenv("BOT_LOG_LEVEL")), stream_logs=bool(os.getenv("
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
 bot.api = API()
+
+
+async def custom_status(bot: commands.Bot, *args: Any) -> tuple[str, ...]:
+    """
+    This function returns a tuple of items which will appear on the bot's status.
+    The main functionality is handled by the disckit library.
+    """
+
+    # These are prefixed by "Listening to" from the default activity type.
+    # You can change the prefix by changing the `UtilConfig.STATUS_TYPE`
+    # to one of `discord.ActivityType` enums.
+
+    total_users = len(bot.users)
+
+    return (
+        f"{total_users} creatures",
+        "your deepest darkest thoughts",
+        "your keyboard clicking..."
+    )
 
 
 async def load_cogs(robot: commands.Bot) -> None:
@@ -60,6 +83,18 @@ async def setup_hook() -> None:
     """
     logger.debug("Executing set up hook...")
 
+    UtilConfig.STATUS_FUNC = (custom_status, ())
+    # In the second element you can supply data which in
+    # turn get passed as args in the custom_status function.
+    
+    UtilConfig.STATUS_COOLDOWN = 120
+    # In seconds for how long each status will last for.
+    
+    UtilConfig.BUG_REPORT_CHANNEL = 1314481784947212288
+    # Configure the channel ID to whatever you wish.
+    # This attribute needs to be defined before calling
+    # the `dis_load_extension` function.
+
 
 @bot.event
 async def on_ready() -> None:
@@ -68,6 +103,7 @@ async def on_ready() -> None:
     """
     logger.debug("Executing on_ready event.")
     await load_cogs(bot)
+    await dis_load_extension(bot, CogEnum.ERROR_HANDLER, CogEnum.STATUS_HANDLER)
     # synced = await bot.tree.sync()
     # logger.info(f"Synced {len(synced)} command(s).")
     logger.info(f"{bot.user.name} is online and ready to go.")
