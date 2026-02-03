@@ -1,13 +1,16 @@
 import os
 import logging
+import hashlib
 from datetime import datetime, timedelta
 
 import discord.errors
 from discord.ext import commands
-
+import discord
 
 logger = logging.getLogger(__name__)
-
+DRAIN_SECONDS_PER_TOKEN = 2500
+WARN_THRESHOLD = 2
+QUARANTINE_THRESHOLD = 3
 
 def embed_spammer_warn(channel1, channel2):
     """
@@ -23,7 +26,7 @@ def embed_spammer_warn(channel1, channel2):
     embed.add_field(name="What happened?", value=report, inline=True)
     embed.add_field(
         name="What should you do?"
-        , value="Don't panic, and be patent."
+        , value="Don't panic, and be patient."
                 " Someone will answer you as soon as they can."
         , inline=True)
     embed.set_footer(text="In the meantime... Maybe make sure your question contains your code, as well as the output.")
@@ -86,14 +89,34 @@ class ModerationSpamMessages(commands.Cog):
             return
 
         author_id = message.author.id
-        content = message.content if message.content else message.attachments[0].filename
+        content = message.content or ""
+        if message.attachments:
+            attachment = message.attachments[0]
+            content += hashlib.sha256(f"|{attachment.filename}|{attachment.size}|{attachment.content_type}".encode()).hexdigest()
 
+        now = datetime.now().astimezone()
         record = self.records.get(author_id, {
             "last_message": None,
-            "occurrence": 0,
+            "occurrence": 0.0,
+            "last_update": now,
+            "stage": 0,
             "messages": []
         })
 
+        # Drain Leaky Bucket
+        elapsed = (now - record["last_update"]).total_seconds()
+        record["occurrence"] = max(0.0, record["occurrence"] - (elapsed / DRAIN_SECONDS_PER_TOKEN))
+        record["last_update"] = now
+
+        if record["occurrence"] < WARN_THRESHOLD:
+            record["stage"] = 0
+
+        if record["occurrence"] <= 0:
+            record["last_message"] = None
+            record["messages"] = []
+            record["stage"] = 0
+
+        # Check if the current message is the same as the last message
         if record["last_message"] == content:
             record["occurrence"] += 1
             logger.debug("%s has sent a double message in %s", message.author.name, message.channel.name)
@@ -110,7 +133,9 @@ class ModerationSpamMessages(commands.Cog):
         else:
             self.records[author_id] = {
                 "last_message": content,
-                "occurrence": 1,
+                "occurrence": 1.0,
+                "last_update": now,
+                "stage": 0,
                 "messages": [{
                     "message_id": message.id,
                     "channel_id": message.channel.id,
@@ -127,13 +152,15 @@ class ModerationSpamMessages(commands.Cog):
             message (discord.Message): The message object triggering this action.
             record (dict): The user's message record containing repeated messages.
         """
-        if record["occurrence"] == 2:
-            logger.info(f"{message.author.name} hit the firewall (2 messages). Message: {message.content}")
-            await self.warn_user(message, record)
-
-        elif record["occurrence"] == 3:
-            logger.info(f"{message.author.name} triggered the firewall (3 messages). Message: {message.content}")
+        if record["occurrence"] >= QUARANTINE_THRESHOLD and record["stage"] < 3:
+            record["stage"] = 3
+            logger.info(f"{message.author.name} triggered the firewall (bucket >= 3). Message: {message.content}")
             await self.quarantine_user(message, record)
+
+        elif record["occurrence"] >= WARN_THRESHOLD and record["stage"] < 2:
+            record["stage"] = 2
+            logger.info(f"{message.author.name} hit the firewall (bucket >= 2). Message: {message.content}")
+            await self.warn_user(message, record)
 
     async def warn_user(self, message, record):
         """
@@ -170,36 +197,36 @@ class ModerationSpamMessages(commands.Cog):
             message (discord.Message): The triggering message object.
             record (dict): The user's message record.
         """
-        naughty_role = await message.guild.fetch_role(self.bot.api.get_one_role("7")[0]["roles"][2])
-        verified_role = await message.guild.fetch_role(self.bot.api.get_one_role("6")[0]["roles"][2])
+        author_id = message.author.id
+        try:
+            naughty_role = await message.guild.fetch_role(self.bot.api.get_one_role("7")[0]["roles"][2])
+            verified_role = await message.guild.fetch_role(self.bot.api.get_one_role("6")[0]["roles"][2])
 
-        quarantine_channel = self.bot.api.get_one_setting("2")[0]["setting"][2]
-        quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
-        thirty_seconds = datetime.now().astimezone() + timedelta(seconds=30)
+            quarantine_channel = self.bot.api.get_one_setting("2")[0]["setting"][2]
+            quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
+            thirty_seconds = datetime.now().astimezone() + timedelta(seconds=30)
 
-        await message.author.timeout(thirty_seconds, reason="Sending the same message multiple times.")
-        await message.author.remove_roles(verified_role)
-        await message.author.add_roles(naughty_role)
+            await message.author.timeout(thirty_seconds, reason="Sending the same message multiple times.")
+            await message.author.remove_roles(verified_role)
+            await message.author.add_roles(naughty_role)
 
-        await quarantine_channel.send(
-            embed=embed_spammer(message.author, message.content, record["messages"][-1]["file_url"])
-        )
+            await quarantine_channel.send(
+                embed=embed_spammer(message.author, message.content, record["messages"][-1]["file_url"])
+            )
 
-        for msg in record["messages"]:
-            channel = await self.bot.fetch_channel(msg["channel_id"])
-            msg_to_delete = await channel.fetch_message(msg["message_id"])
-            await msg_to_delete.delete()
+            for msg in record["messages"]:
+                channel = await self.bot.fetch_channel(msg["channel_id"])
+                msg_to_delete = await channel.fetch_message(msg["message_id"])
+                await msg_to_delete.delete()
 
-        self.records[message.author.id] = {
-            "last_message": message.content if message.content else message.attachments[0].filename,
-            "occurrence": 1,
-            "messages": [{
-                "message_id": message.id,
-                "channel_id": message.channel.id,
-                "file_name": message.attachments[0].filename if not message.content else None,
-                "file_url": message.attachments[0].url if not message.content else None
-            }]
-        }
+        finally:
+            self.records[author_id] = {
+                "last_message": None,
+                "occurrence": 0.0,
+                "last_update": datetime.now().astimezone(),
+                "stage": 0,
+                "messages": []
+            }
 
 
 
