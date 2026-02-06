@@ -1,3 +1,4 @@
+import math
 import os
 import logging
 import hashlib
@@ -7,10 +8,10 @@ import discord.errors
 from discord.ext import commands
 import discord
 
-logger = logging.getLogger(__name__)
-DRAIN_SECONDS_PER_TOKEN = 2500
-WARN_THRESHOLD = 2
-QUARANTINE_THRESHOLD = 3
+logger: logging.Logger = logging.getLogger(__name__)
+DRAIN_SECONDS_PER_TOKEN: int = 600  # 1 token evaporated every 10 minutes
+WARN_THRESHOLD: int = 3
+QUARANTINE_THRESHOLD: int = 4
 
 def embed_spammer_warn(channel1, channel2):
     """
@@ -18,7 +19,7 @@ def embed_spammer_warn(channel1, channel2):
     """
     embed = discord.Embed(
         title='Warning'
-        , description='When you send the same message **three times**, you get the quarantine.\n'
+        , description=f'When you send the same message **{QUARANTINE_THRESHOLD} times**, you get the quarantine.\n'
         , color=discord.Color.red()
         , timestamp=datetime.utcnow()
     )
@@ -38,7 +39,7 @@ def embed_spammer(spammer, message_to_report=None, file_url=None):
     """
     embed = discord.Embed(
         title='Firewall has been triggered'
-        , description=f'When you send the same message three times, {spammer.mention}, you get the quarantine.'
+        , description=f'When you send the same message **{QUARANTINE_THRESHOLD} times**, {spammer.mention}, you get the quarantine.'
                       f' Wait for the staff to come let you out.'
         , color=discord.Color.red()
         , timestamp=datetime.utcnow()
@@ -79,7 +80,7 @@ class ModerationSpamMessages(commands.Cog):
             message (discord.Message): The message object representing the user's message.
         """
         if message.author.bot or isinstance(message.channel, discord.DMChannel):
-            # don't track bot, or DM's
+            # Don't track bot, or DM's
             return
         if message.author.guild_permissions.ban_members:
             # Don't track the staff man.
@@ -108,7 +109,7 @@ class ModerationSpamMessages(commands.Cog):
         record["occurrence"] = max(0.0, record["occurrence"] - (elapsed / DRAIN_SECONDS_PER_TOKEN))
         record["last_update"] = now
 
-        if record["occurrence"] < WARN_THRESHOLD:
+        if record["occurrence"] <= WARN_THRESHOLD:
             record["stage"] = 0
 
         if record["occurrence"] <= 0:
@@ -152,12 +153,15 @@ class ModerationSpamMessages(commands.Cog):
             message (discord.Message): The message object triggering this action.
             record (dict): The user's message record containing repeated messages.
         """
-        if record["occurrence"] >= QUARANTINE_THRESHOLD and record["stage"] < 3:
+
+        # Number of times the user sent the same message
+        current_count: int = math.ceil(record["occurrence"])
+        if current_count >= QUARANTINE_THRESHOLD and record["stage"] < 3:
             record["stage"] = 3
             logger.info(f"{message.author.name} triggered the firewall (bucket >= 3). Message: {message.content}")
             await self.quarantine_user(message, record)
 
-        elif record["occurrence"] >= WARN_THRESHOLD and record["stage"] < 2:
+        elif current_count >= WARN_THRESHOLD and record["stage"] < 2:
             record["stage"] = 2
             logger.info(f"{message.author.name} hit the firewall (bucket >= 2). Message: {message.content}")
             await self.warn_user(message, record)
