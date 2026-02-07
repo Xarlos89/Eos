@@ -1,6 +1,5 @@
 import hashlib
 import logging
-import math
 import os
 from datetime import datetime, timedelta
 
@@ -9,14 +8,14 @@ import discord.errors
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
-DRAIN_SECONDS_PER_TOKEN = 600  # 1 token evaporated every 10 minutes
+DRAIN_SECONDS_PER_TOKEN = 60 * 20  # 1 token evaporated every 20 minutes
 WARN_THRESHOLD = 3
 QUARANTINE_THRESHOLD = 4
 
 
 def embed_spammer_warn(channel1, channel2):
     """
-    Embedding warn for detected spam messages.
+    Embedding regular warn for detected spam messages.
     """
     embed = discord.Embed(
         title="Warning",
@@ -38,9 +37,9 @@ def embed_spammer_warn(channel1, channel2):
     return embed
 
 
-def embed_spammer(spammer, message_to_report=None, file_url=None):
+def embed_spammer_quarantine(spammer, message_to_report=None, file_url=None):
     """
-    Embedding for detected spam messages.
+    Embedding quarantine warn for detected spam messages.
     """
     embed = discord.Embed(
         title="Firewall has been triggered",
@@ -183,19 +182,23 @@ class ModerationSpamMessages(commands.Cog):
             record (dict): The user's message record containing repeated messages.
         """
 
-        # Number of times the user sent the same message
-        current_count = math.ceil(record["occurrence"])
-        if current_count >= QUARANTINE_THRESHOLD and record["stage"] < 3:
+        # Number of times user sent the same message
+        count = record["occurrence"]
+        error_rate = 0.5
+
+        # Quarantine eligible user
+        if count >= (QUARANTINE_THRESHOLD - error_rate) and record["stage"] < 3:
             record["stage"] = 3
             logger.info(
-                f"{message.author.name} triggered the firewall (bucket >= {QUARANTINE_THRESHOLD}). Message: {message.content}"
+                f"{message.author.name} was quarantined (bucket >= {QUARANTINE_THRESHOLD}). Message: {message.content}"
             )
             await self.quarantine_user(message, record)
 
-        elif current_count >= WARN_THRESHOLD and record["stage"] < 2:
+        # Warn eligible user
+        elif count >= (WARN_THRESHOLD - error_rate) and record["stage"] < 2:
             record["stage"] = 2
             logger.info(
-                f"{message.author.name} hit the firewall (bucket >= {WARN_THRESHOLD}). Message: {message.content}"
+                f"{message.author.name} was timed out (bucket >= {WARN_THRESHOLD}). Message: {message.content}"
             )
             await self.warn_user(message, record)
 
@@ -234,7 +237,6 @@ class ModerationSpamMessages(commands.Cog):
             await message.author.timeout(
                 fifteen_seconds, reason="Sending the same message multiple times."
             )
-            logger.info("%s was timed out (2/3 messages)", message.author.name)
 
     async def quarantine_user(self, message, record):
         """
@@ -264,7 +266,7 @@ class ModerationSpamMessages(commands.Cog):
             await message.author.add_roles(naughty_role)
 
             await quarantine_channel.send(
-                embed=embed_spammer(
+                embed=embed_spammer_quarantine(
                     message.author, message.content, record["messages"][-1]["file_url"]
                 )
             )
