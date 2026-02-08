@@ -16,7 +16,7 @@ If you already have postgres installed on your system then you may have conflict
 1. Change `POSTGRES_PORT` and `DATABASE_URL` in `.env`
 2. Change `ports: -5432:5432` under `postgres` in `docker-compose.yml`
 
-Then rebuild without using cahced images by using following command
+Then rebuild without using cached images by using following command
 ```
 docker compose down --volumes && docker compose build --no-cache && docker compose up -d
 ```
