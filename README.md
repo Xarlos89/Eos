@@ -12,13 +12,9 @@ Then:
 3. `docker compose up -d`
 4. The bot should come online. You can use the `>hc` command to run a healthcheck on the system.
 
-If you already have postgres installed on your system then you may have conflicting ports, in that case change the ports to a free port, usually `5433`:
-1. Change `POSTGRES_PORT` and `DATABASE_URL` in `.env`
-2. Change `ports: -5432:5432` under `postgres` in `docker-compose.yml`
-
-Then rebuild without using cached images by using following command
+If you already have postgres installed on your system then you may have conflicting ports, in that case change the `POSTGRES_PORT` to a free port in the `.env`, usually `5433`. Then rebuild by using following command:
 ```
-docker compose down --volumes && docker compose build --no-cache && docker compose up -d
+docker compose down && docker compose build && docker compose up -d
 ```
 ---
 # Infrastructure
