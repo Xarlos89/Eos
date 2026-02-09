@@ -14,7 +14,7 @@ Then:
 
 If you already have postgres installed on your system then you may have conflicting ports, in that case change the `POSTGRES_PORT` to a free port in the `.env`, usually `5433`. Then rebuild by using following command:
 ```
-docker compose down && docker compose build && docker compose up -d
+docker compose up -d --build
 ```
 ---
 # Infrastructure
@@ -38,7 +38,7 @@ A `.postman` directory is included, which contains a postman collection if you f
 
 ### Discord.py Bot
 The Bot is running using Discord.py, and cogged commands.
-- While not reccomended, you may also run the bot manually for debugging using `python main.py` if your Token is in the .env, however many features of the bot will not work.
+- While not recommended, you may also run the bot manually for debugging using `python main.py` if your Token is in the .env, however many features of the bot will not work.
 - TODO: make the bot start independent of other infrastructure.
 cogs are located at `/src/bot/cogs/*/`, and are seperated by their purpose.
 

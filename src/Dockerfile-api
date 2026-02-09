@@ -12,5 +12,5 @@ RUN apt update && \
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r /api/requirements-api.txt
 
 
-EXPOSE 5000
-CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5000"]
+EXPOSE ${FLASK_RUN_PORT}
+CMD flask run --host ${FLASK_RUN_HOST} --port ${FLASK_RUN_PORT}
