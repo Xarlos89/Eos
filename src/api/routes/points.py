@@ -24,6 +24,21 @@ def get_points(user_id):
         logger.error(f"Error fetching points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
+def get_monthly_points(user_id):
+    """
+    Retrieve monthly points of the user.
+    """
+    try:
+        result = eos.db.get_monthly_points_for_user(user_id)
+        if result["status"] == "ok":
+            return jsonify(result), 200
+        else:
+            logger.warning(f"Error getting monthly points for the user: {result}")
+            return jsonify(result), 400
+    except Exception as err:
+        logger.error(f"Error fetching points: {err}")
+        return jsonify({"status": "error", "message": str(err)}), 400
+
 @points.route('/points/<user_id>/update', methods=['POST'])
 def update_points(user_id):
     """
