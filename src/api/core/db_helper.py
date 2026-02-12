@@ -254,6 +254,18 @@ class DB:
             logger.error(f"Error fetching points: {err}")
             return {"status": "error", "message": str(err)}
 
+    def get_monthly_points_for_user(self, user_id):
+        try:
+            self.cursor.execute("SELECT montly_points FROM users WHERE discord_id = %s", (user_id))
+            result = self.cursor.fetchone()
+            if result is not None:
+                return {"status": "ok", "monthly_points": result}
+            else:
+                return {"status": "error", "monthly_points": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching monthly_points: {err}")
+            return {"status": "error", "message": str(err)}
+
     def update_points(self, user_id, value):
         try:
             self.cursor.execute(
