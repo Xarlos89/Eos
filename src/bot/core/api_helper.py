@@ -194,6 +194,10 @@ class API:
             f"{self.api}/points/{user_id}", timeout=REQUEST_TIMEOUT
         ).json()
 
+    def get_monthly_points(self, user_id):
+        logger.debug(f"Bot called the get_monthly_points endpoint. User Id: {user_id}")
+        return requests.get(f"{self.api}/points/monthly/{user_id}").json()
+
     def update_points(self, user_id, amount):
         logger.debug(
             f"Bot called the update_points endpoint. User ID: {user_id} - Points: {amount}"
