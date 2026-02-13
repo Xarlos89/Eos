@@ -24,6 +24,7 @@ def get_points(user_id):
         logger.error(f"Error fetching points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
+@points.route('/points/monthly/<user_id>', methods=['GET'])
 def get_monthly_points(user_id):
     """
     Retrieve monthly points of the user.
