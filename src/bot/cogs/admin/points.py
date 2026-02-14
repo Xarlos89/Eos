@@ -153,6 +153,7 @@ class Points(commands.Cog):
             f"Updating {len(msg)} points for {message.author.display_name} for sending a message."
         )
         self.bot.api.update_points(message.author.id, int(len(msg)))
+        self.bot.api.update_monthly_points(message.author.id, int(len(msg)))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
