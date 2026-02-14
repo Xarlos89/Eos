@@ -136,6 +136,7 @@ class Points(commands.Cog):
         msg = message.content.split()
         logger.debug(f"Updating {len(msg)} points for {message.author.display_name} for sending a message.")
         self.bot.api.update_points(message.author.id, int(len(msg)))
+        self.bot.api.update_monthly_points(message.author.id, int(len(msg)))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -148,6 +149,7 @@ class Points(commands.Cog):
         msg = message.content.split()
         logger.debug(f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message.")
         self.bot.api.update_points(message.author.id, int(len(msg))*-1)
+        self.bot.api.update_monthly_points(message.author.id, int(len(msg))*-1)
 
     @commands.Cog.listener()
     async def on_member_join(self, member) -> None:

@@ -51,6 +51,7 @@ VALUES
     ('Staff', '0'),
     ('Privileged', '0'),
     ('Ping', '0'),
+    ('Yapper', '0'),
     ('Verified', '0'),
     ('Quarantine', '0');
 
