@@ -3,6 +3,8 @@ Uses PistonAPI to run code in the server.
 """
 
 import logging
+import os
+from sys import api_version
 
 import discord
 from discord import Message
@@ -15,7 +17,7 @@ logger = logging.getLogger(__name__)
 TRUNCATED_MESSAGE: str = "\n```\n```\nOutput too long. Message truncated.\n```"
 TRUNCATED_MESSAGE_LENGTH: int = len(TRUNCATED_MESSAGE)
 MAX_NEW_LINES: int = 6
-MAX_CHARACTERS: int = 1000 
+MAX_CHARACTERS: int = 1000
 # Discord character limit is 4096, but to prevent spamming, we reduce it to 1K
 
 
@@ -24,7 +26,13 @@ class UtilityRunCode(commands.Cog):
 
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.piston = PistonClient()
+        PISTON_API_TOKEN = os.environ.get("PISTON_API_TOKEN")
+        if not PISTON_API_TOKEN:
+            raise ValueError("PISTON_API_TOKEN environment variable not set")
+
+        self.piston = PistonClient(
+            api_key=f"{PISTON_API_TOKEN}",
+        )
 
     def get_embed(
         self, title: str, output: str, is_error: bool, is_code: bool = True
