@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 TRUNCATED_MESSAGE: str = "\n```\n```\nOutput too long. Message truncated.\n```"
 TRUNCATED_MESSAGE_LENGTH: int = len(TRUNCATED_MESSAGE)
-MAX_NEW_LINES: int = 6
+MAX_NEW_LINES: int = 10
 MAX_CHARACTERS: int = 1000
 # Discord character limit is 4096, but to prevent spamming, we reduce it to 1K
 
