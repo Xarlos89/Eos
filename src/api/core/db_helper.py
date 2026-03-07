@@ -269,7 +269,7 @@ class DB:
     def update_points(self, user_id, value):
         try:
             self.cursor.execute(
-                "UPDATE users SET points = points + %s WHERE discord_id = %s",
+                "UPDATE users SET points = points + %s, monthly_points = monthly_points + %s WHERE discord_id = %s",
                 (value, user_id),
             )
             self.conn.commit()
@@ -323,6 +323,16 @@ class DB:
             result = self.cursor.fetchall()
             return {"status": "ok", "message": result}
         except OperationalError as err:
-            logger.error(f"Error deleting user: {err}")
+            logger.error(f"Error getting top10: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def get_monthly_top_point_earner(self):
+        try:
+            self.cursor.execute("SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 1")
+            result = self.cursor.fetchone()
+            return {"status": "ok", "message": result}
+        except OperationalError as err:
+            logger.error(f"Error getting monthly top: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
