@@ -17,7 +17,8 @@ VALUES
     ('Verification Channel', '0'),
     ('Quarantine Channel', '0'),
     ('Staff Channel', '0'),
-    ('Bot Spam Channel', '0');
+    ('Bot Spam Channel', '0'),
+    ('Server Announcement Channel', '0');
 
 
 -- Create logging table
@@ -51,9 +52,9 @@ VALUES
     ('Staff', '0'),
     ('Privileged', '0'),
     ('Ping', '0'),
-    ('Yapper', '0'),
     ('Verified', '0'),
-    ('Quarantine', '0');
+    ('Quarantine', '0'),
+    ('Yapper', '0');
 
 
 -- Create users table

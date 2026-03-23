@@ -14,7 +14,7 @@ TIME_HOUR = "0"
 TIME_MINUTE = "0"
 
 
-def make_a_new_yapper():
+async def make_a_new_yapper():
     pass
 
 scheduler = BackgroundScheduler()
