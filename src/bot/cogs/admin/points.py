@@ -78,6 +78,24 @@ class Points(commands.Cog):
             await ctx.reply("Oopsie. Unexpected error. Check the logs.")
             logger.critical(points)
 
+    @commands.hybrid_command()
+    async def get_monthly_points(self, ctx: commands.Context, user: discord.Member) -> None:
+        """
+        Gets the monthly points of a specific member. Takes a Mention, returns an embed.
+        """
+        monthly_points = self.bot.api.get_monthly_points(user.id)
+        if monthly_points['status'] == 'ok':
+            await ctx.reply(
+                embed=embed_info(
+                    ""
+                    , f"{user.display_name} has {monthly_points['points'][0]} points"
+                    , discord.Color.lighter_gray()
+                )
+            )
+        else:
+            await ctx.reply("Oopsie. Unexpected error. Check the logs.")
+            logger.critical(monthly_points)
+
     @is_admin()
     @is_master_guild()
     @commands.hybrid_command()
@@ -125,6 +143,32 @@ class Points(commands.Cog):
             await ctx.reply(f"Oopsie. Unexpected error. Check the logs.")
             logger.critical(top10)
 
+    @commands.hybrid_command()
+    async def top_10_monthly(self, ctx: commands.Context) -> None:
+        """
+        Gets the top 10 users in the DB with the most points this month.
+        Takes no args, returns an embed.
+        """
+        monthly_top10 = self.bot.api.monthly_top_10()
+        if monthly_top10['status'] == 'ok':
+
+            data = []
+            for user in monthly_top10['message']:
+                user_obj = self.bot.get_user(int(user[0]))
+                data.append((user_obj.display_name, user[1]))
+
+            await ctx.reply(
+                embed=embed_info(
+                    "Top 10 Point Earners"
+                    , "\n".join([f"{index + 1}. {user_name} - {points}"
+                              for index, (user_name, points) in enumerate(data)])
+                    , discord.Color.yellow()
+                )
+            )
+        else:
+            await ctx.reply(f"Oopsie. Unexpected error. Check the logs.")
+            logger.critical(monthly_top10)
+
     @commands.Cog.listener()
     async def on_message(self, message) -> None:
         """
@@ -136,7 +180,6 @@ class Points(commands.Cog):
         msg = message.content.split()
         logger.debug(f"Updating {len(msg)} points for {message.author.display_name} for sending a message.")
         self.bot.api.update_points(message.author.id, int(len(msg)))
-        self.bot.api.update_monthly_points(message.author.id, int(len(msg)))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -149,7 +192,6 @@ class Points(commands.Cog):
         msg = message.content.split()
         logger.debug(f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message.")
         self.bot.api.update_points(message.author.id, int(len(msg))*-1)
-        self.bot.api.update_monthly_points(message.author.id, int(len(msg))*-1)
 
     @commands.Cog.listener()
     async def on_member_join(self, member) -> None:

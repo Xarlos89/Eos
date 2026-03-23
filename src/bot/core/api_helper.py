@@ -166,3 +166,11 @@ class API:
     def top_10(self):
         logger.debug("Bot called the top_10 endpoint.")
         return requests.get(f"{self.api}/points/top10").json()
+
+    def monthly_top_point_earner(self):
+        logger.debug("Bot called monthly top point earner.")
+        return requests.get(f"{self.api}/points/monthly/top").json()
+
+    def monthly_top_10(self):
+        logger.debug("Bot called the monthly top_10 endpoint.")
+        return requests.get(f"{self.api}/points/monthly/top10").json()

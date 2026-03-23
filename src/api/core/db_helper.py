@@ -212,7 +212,7 @@ class DB:
 
     def get_monthly_points_for_user(self, user_id):
         try:
-            self.cursor.execute("SELECT montly_points FROM users WHERE discord_id = %s", (user_id))
+            self.cursor.execute("SELECT monthly_points FROM users WHERE discord_id = %s", (user_id))
             result = self.cursor.fetchone()
             if result is not None:
                 return {"status": "ok", "monthly_points": result}
@@ -224,7 +224,7 @@ class DB:
 
     def update_points(self, user_id, value):
         try:
-            self.cursor.execute("UPDATE users SET points = points + %s, monthly_points = monthly_points + %s WHERE discord_id = %s", (value, user_id))
+            self.cursor.execute("UPDATE users SET points = points + %s, monthly_points = monthly_points + %s WHERE discord_id = %s", (value, value, user_id))
             self.conn.commit()
             return {"status": "ok", "message": "points updated successfully"}
         except OperationalError as err:
@@ -235,7 +235,7 @@ class DB:
     def add_user_to_points(self, user_id):
         try:
             self.cursor.execute(
-                "INSERT INTO users (discord_id, points) VALUES (%s, 0) ON CONFLICT (discord_id) DO NOTHING;"
+                "INSERT INTO users (discord_id, points, monthly_points) VALUES (%s, 0, 0) ON CONFLICT (discord_id) DO NOTHING;"
                 , (user_id,)
             )
             # self.conn.commit()
@@ -272,6 +272,16 @@ class DB:
     def get_monthly_top_point_earner(self):
         try:
             self.cursor.execute("SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 1")
+            result = self.cursor.fetchone()
+            return {"status": "ok", "message": result}
+        except OperationalError as err:
+            logger.error(f"Error getting monthly top: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def get_monthly_top_10(self):
+        try:
+            self.cursor.execute("SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 10")
             result = self.cursor.fetchone()
             return {"status": "ok", "message": result}
         except OperationalError as err:
