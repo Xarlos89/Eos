@@ -37,7 +37,7 @@ def get_monthly_points(user_id):
             logger.warning(f"Error getting monthly points for the user: {result}")
             return jsonify(result), 400
     except Exception as err:
-        logger.error(f"Error fetching points: {err}")
+        logger.error(f"Error fetching monthly points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
 @points.route('/points/<user_id>/update', methods=['POST'])

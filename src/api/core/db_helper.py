@@ -212,7 +212,7 @@ class DB:
 
     def get_monthly_points_for_user(self, user_id):
         try:
-            self.cursor.execute("SELECT monthly_points FROM users WHERE discord_id = %s", (user_id))
+            self.cursor.execute("SELECT monthly_points FROM users WHERE discord_id = %s", (user_id,))
             result = self.cursor.fetchone()
             if result is not None:
                 return {"status": "ok", "monthly_points": result}
@@ -282,7 +282,7 @@ class DB:
     def get_monthly_top_10(self):
         try:
             self.cursor.execute("SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 10")
-            result = self.cursor.fetchone()
+            result = self.cursor.fetchall()
             return {"status": "ok", "message": result}
         except OperationalError as err:
             logger.error(f"Error getting monthly top: {err}")

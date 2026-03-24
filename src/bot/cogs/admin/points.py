@@ -88,7 +88,7 @@ class Points(commands.Cog):
             await ctx.reply(
                 embed=embed_info(
                     ""
-                    , f"{user.display_name} has {monthly_points['points'][0]} points"
+                    , f"{user.display_name} has {monthly_points['monthly_points'][0]} points"
                     , discord.Color.lighter_gray()
                 )
             )
@@ -159,7 +159,7 @@ class Points(commands.Cog):
 
             await ctx.reply(
                 embed=embed_info(
-                    "Top 10 Point Earners"
+                    "Top 10 Point Earners This Month"
                     , "\n".join([f"{index + 1}. {user_name} - {points}"
                               for index, (user_name, points) in enumerate(data)])
                     , discord.Color.yellow()
