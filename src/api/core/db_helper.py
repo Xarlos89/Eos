@@ -288,3 +288,13 @@ class DB:
             logger.error(f"Error getting monthly top: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
+
+    def reset_monthly_points(self):
+        try:
+            self.cursor.execute("UPDATE users SET monthly_points = 0")
+            self.conn.commit()
+            return {"status": "ok", "message": "monthly_points successfully set to 0"}
+        except OperationalError as err:
+            logger.error(f"Error resetting monthly_points: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}

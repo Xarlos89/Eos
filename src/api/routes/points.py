@@ -124,3 +124,15 @@ def monthly_top10():
     except Exception as err:
         logger.error(f"Error getting monthly top 10: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
+
+@points.route('/points/monthly/reset', methods=['GET'])
+def reset_monthly_points();
+    """
+    Resets monthly points of all members
+    """
+    try:
+        result = eos.db.reset_monthly_points()
+        return jsonify(result), 200
+    except Exception as err:
+        logger.error(f"Error resetting monthly points: {err}")
+        return jsonify({"status": "error", "message": str(err)}), 400
