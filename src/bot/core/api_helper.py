@@ -224,3 +224,9 @@ class API:
         return requests.get(
             f"{self.api}/points/monthly/top10", timeout=REQUEST_TIMEOUT
         ).json()
+
+    def reset_monthly_points(self):
+        logger.debug("Bot called the reset monthly points endpoint.")
+        return requests.get(
+            f"{self.api}/points/monthly/reset", timeout=REQUEST_TIMEOUT
+        ).json()
