@@ -153,7 +153,7 @@ Please select the server roles you'd like to configure for the positions availab
 5. Ping - This role is for server notifications and pingable events. 
 6. Verified - This role is for verification of users. Allows access to the server. (DANGEROUS!)
 7. Quarantine - This role is for quarantining user until moderation action is taken. 
-    
+8. Yapper - This role is for the most active monthly user in the server.
 """
             )
             for title, view in self.main_menu[1]:

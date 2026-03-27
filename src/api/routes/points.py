@@ -126,7 +126,7 @@ def monthly_top10():
         return jsonify({"status": "error", "message": str(err)}), 400
 
 @points.route('/points/monthly/reset', methods=['GET'])
-def reset_monthly_points();
+def reset_monthly_points():
     """
     Resets monthly points of all members
     """
