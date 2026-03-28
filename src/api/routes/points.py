@@ -116,7 +116,7 @@ def top_monthly():
 @points.route('/points/monthly/top10', methods=['GET'])
 def monthly_top10():
     """
-    Grabs the top point earner of the month
+    Grabs the top 10 point earners of the month
     """
     try:
         result = eos.db.get_monthly_top_10()
