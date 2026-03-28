@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 # NOTE: Currently this time is not customizable through /update_settings
-DATE_AND_TIME = datetime.time(hour=17, minute=0, second=0, tzinfo=datetime.timezone.utc)
+TIME = datetime.time(hour=0, minute=0, second=0, tzinfo=datetime.timezone.utc)
 
 
 class MonthlyYapathon(commands.Cog):
@@ -29,28 +29,27 @@ class MonthlyYapathon(commands.Cog):
     def cog_unload(self):
         self.appoint_monthly_yapper.cancel()
 
-    @tasks.loop(time=DATE_AND_TIME)
+    @tasks.loop(time=TIME)
     async def appoint_monthly_yapper(self):
         """
         Function that is called to appoint monthly yapper.
         """
-        logger.info("hmmm.")
-        if datetime.datetime.now().date == 27:
+        if datetime.datetime.now(datetime.timezone.utc).day == 1:
             logger.info(f"Bot running appoint_monthly_yapper.")
-            monthly_top_point_earner = self.bot.monthly_top_point_earner()
+            monthly_top_point_earner = self.bot.api.monthly_top_point_earner()
 
             if monthly_top_point_earner["status"] == "ok":
                 try:
-                    guild = bot.get_guild(os.get_env("MASTER_GUILD"))
+                    guild = self.bot.get_guild(int(os.getenv("MASTER_GUILD")))
 
-                    new_yapper = get(guild.members, id=int(monthly_top_point_earner["message"][1]))
+                    new_yapper = get(guild.members, id=int(monthly_top_point_earner["message"][0]))
                     yapper_role = get(guild.roles, id=int(self.yapper_role_id))
                     announcement_channel = get(guild.channels, id=int(self.announcement_channel_id))
 
                     await new_yapper.add_roles(yapper_role)
-                    await announcement_channel.send(f"The winner of last month's Monthly Yappaton is {new_yapper.mention}. Keep yapping and you might be the next one.")
+                    await announcement_channel.send(f"The winner of last month's Monthly Yapathon is {new_yapper.mention}. Keep yapping and you might be the next yapper.")
 
-                    self.bot.reset_monthly_points();
+                    self.bot.api.reset_monthly_points();
                     logger.info(f"Successfully appointed new yapper.")
                 except Exception as err:
                     logger.error(f"Error appointing new monthly yapper: {err}")
