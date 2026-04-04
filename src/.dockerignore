@@ -1,3 +1,28 @@
+.env
 .env.EXAMPLE
 .gitignore
 .dockerignore
+
+# Data directory
+db/postgres-data/
+
+# Python cache
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+.venv/
+venv/
+env/
+
+# Dev/tooling files
+.git/
+.idea/
+.vscode/
+.postman/
+.claude/
+*.md
+*.log
+
+# Docker files themselves
+Dockerfile*
+docker-compose*.yml

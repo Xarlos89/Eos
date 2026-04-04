@@ -1,4 +1,4 @@
-aiohttp
+aiohttp==3.11.18
 aiosignal==1.3.2
 attrs==25.3.0
 blinker==1.9.0
@@ -11,7 +11,7 @@ idna==3.10
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.2
-multidict>=6.0.4
+multidict==6.7.1
 ultra-piston==1.0.0
 requests==2.32.3
 urllib3==2.3.0
