@@ -177,4 +177,4 @@ class API:
 
     def reset_monthly_points(self):
         logger.debug("Bot called the reset monthly points endpoint.")
-        return requests.get(f"{self.api}/points/monthly/reset").json()
+        return requests.delete(f"{self.api}/points/monthly/reset").json()
