@@ -9,6 +9,7 @@ from routes.logging import logs
 from routes.points import points
 from routes.roles import role
 from routes.settings import settings
+from routes.parameters import parameters
 from werkzeug.exceptions import HTTPException
 
 logger = logging.getLogger(__name__)
