@@ -54,7 +54,7 @@ class MonthlyYapathon(commands.Cog):
                 except Exception as err:
                     logger.error(f"Error appointing new monthly yapper: {err}")
             else:
-                logger.error(f"Error appointing new monthly yapper: {monthly_top_point_earner["message"]}")
+                logger.error(f"Error appointing new monthly yapper: {monthly_top_point_earner['message']}")
 
     @appoint_monthly_yapper.before_loop
     async def wait_until_bot_ready(self):
