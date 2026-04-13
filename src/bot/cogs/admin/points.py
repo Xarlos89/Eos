@@ -129,6 +129,9 @@ class Points(commands.Cog):
             data = []
             for user in top10['message']:
                 user_obj = self.bot.get_user(int(user[0]))
+                if user_obj == None:
+                    continue
+
                 data.append((user_obj.display_name, user[1]))
 
             await ctx.reply(
@@ -155,6 +158,9 @@ class Points(commands.Cog):
             data = []
             for user in monthly_top10['message']:
                 user_obj = self.bot.get_user(int(user[0]))
+                if user_obj == None:
+                    continue
+
                 data.append((user_obj.display_name, user[1]))
 
             await ctx.reply(
