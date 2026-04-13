@@ -298,3 +298,26 @@ class DB:
             logger.error(f"Error resetting monthly_points: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
+
+    ################
+    ## parameters ##
+    ################
+    def get_parameter(self, parameter_name):
+        try:
+            self.cursor.execute("SELECT parameter_value FROM parameters WHERE parameter_name = %s", (parameter_name,))
+            result = self.cursor.fetchone()
+            return {"status": "ok", "message": result}
+        except OperationalError as err:
+            logger.error(f"Error getting parameter: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+
+    def set_parameter(self, parameter_name, parameter_value):
+        try:
+            self.cursor.execute("UPDATE parameters SET parameter_value = %s WHERE parameter_name = %s", (parameter_value, parameter_name))
+            self.conn.commit()
+            return {"status": "ok", "message": "parameter set successfully"}
+        except OperationalError as err:
+            logger.error(f"Error setting parameter : {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}

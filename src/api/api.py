@@ -28,6 +28,7 @@ app.register_blueprint(logs)
 app.register_blueprint(settings)
 app.register_blueprint(points)
 app.register_blueprint(role)
+app.register_blueprint(parameters)
 
 # Error handlers
 @app.errorhandler(Exception)

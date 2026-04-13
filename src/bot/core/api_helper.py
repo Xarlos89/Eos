@@ -178,3 +178,15 @@ class API:
     def reset_monthly_points(self):
         logger.debug("Bot called the reset monthly points endpoint.")
         return requests.delete(f"{self.api}/points/monthly/reset").json()
+
+    ##############################
+    #        Parameters          #
+    ##############################
+
+    def get_parameter(self, parameter_name):
+        logger.debug(f"Bot called parameters endpoint to get parameter {parameter_name}")
+        return requests.get(f"{self.api}/parameters/{parameter_name}").json()
+
+    def set_parameter(self, parameter_name, parameter_value):
+        logger.debug(f"Bot called parameters endpoint to set {parameter_name} to {parameter_value}")
+        return requests.post(f"{self.api}/parameters/set/{parameter_name}/{parameter_value}").json()

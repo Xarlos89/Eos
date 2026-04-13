@@ -65,4 +65,13 @@ CREATE TABLE IF NOT EXISTS users (
     monthly_points int NOT NULL
 );
 ALTER TABLE users
- ADD CONSTRAINT unique_discord_id UNIQUE (discord_id);
+ADD CONSTRAINT unique_discord_id UNIQUE (discord_id);
+
+-- Create parameters table
+CREATE TABLE IF NOT EXISTS parameters (
+    parameter_name VARCHAR(255) NOT NULL,
+    parameter_value VARCHAR(255)
+)
+INSERT INTO parameters (parameter_name, parameter_value)
+VALUES
+    ('monthly_yapper', '0')
