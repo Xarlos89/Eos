@@ -230,3 +230,19 @@ class API:
         return requests.delete(
             f"{self.api}/points/monthly/reset", timeout=REQUEST_TIMEOUT
         ).json()
+
+    ##############################
+    #        Parameters          #
+    ##############################
+
+    def get_parameter(self, parameter_name):
+        logger.debug(f"Bot called parameters endpoint to get parameter {parameter_name}")
+        return requests.get(
+            f"{self.api}/parameters/{parameter_name}", timeout=REQUEST_TIMEOUT
+        ).json()
+
+    def set_parameter(self, parameter_name, parameter_value):
+        logger.debug(f"Bot called parameters endpoint to set {parameter_name} to {parameter_value}")
+        return requests.post(
+            f"{self.api}/parameters/set/{parameter_name}/{parameter_value}", timeout=REQUEST_TIMEOUT
+        ).json()

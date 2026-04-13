@@ -27,6 +27,7 @@ app.register_blueprint(logs)
 app.register_blueprint(settings)
 app.register_blueprint(points)
 app.register_blueprint(role)
+app.register_blueprint(parameters)
 
 
 # Error handlers
@@ -45,6 +46,8 @@ def handle_http_exception(e):
     app.logger.error(f"HTTP exception: {str(e)}")
 
     # Return a JSON response with details about the HTTP error
-    return jsonify(
-        {"error": str(e), "status_code": e.code, "description": e.description}
-    ), e.code
+    return jsonify({
+        "error": str(e),
+        "status_code": e.code,
+        "description": e.description
+    }), e.code

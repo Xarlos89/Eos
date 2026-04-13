@@ -36,17 +36,25 @@ class MonthlyYapathon(commands.Cog):
         """
         if datetime.datetime.now(datetime.timezone.utc).day == 1:
             logger.info(f"Bot running appoint_monthly_yapper.")
+
             monthly_top_point_earner = self.bot.api.monthly_top_point_earner()
+            current_monthly_yapper = self.bot.api.get_parameter("monthly_yapper")
 
             if monthly_top_point_earner["status"] == "ok":
                 try:
                     guild = self.bot.get_guild(int(os.getenv("MASTER_GUILD")))
 
                     new_yapper = get(guild.members, id=int(monthly_top_point_earner["message"][0]))
+                    current_yapper = get(guild.members, id=int(current_monthly_yapper["message"][0]))
+                    # This condition will save this from crash when the current yapper has left the guild
+                    if current_yapper != None:
+                        await current_yapper.remove_roles(yapper_role)
+
                     yapper_role = get(guild.roles, id=int(self.yapper_role_id))
                     announcement_channel = get(guild.channels, id=int(self.announcement_channel_id))
 
                     await new_yapper.add_roles(yapper_role)
+                    self.bot.api.set_parameter("monthly_yapper", str(new_yapper.id))
                     await announcement_channel.send(f"The winner of last month's Monthly Yapathon is {new_yapper.mention}. Keep yapping and you might be the next yapper.")
 
                     self.bot.api.reset_monthly_points()
