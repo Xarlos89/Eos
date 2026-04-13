@@ -71,7 +71,7 @@ ADD CONSTRAINT unique_discord_id UNIQUE (discord_id);
 CREATE TABLE IF NOT EXISTS parameters (
     parameter_name VARCHAR(255) NOT NULL,
     parameter_value VARCHAR(255)
-)
+);
 INSERT INTO parameters (parameter_name, parameter_value)
 VALUES
-    ('monthly_yapper', '0')
+    ('monthly_yapper', '0');

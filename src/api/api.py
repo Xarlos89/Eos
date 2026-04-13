@@ -10,6 +10,7 @@ from routes.logging import logs
 from routes.settings import settings
 from routes.points import points
 from routes.roles import role
+from routes.parameters import parameters
 
 from core.db_helper import DB
 
