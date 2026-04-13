@@ -49,7 +49,7 @@ class MonthlyYapathon(commands.Cog):
                     await new_yapper.add_roles(yapper_role)
                     await announcement_channel.send(f"The winner of last month's Monthly Yapathon is {new_yapper.mention}. Keep yapping and you might be the next yapper.")
 
-                    self.bot.api.reset_monthly_points();
+                    self.bot.api.reset_monthly_points()
                     logger.info(f"Successfully appointed new yapper.")
                 except Exception as err:
                     logger.error(f"Error appointing new monthly yapper: {err}")
