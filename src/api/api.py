@@ -16,7 +16,7 @@ from core.db_helper import DB
 logger = logging.getLogger(__name__)
 setup_logger(
     level=int(os.getenv("API_LOG_LEVEL", "20")),
-    stream_logs=os.getenv("STREAM_LOGS", "true").lower() in ("1", "true", "yes"))
+    stream_logs=os.getenv("STREAM_LOGS", "true").lower())
 
 
 app = Flask(__name__)
