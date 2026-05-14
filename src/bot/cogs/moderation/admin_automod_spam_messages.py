@@ -1,7 +1,7 @@
 import hashlib
 import logging
 import os
-import datetime, timedelta
+import datetime
 
 import discord
 import discord.errors
@@ -233,7 +233,7 @@ class ModerationSpamMessages(commands.Cog):
                 f"You already posted this in {first_channel.mention}"
             )
         finally:
-            fifteen_seconds = datetime.now().astimezone() + timedelta(seconds=15)
+            fifteen_seconds = datetime.now().astimezone() + datetime.timedelta(seconds=15)
             await message.author.timeout(
                 fifteen_seconds, reason="Sending the same message multiple times."
             )
@@ -257,7 +257,7 @@ class ModerationSpamMessages(commands.Cog):
 
             quarantine_channel = self.bot.api.get_one_setting("2")[0]["setting"][2]
             quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
-            thirty_seconds = datetime.now().astimezone() + timedelta(seconds=30)
+            thirty_seconds = datetime.now().astimezone() + datetime.timedelta(seconds=30)
 
             await message.author.timeout(
                 thirty_seconds, reason="Sending the same message multiple times."

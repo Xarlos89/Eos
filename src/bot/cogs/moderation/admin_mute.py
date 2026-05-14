@@ -1,9 +1,8 @@
 """
 Admin command for kicking a user.
 """
-import os
 import logging
-import datetime, timedelta
+import datetime
 
 import discord
 from discord.ext import commands
@@ -76,7 +75,7 @@ class AdminMute(commands.Cog):
                 except:
                     logger.info(f"{target.name} was muted, but cannot be sent a DM.")
                 # Then we do the mute
-                await target.timeout(timedelta(minutes=float(time)), reason=None)
+                await target.timeout(datetime.timedelta(minutes=float(time)), reason=None)
                 logger.info("%s muted %s for %s minutes. Reason: %s", interaction.user.name, target.name, time,
                             reason)
                 # Then we publicly announce what happened.
