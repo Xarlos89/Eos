@@ -1,6 +1,6 @@
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 from .._checks import is_master_guild, is_admin

@@ -3,7 +3,7 @@ Logs when a member gets the boot.
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -19,7 +19,7 @@ def embed_kick(some_member, audit_log_entry):
         title=""
         , description=f"{some_member} was kicked by: {audit_log_entry.user}. Reason: {audit_log_entry.reason}"
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
 
     return embed

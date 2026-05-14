@@ -1,7 +1,7 @@
 import hashlib
 import logging
 import os
-from datetime import datetime, timedelta
+import datetime, timedelta
 
 import discord
 import discord.errors
@@ -21,7 +21,7 @@ def embed_spammer_warn(channel1, channel2):
         title="Warning",
         description=f"When you send the same message **{QUARANTINE_THRESHOLD} times**, you get the quarantine.\n",
         color=discord.Color.red(),
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     report = f"Detected the same message in {channel1.mention} and {channel2.mention}"
     embed.add_field(name="What happened?", value=report, inline=True)
@@ -46,7 +46,7 @@ def embed_spammer_quarantine(spammer, message_to_report=None, file_url=None):
         description=f"When you send the same message **{QUARANTINE_THRESHOLD} times**, {spammer.mention}, you get the quarantine."
         f" Wait for the staff to come let you out.",
         color=discord.Color.red(),
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     if message_to_report:
         embed.add_field(name="Message:", value=message_to_report, inline=True)

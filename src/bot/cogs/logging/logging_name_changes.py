@@ -3,7 +3,7 @@ logs when a username is changed.
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -18,7 +18,7 @@ def embed_name_change(username_before, username_after):
         title=""
         , description=f"{username_before} changed their name to {username_after}"
         , color=discord.Color.dark_grey()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 

@@ -3,7 +3,7 @@ Logging for message edits
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -20,7 +20,7 @@ def embed_message_edit(some_username, orig_author, some_message_before, some_mes
         , description=f'Message Edited by {some_username}\n'
                       f'In {some_message_after.channel.mention}'
         , color=discord.Color.dark_orange()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     if orig_author.avatar is not None:
         embed.set_thumbnail(

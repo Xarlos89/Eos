@@ -3,7 +3,7 @@ Admin command for kicking a user.
 """
 import os
 import time
-from datetime import datetime
+import datetime
 import logging
 
 import discord
@@ -25,7 +25,7 @@ def embed_info(message):
         title=''
         , description=message
         , color=discord.Color.green()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -38,7 +38,7 @@ def embed_cant_do_that(message):
         title=''
         , description=message
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -51,7 +51,7 @@ def embed_quarantine(moderator, some_member, number_of_removed_messages):
         title=''
         , description=f'{moderator.name} quarantined {some_member.name}'
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
 
     if number_of_removed_messages > 0:

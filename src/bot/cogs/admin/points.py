@@ -1,6 +1,5 @@
-import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -17,7 +16,7 @@ def embed_info(title, message, color):
         title=f'{title}'
         , description=f'{message}'
         , color=color
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 

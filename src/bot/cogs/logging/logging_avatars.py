@@ -2,9 +2,8 @@
 Logs user avatar changes.
 TODO: Would be cool to add an API that detects nasty images here.
 """
-import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -19,7 +18,7 @@ def embed_avatar(before, after):
     embed = discord.Embed(
         title=f'{before} updated their profile picture!'
         , color=discord.Color.dark_grey()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
 
     embed.set_thumbnail(

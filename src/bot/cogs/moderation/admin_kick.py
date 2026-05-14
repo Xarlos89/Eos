@@ -3,7 +3,7 @@ Admin command for kicking a user.
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 
 import discord
 from discord.ext import commands
@@ -23,7 +23,7 @@ def embed_info(message):
         title=''
         , description=message
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 

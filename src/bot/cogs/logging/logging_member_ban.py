@@ -3,7 +3,7 @@ Logs when a member gets banned.
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -18,7 +18,7 @@ def embed_ban(some_member, audit_log_entry):
         title=""
         , description=f"{some_member} was banned by: {audit_log_entry.user}. Reason: {audit_log_entry.reason}"
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 

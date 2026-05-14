@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -16,7 +16,7 @@ def embed_hc(api, db):
     embed = discord.Embed(
         title=f'Health checks'
         , color=color
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     embed.add_field(
         name=api.get("message")

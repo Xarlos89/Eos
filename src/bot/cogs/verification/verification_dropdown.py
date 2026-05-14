@@ -9,7 +9,7 @@ import logging
 import discord
 from discord.ext import commands
 from time import sleep
-from datetime import datetime
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def embed_verified_success(name, amount):
         title=''
         , description=f'{name}, human number {amount} has joined.'
         , color=discord.Color.dark_green()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
 
     return embed

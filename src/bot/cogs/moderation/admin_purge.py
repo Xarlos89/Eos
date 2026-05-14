@@ -3,7 +3,7 @@ Admin command to remove messages in bulk.
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -22,7 +22,7 @@ def embed_info(message):
         title=''
         , description=message
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
