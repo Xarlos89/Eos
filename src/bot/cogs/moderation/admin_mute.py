@@ -50,13 +50,22 @@ class AdminMute(commands.Cog):
 
     @is_moderator()
     @is_master_guild()
-    @app_commands.command(description="Time is in minutes to mute a user.")
+    @app_commands.command()
     @commands.has_permissions(moderate_members=True)
-    async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: str, reason: str):
+    async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: float, reason: str):
         """
-        Take in a user mention, and a string reason.
+        Moderation command to mute a member.
+
+        Parameters
+        ----------
+        target : discord.Member
+            The member that needs to be muted.
+        time : float
+            How long the member needs to be muted for in minutes.
+        reason : str
+            The reason for the mute.
         """
-        # Cant ban bots or admins.
+
         if not target.bot:
             logger.info("0")
             if not target.guild_permissions.administrator:
