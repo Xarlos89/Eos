@@ -91,7 +91,7 @@ class Points(commands.Cog):
             await ctx.reply(
                 embed=embed_info(
                     ""
-                    , f"{amount} points {'removed from' if amount.startswith('-') else 'added to'} to {user.display_name}"
+                    , f"{amount.lstrip('-+')} points {'removed from' if amount.startswith('-') else 'added to'} {user.display_name}"
                     , discord.Color.green() if not amount.startswith('-') else discord.Color.red()
                 )
             )
