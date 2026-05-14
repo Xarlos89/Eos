@@ -37,6 +37,10 @@ class Health(commands.Cog):
 
     @commands.hybrid_command()
     async def hc(self, ctx: commands.Context) -> None:
+        """
+        Health check of the bot. Replies with the health stats of the bot.
+        """
+
         logger.debug("healthcheck command used.")
 
         hc_api = self.bot.api.api_health_check()
