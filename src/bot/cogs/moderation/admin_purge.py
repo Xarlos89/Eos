@@ -51,24 +51,27 @@ class AdminPurge(commands.Cog):
 
     @is_moderator()
     @is_master_guild()
-    @app_commands.command(description="Removes up to 100 messages from channel.")
-    async def purge_messages(self, interaction: discord.Interaction, number_messages: str):
+    @app_commands.command()
+    async def purge_messages(self, interaction: discord.Interaction, amount: int):
         """
-        We currently have permissions on this command set,
-        which throws an error when the user does not have the correct perms.
-        We handle this with an error_handler block
+        Purge a set of messages from the current channel.
+
+        Parameters
+        ----------
+        amount : int
+            The number of messages that will be purged.
         """
 
         if api_request_is_ok(self.log_channel_req):
-            logger.info(f"{interaction.user.name} is purging {number_messages} messages from "
+            logger.info(f"{interaction.user.name} is purging {amount} messages from "
                         f"the {self.log_channel_req[0]['logging'][1]}")
             await interaction.response.defer()
-            await interaction.channel.purge(limit=int(number_messages) + 1)
+            await interaction.channel.purge(limit=amount + 1)
 
             if logging_is_activated(self.log_channel_req):
                 logging_channel = await self.bot.fetch_channel(self.log_channel_req[0]["logging"][2])
 
-                await logging_channel.send(f"{number_messages} messages purged"
+                await logging_channel.send(f"{amount} messages purged"
                                            f" from {interaction.channel.mention}"
                                            f" by {interaction.user.mention}.")
 
