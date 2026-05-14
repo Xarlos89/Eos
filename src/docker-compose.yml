@@ -51,8 +51,11 @@ services:
 
   postgres:
     container_name: db
-    image: postgres:17.5-alpine3.21
+    build:
+      context: .
+      dockerfile: Dockerfile-db
     env_file: .env
+    image: eos-db:latest
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${POSTGRES_DB}"]
       interval: 5s
