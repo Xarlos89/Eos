@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/sh
 
 set -e
 
@@ -6,13 +6,13 @@ until pg_isready -h "$POSTGRES_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DATABASE"
     sleep 1
 done
 
-if [[ "$RUN_MIGRATIONS_BEFORE_STARTUP" == "true" ]]; then
+if [ "$RUN_MIGRATIONS_BEFORE_STARTUP" = "true" ]; then
     echo "Server started, running migrations..."
     echo ""
 
     MIGRATION_FILE_PATH="migrations.sql"
 
-    if [[ ! -f "$MIGRATION_FILE_PATH" ]]; then
+    if [ ! -f "$MIGRATION_FILE_PATH" ]; then
         echo "Migration file not found, exiting."
         exit 1
     fi

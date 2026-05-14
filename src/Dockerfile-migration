@@ -5,4 +5,4 @@ COPY /db/migrations.sql /
 
 RUN chmod +x /usr/local/bin/migration-entrypoint.sh
 
-ENTRYPOINT ["migration-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/migration-entrypoint.sh"]
