@@ -71,22 +71,28 @@ class AdminQuarantine(commands.Cog):
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
-    @app_commands.command(description="Quarantine a user.")
+    @app_commands.command()
     @is_moderator()
     @is_master_guild()
     @commands.has_permissions(moderate_members=True)
     async def quarantine(self, interaction: discord.Interaction, target: discord.Member,
-                         number_of_messages_to_remove: str):
+                         messages_to_remove: int):
         """
-        Take in a user mention, and an int amount of messages to remove.
+        Quarantines the specified user. Removes their access from public channels.
+
+        Parameters
+        ----------
+        target : discord.Member
+            The member to quarantine.
+        messages_to_remove : int
+            The number of messages to remove from this member.
         """
-        # Cant ban bots or admins.
+        
         await interaction.response.defer()
         logger.info(f"{interaction.user.name} used the quarantine command on {target.name}")
         if not target.bot:
             if not target.guild_permissions.administrator:
                 message_counter = 0
-                number_messages = int(number_of_messages_to_remove)
 
                 mod_log = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
                 verified_role = get(interaction.guild.roles, id=int(self.verified_role))
@@ -105,9 +111,9 @@ class AdminQuarantine(commands.Cog):
                     await interaction.followup.send(content=f"Removing {number_messages} messages by {target.name}...",
                                                     ephemeral=True)
 
-                if number_messages > 0:
+                if messages_to_remove > 0:
                     async for message in interaction.channel.history(limit=50):
-                        if int(number_of_messages_to_remove) > message_counter:
+                        if messages_to_remove > message_counter:
                             if message.author.name == target.name:
                                 await message.delete()
                                 message_counter += 1
@@ -121,11 +127,20 @@ class AdminQuarantine(commands.Cog):
         else:
             await interaction.followup.send(embed=embed_cant_do_that("You cant quarantine a bot."), ephemeral=True)
 
-    @app_commands.command(description="Release a user from quarantine.")
+    @app_commands.command()
     @commands.has_permissions(moderate_members=True)
     @is_moderator()
     @is_master_guild()
     async def release(self, interaction: discord.Interaction, target: discord.Member):
+        """
+        Releases the specified member from quarantine. Gives back their access to public channels.
+
+        Parameters
+        ----------
+        target : discord.Member
+            The member to release from quarantine.
+        """
+
         await interaction.response.defer()
         logger.info(f"{interaction.user.name} used the release command on {target.name}")
         if not target.bot:
