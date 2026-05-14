@@ -101,9 +101,10 @@ class Verification(commands.Cog):
         self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
 
-    @commands.command(description="Verification!")
+    @commands.command()
     async def verify(self, ctx):
-        """The slash command that initiates the fancy menus."""
+        """Command to verify yourself."""
+
         if str(type(ctx.channel)) == "<class 'discord.channel.DMChannel'>":
             await ctx.respond(
                 f"You need to use the command in the {self.bot.get_channel(self.verification_channel).mention} channel.")
