@@ -21,7 +21,7 @@ class GeneralCatFact(commands.Cog):
     @commands.hybrid_command(name="catfact")
     async def catfact(self, ctx):
         """
-        Sends a cat fact using an API
+        Gives you a cat fact.
         """
         logger.info("%s used the %s command.",
                     ctx.author.name,
