@@ -38,10 +38,17 @@ class AdminBan(commands.Cog):
     @is_moderator()
     @is_master_guild()
     @commands.has_permissions(ban_members=True)
-    @app_commands.command(description="Ban a user.")
+    @app_commands.command()
     async def ban_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):
         """
-        Take in a user mention, and a string reason.
+        Moderation command to ban a member from the server.
+
+        Parameters
+        ----------
+        target : discord.Member
+            The member that needs to be banned.
+        reason : str
+            The reason for the ban.
         """
         # Cant ban bots or admins.
         if not target.bot:
