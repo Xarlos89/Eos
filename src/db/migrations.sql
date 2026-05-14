@@ -1,3 +1,5 @@
-CREATE TABLE IF NOT EXISTS test (
-    test INTEGER PRIMARY KEY;
-)
+BEGIN;
+
+    -- Put all your migrations commands here
+
+COMMIT;
