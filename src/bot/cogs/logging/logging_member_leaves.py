@@ -3,7 +3,7 @@ Logs when a member leaves.
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -18,7 +18,7 @@ def embed_leave(some_member):
         title=''
         , description=f'{some_member} has left us.'
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 

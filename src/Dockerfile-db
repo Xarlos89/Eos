@@ -1,6 +1,0 @@
-# https://hub.docker.com/_/postgres
-FROM postgres:17.5-alpine3.21
-
-RUN su postgres
-
-COPY /db/init.sql /docker-entrypoint-initdb.d/init.sql

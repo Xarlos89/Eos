@@ -1,6 +1,5 @@
-import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -17,7 +16,7 @@ def embed_info(title, message, color):
         title=f'{title}'
         , description=f'{message}'
         , color=color
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -63,7 +62,12 @@ class Points(commands.Cog):
     @commands.hybrid_command()
     async def get_points(self, ctx: commands.Context, user: discord.Member) -> None:
         """
-        Gets the points of a specific member. Takes a Mention, returns an embed.
+        Gets the points of a specific member.
+
+        Parameters
+        ----------
+        user : discord.Member
+            The user you want to get the points of.
         """
         points = self.bot.api.get_points(user.id)
         if points['status'] == 'ok':
@@ -99,17 +103,24 @@ class Points(commands.Cog):
     @is_admin()
     @is_master_guild()
     @commands.hybrid_command()
-    async def update_points(self, ctx: commands.Context, user: discord.User, amount) -> None:
+    async def update_points(self, ctx: commands.Context, user: discord.Member, amount: int) -> None:
         """
-        Updates the points of a specific member. Takes a Mention and an amount, returns an embed.
-        Amount can be a positive or negative integer
+        Updates the points of a specific member.
+
+        Parameters
+        ----------
+        user : discord.Member
+            The user who's points you want to update.
+        amount : int
+            The amount you want to update. Can be a positive or negative integer.
         """
+
         update_points = self.bot.api.update_points(user.id, int(amount))
         if update_points['status'] == 'ok':
             await ctx.reply(
                 embed=embed_info(
                     ""
-                    , f"{amount} points {'removed from' if amount.startswith('-') else 'added to'} to {user.display_name}"
+                    , f"{amount.lstrip('-+')} points {'removed from' if amount.startswith('-') else 'added to'} {user.display_name}"
                     , discord.Color.green() if not amount.startswith('-') else discord.Color.red()
                 )
             )
@@ -121,7 +132,6 @@ class Points(commands.Cog):
     async def top_10(self, ctx: commands.Context) -> None:
         """
         Gets the top 10 users in the DB with the most points.
-        Takes no args, returns an embed.
         """
         top10 = self.bot.api.top_10()
         if top10['status'] == 'ok':
@@ -239,6 +249,7 @@ class Points(commands.Cog):
         if isinstance(error, commands.CheckFailure):
             logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
             await ctx.send('For one reason, or another, YOU cannot use this command.')
+
 
 async def setup(bot: commands.Bot) -> None:
     """boink"""

@@ -1,6 +1,6 @@
 import os
 import logging
-from datetime import datetime
+import datetime
 
 import discord
 from discord import app_commands
@@ -20,7 +20,7 @@ def embed_info(message):
         title=''
         , description=message
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -33,6 +33,8 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
     @is_admin()
     @commands.hybrid_command()
     async def lockdown(self, interaction: discord.Interaction):
+        """Locksdown the current channel."""
+
         await interaction.response.defer()
         logger.warning(f"{interaction.guild.name} is going into lockdown mode!")
         for channel in interaction.guild.text_channels:
@@ -44,6 +46,8 @@ class AdminEmergencey(commands.Cog, command_attrs=dict(hidden=True)):
     @is_admin()
     @commands.hybrid_command()
     async def unlock(self, interaction: discord.Interaction):
+        """Removes the lock from the current channel"""
+
         await interaction.response.defer()
         logger.warning(f"{interaction.guild.name} is coming out of lockdown mode!")
         for channel in interaction.guild.text_channels:

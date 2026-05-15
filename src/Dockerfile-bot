@@ -1,8 +1,16 @@
-FROM python:3.12.8-bookworm
+FROM python:3.12-slim-bookworm
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /bot
 
-COPY /bot /bot/.
+COPY /bot/requirements-bot.txt /bot/requirements-bot.txt
 RUN --mount=type=cache,target=/root/.cache/pip pip install -r /bot/requirements-bot.txt
+
+COPY /bot /bot/
+
+RUN useradd -r -M botuser && chown -R botuser:botuser /bot
+USER botuser
 
 CMD ["python", "/bot/main.py"]

@@ -9,7 +9,7 @@ import logging
 import discord
 from discord.ext import commands
 from time import sleep
-from datetime import datetime
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def embed_verified_success(name, amount):
         title=''
         , description=f'{name}, human number {amount} has joined.'
         , color=discord.Color.dark_green()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
 
     return embed
@@ -101,9 +101,10 @@ class Verification(commands.Cog):
         self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
         self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
 
-    @commands.command(description="Verification!")
+    @commands.command()
     async def verify(self, ctx):
-        """The slash command that initiates the fancy menus."""
+        """Command to verify yourself."""
+
         if str(type(ctx.channel)) == "<class 'discord.channel.DMChannel'>":
             await ctx.respond(
                 f"You need to use the command in the {self.bot.get_channel(self.verification_channel).mention} channel.")

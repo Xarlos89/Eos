@@ -3,7 +3,7 @@ Logging for role changes. Logs the user who did the changing, the target user an
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -18,7 +18,7 @@ def embed_role_add(some_member, member_who_did_action, role_obj):
         title=""
         , description=f'<@{member_who_did_action.id}> added <@&{role_obj.id}> to <@{some_member.id}>'
         , color=discord.Color.green()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -31,7 +31,7 @@ def embed_role_remove(some_member, member_who_did_action, role_obj):
         title=""
         , description=f'<@{member_who_did_action.id}> removed <@&{role_obj.id}> from <@{some_member.id}>'
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 

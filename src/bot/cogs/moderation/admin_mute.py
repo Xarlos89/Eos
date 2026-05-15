@@ -1,9 +1,8 @@
 """
 Admin command for kicking a user.
 """
-import os
 import logging
-from datetime import datetime, timedelta
+import datetime
 
 import discord
 from discord.ext import commands
@@ -22,7 +21,7 @@ def embed_info(message):
         title=''
         , description=message
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -35,7 +34,7 @@ def embed_info(message):
         title=''
         , description=message
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -50,13 +49,22 @@ class AdminMute(commands.Cog):
 
     @is_moderator()
     @is_master_guild()
-    @app_commands.command(description="Time is in minutes to mute a user.")
+    @app_commands.command()
     @commands.has_permissions(moderate_members=True)
-    async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: str, reason: str):
+    async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: float, reason: str):
         """
-        Take in a user mention, and a string reason.
+        Moderation command to mute a member.
+
+        Parameters
+        ----------
+        target : discord.Member
+            The member that needs to be muted.
+        time : float
+            How long the member needs to be muted for in minutes.
+        reason : str
+            The reason for the mute.
         """
-        # Cant ban bots or admins.
+
         if not target.bot:
             logger.info("0")
             if not target.guild_permissions.administrator:
@@ -67,7 +75,7 @@ class AdminMute(commands.Cog):
                 except:
                     logger.info(f"{target.name} was muted, but cannot be sent a DM.")
                 # Then we do the mute
-                await target.timeout(timedelta(minutes=float(time)), reason=None)
+                await target.timeout(datetime.timedelta(minutes=float(time)), reason=None)
                 logger.info("%s muted %s for %s minutes. Reason: %s", interaction.user.name, target.name, time,
                             reason)
                 # Then we publicly announce what happened.

@@ -1,20 +1,5 @@
 ---
 services:
-  api:
-    container_name: api
-    build:
-      context: .
-      dockerfile: Dockerfile-api
-    env_file: .env
-    image: eos-api:latest
-    ports:
-      - "${FLASK_RUN_PORT}:${FLASK_RUN_PORT}"
-    networks:
-      - eos
-    depends_on:
-      - bot
-    restart: unless-stopped
-
   bot:
     container_name: bot
     build:
@@ -22,34 +7,92 @@ services:
       dockerfile: Dockerfile-bot
     env_file: .env
     image: eos-bot:latest
+    init: true
+    networks:
+      - eos
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile-api
+      args:
+        FLASK_RUN_PORT: ${FLASK_RUN_PORT}
+    env_file: .env
+    image: eos-api:latest
+    networks:
+      - eos
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:${FLASK_RUN_PORT}/hc_api')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postgres:
+    container_name: db
+    env_file: .env
+    image: postgres:17.5-alpine3.21
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
+    networks:
+      - eos
+    restart: unless-stopped
+    mem_limit: 512m
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  migration:
+    container_name: migration
+    build:
+      context: .
+      dockerfile: Dockerfile-migration
+    env_file: .env
+    image: eos-migration:latest
     networks:
       - eos
     depends_on:
       postgres:
         condition: service_healthy
-    restart: unless-stopped
-
-  postgres:
-    container_name: db
-    build:
-      context: .
-      dockerfile: Dockerfile-db
-    env_file: .env
-    image: eos-postgres:latest
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
-    networks:
-      - eos
-    restart: unless-stopped
-    volumes:
-      - ./db/postgres-data:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    restart: no
 
 networks:
   eos:
     driver: bridge
+
+volumes:
+  postgres-data:

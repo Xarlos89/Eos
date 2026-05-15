@@ -19,9 +19,14 @@ class GeneralSarcasticGoogle(commands.Cog):
         self.bot = bot
 
     @commands.hybrid_command(name="google")
-    async def google(self, ctx, question):
+    async def google(self, ctx, question: str):
         """
-        sarcastically googles a question.
+        Sarcastically googles a question.
+
+        Parameters
+        ----------
+        question : str
+            The question you want to "search" up.
         """
         logger.info("%s used the %s command.", ctx.author.name, ctx.command)
         await ctx.send(
