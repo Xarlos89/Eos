@@ -3,7 +3,7 @@ Admin command for kicking a user.
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 
 import discord
 from discord.ext import commands
@@ -23,7 +23,7 @@ def embed_info(message):
         title=''
         , description=message
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
     return embed
 
@@ -38,13 +38,20 @@ class AdminKick(commands.Cog):
 
     @is_moderator()
     @is_master_guild()
-    @app_commands.command(description="Kick a user.")
+    @app_commands.command()
     @commands.has_permissions(kick_members=True)
     async def kick_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):
         """
-        Take in a user mention, and a string reason.
+        Moderation command to kick a member from the server.
+
+        Parameters
+        ----------
+        target : discord.Member
+            The member that needs to be kicked.
+        reason : str
+            The reason for the kick.
         """
-        # Cant kick bots or admins.
+
         if not target.bot:
             await interaction.response.defer()
             if not target.guild_permissions.administrator:
@@ -56,7 +63,6 @@ class AdminKick(commands.Cog):
                     "\nIf you wish to appeal this kick,"
                     " contact PracticalPythonStaff@gmail.com"
                 )
-                # Then we do the kick
                 await target.kick(reason=f"{interaction.user.name} - {reason}")
                 logger.info("{%s} kicked {%s}. Reason: {%s}", interaction.user.name, target.name, reason)
                 # Then we publicly announce what happened.

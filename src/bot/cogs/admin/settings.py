@@ -1,6 +1,6 @@
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 from .._checks import is_master_guild, is_admin
@@ -17,14 +17,12 @@ def sanitize_string(input_string):
     return ''.join(char for char in input_string if ord(char) < 128)
 
 class Settings(commands.Cog):
-    """1
-    Settings is made up of a "view". (Docs: https://discordpy.readthedocs.io/en/stable/interactions/api.html?highlight=ui%20view#select)
-    This view uses a DropdownView, which contains a "dropdown", that is made up of many "SelectOption" objects.
     """
-    def __init__(self, bot: commands.Bot) -> None:
-        """Initialization of the points Class"""
-        self.bot = bot
+    Settings Cog for managing various settings of the bot.
+    """
 
+    def __init__(self, bot: commands.Bot) -> None:
+        self.bot = bot
 
     @is_master_guild()
     @is_admin()
@@ -32,9 +30,8 @@ class Settings(commands.Cog):
     async def settings(self, ctx: commands.Context):
        """
        List all available settings.
-
-       >settings
        """
+
        server_settings = self.bot.api.get_all_settings()
        log_settings = self.bot.api.get_all_log_settings()
 
@@ -132,38 +129,31 @@ class PromptDropdown(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         if self.values[0] == 'logging':
             await interaction.response.send_message(
-"""
-# -- Logging Settings --
-Please select the channel you would like the relevant logs to go to.
-If you do not want logs for something, you can select the "Turn off logging" option. 
-"""
+            "# -- Logging Settings --"
+            "\nPlease select the channel you would like the relevant logs to go to."
+            "\nIf you do not want logs for something, you can select the \"Turn off logging\" option. "
             )
             for title, view in self.main_menu[0]:
                 await interaction.channel.send(f"### **{title}**", view=view)
 
         if self.values[0] == 'roles':
             await interaction.response.send_message(
-"""
-# -- Role Settings --
-Please select the server roles you'd like to configure for the positions available.
-1. Owner - The owner of the server. This role has the highest permissions.
-2. Admin - This role also has the highest permissions, but is assigned. 
-3. Staff - This role is for moderators. Gives access to moderation commands.
-4. Privileged - This role is for privileged users. Gives access to logging.
-5. Ping - This role is for server notifications and pingable events. 
-6. Verified - This role is for verification of users. Allows access to the server. (DANGEROUS!)
-7. Quarantine - This role is for quarantining user until moderation action is taken. 
-    
-"""
+                "# -- Role Settings --"
+                "\nPlease select the server roles you'd like to configure for the positions available."
+                "\n1. Owner - The owner of the server. This role has the highest permissions."
+                "\n2. Admin - This role also has the highest permissions, but is assigned. "
+                "\n3. Staff - This role is for moderators. Gives access to moderation commands."
+                "\n4. Privileged - This role is for privileged users. Gives access to logging."
+                "\n5. Ping - This role is for server notifications and pingable events. "
+                "\n6. Verified - This role is for verification of users. Allows access to the server. (DANGEROUS!)"
+                "\n7. Quarantine - This role is for quarantining user until moderation action is taken. "
             )
             for title, view in self.main_menu[1]:
                 await interaction.channel.send(f"### **{title}**", view=view)
 
         if self.values[0] == 'server':
             await interaction.response.send_message(
-"""
-# -- Server Settings --
-"""
+            "# -- Server Settings --"
             )
             for title, view in self.main_menu[2]:
                 await interaction.channel.send(f"### **{title}**", view=view)
@@ -321,20 +311,19 @@ class LoggingDropdownView(discord.ui.View):
         # Adds the dropdown to our view object.
         self.add_item(LoggingDropdown(ctx, bot, channels, purpose))
 
+
 class RoleDropdownView(discord.ui.View):
     def __init__(self, ctx: commands.Context, bot, roles: list, purpose: str):
         super().__init__()
         # Adds the dropdown to our view object.
         self.add_item(RoleDropdown(ctx, bot, roles, purpose))
 
+
 class ServerDropdownView(discord.ui.View):
     def __init__(self, ctx: commands.Context, bot, channels: list, purpose: str):
         super().__init__()
         # Adds the dropdown to our view object.
         self.add_item(ServerDropdown(ctx, bot, channels, purpose))
-
-
-
 
 
 async def setup(bot: commands.Bot) -> None:

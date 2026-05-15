@@ -3,7 +3,7 @@ Logging for message deletes
 """
 import os
 import logging
-from datetime import datetime
+import datetime
 import discord
 from discord.ext import commands
 
@@ -21,7 +21,7 @@ def embed_message_delete(some_member, some_message, some_moderator=None):
                     f'\nIn {some_message.channel}\nMessage '
                     f'author: {some_member.mention}'
         , color=discord.Color.red()
-        , timestamp=datetime.utcnow()
+        , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
 
     embed.set_thumbnail(

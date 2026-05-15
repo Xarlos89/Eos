@@ -69,6 +69,11 @@ class UtilityRunCode(commands.Cog):
     async def run(self, ctx: Context, *, codeblock: str = "") -> None:
         """
         Uses Piston-API to run code in the server.
+
+        Parameters
+        ----------
+        codeblock : str
+            The code you want to execute.
         """
         logger.info("%s used the %s command.", ctx.author.name, ctx.command)
 
