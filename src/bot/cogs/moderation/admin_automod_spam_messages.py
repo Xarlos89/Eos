@@ -102,7 +102,7 @@ class ModerationSpamMessages(commands.Cog):
                 f"|{attachment.filename}|{attachment.size}|{attachment.content_type}".encode()
             ).hexdigest()
 
-        now = datetime.now().astimezone()
+        now = datetime.datetime.now(datetime.timezone.utc)
         record = self.records.get(
             author_id,
             {
