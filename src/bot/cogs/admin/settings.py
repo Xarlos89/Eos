@@ -45,7 +45,7 @@ class Settings(commands.Cog):
        embed = discord.Embed(title="-- Settings --",
                       description="Here, you can see the current settings for the server.",
                       colour=0x000000,
-                      timestamp=datetime.now())
+                      timestamp=datetime.datetime.now())
 
        for setting in server_settings[0]["setting"]:
            value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
