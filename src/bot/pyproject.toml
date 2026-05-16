@@ -1,0 +1,11 @@
+[project]
+name = "bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "discord-py>=2.7.1",
+    "requests>=2.34.2",
+    "ultra-piston>=1.0.1",
+]
