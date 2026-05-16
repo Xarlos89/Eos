@@ -1,0 +1,26 @@
+# These files run inside Linux containers and must keep LF line endings,
+# regardless of a contributor's core.autocrlf setting. CRLF in a shell
+# script corrupts the shebang and breaks the Docker entrypoint.
+# l0L windows users.
+
+# Normalize line endings to LF on commit
+* text=auto eol=lf
+
+# Explicitly declare text files
+*.cfg   text eol=lf
+*.env*  text eol=lf
+*.ini   text eol=lf
+*.md    text eol=lf
+*.py    text eol=lf
+*.sh text eol=lf
+*.sql text eol=lf
+*.toml  text eol=lf
+*.txt   text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+Dockerfile* text eol=lf
+
+# Binary files — never diff or merge
+*.jpeg  binary
+*.jpg   binary
+*.png   binary
