@@ -3,8 +3,8 @@ services:
   bot:
     container_name: bot
     build:
-      context: .
-      dockerfile: Dockerfile-bot
+      context: ../
+      dockerfile: src/Dockerfile-bot
     env_file: .env
     image: eos-bot:latest
     init: true
@@ -24,8 +24,8 @@ services:
   api:
     container_name: api
     build:
-      context: .
-      dockerfile: Dockerfile-api
+      context: ../
+      dockerfile: src/Dockerfile-api
       args:
         FLASK_RUN_PORT: ${FLASK_RUN_PORT}
     env_file: .env
