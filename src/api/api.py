@@ -10,6 +10,7 @@ from routes.logging import logs
 from routes.settings import settings
 from routes.points import points
 from routes.roles import role
+from routes.parameters import parameters
 
 from core.db_helper import DB
 
@@ -28,6 +29,7 @@ app.register_blueprint(logs)
 app.register_blueprint(settings)
 app.register_blueprint(points)
 app.register_blueprint(role)
+app.register_blueprint(parameters)
 
 # Error handlers
 @app.errorhandler(Exception)

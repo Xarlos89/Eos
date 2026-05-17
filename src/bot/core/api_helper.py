@@ -154,6 +154,10 @@ class API:
         logger.debug(f"Bot called the get_points endpoint. User ID: {user_id}")
         return requests.get(f"{self.api}/points/{user_id}").json()
 
+    def get_monthly_points(self, user_id):
+        logger.debug(f"Bot called the get_monthly_points endpoint. User Id: {user_id}")
+        return requests.get(f"{self.api}/points/monthly/{user_id}").json()
+
     def update_points(self, user_id, amount):
         logger.debug(f"Bot called the update_points endpoint. User ID: {user_id} - Points: {amount}")
         data = {'value': amount}
@@ -162,3 +166,27 @@ class API:
     def top_10(self):
         logger.debug("Bot called the top_10 endpoint.")
         return requests.get(f"{self.api}/points/top10").json()
+
+    def monthly_top_point_earner(self):
+        logger.debug("Bot called monthly top point earner.")
+        return requests.get(f"{self.api}/points/monthly/top").json()
+
+    def monthly_top_10(self):
+        logger.debug("Bot called the monthly top_10 endpoint.")
+        return requests.get(f"{self.api}/points/monthly/top10").json()
+
+    def reset_monthly_points(self):
+        logger.debug("Bot called the reset monthly points endpoint.")
+        return requests.delete(f"{self.api}/points/monthly/reset").json()
+
+    ##############################
+    #        Parameters          #
+    ##############################
+
+    def get_parameter(self, parameter_name):
+        logger.debug(f"Bot called parameters endpoint to get parameter {parameter_name}")
+        return requests.get(f"{self.api}/parameters/{parameter_name}").json()
+
+    def set_parameter(self, parameter_name, parameter_value):
+        logger.debug(f"Bot called parameters endpoint to set {parameter_name} to {parameter_value}")
+        return requests.post(f"{self.api}/parameters/set/{parameter_name}/{parameter_value}").json()

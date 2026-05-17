@@ -24,6 +24,22 @@ def get_points(user_id):
         logger.error(f"Error fetching points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
+@points.route('/points/monthly/<user_id>', methods=['GET'])
+def get_monthly_points(user_id):
+    """
+    Retrieve monthly points of the user.
+    """
+    try:
+        result = eos.db.get_monthly_points_for_user(user_id)
+        if result["status"] == "ok":
+            return jsonify(result), 200
+        else:
+            logger.warning(f"Error getting monthly points for the user: {result}")
+            return jsonify(result), 400
+    except Exception as err:
+        logger.error(f"Error fetching monthly points: {err}")
+        return jsonify({"status": "error", "message": str(err)}), 400
+
 @points.route('/points/<user_id>/update', methods=['POST'])
 def update_points(user_id):
     """
@@ -82,5 +98,41 @@ def top10():
         result = eos.db.get_top_10()
         return jsonify(result), 200
     except Exception as err:
-        logger.error(f"Error removing user: {err}")
+        logger.error(f"Error getting top 10: {err}")
+        return jsonify({"status": "error", "message": str(err)}), 400
+
+@points.route('/points/monthly/top', methods=['GET'])
+def top_monthly():
+    """
+    Grabs the top point earner of the month
+    """
+    try:
+        result = eos.db.get_monthly_top_point_earner()
+        return jsonify(result), 200
+    except Exception as err:
+        logger.error(f"Error getting monthly top point earner: {err}")
+        return jsonify({"status": "error", "message": str(err)}), 400
+
+@points.route('/points/monthly/top10', methods=['GET'])
+def monthly_top10():
+    """
+    Grabs the top 10 point earners of the month
+    """
+    try:
+        result = eos.db.get_monthly_top_10()
+        return jsonify(result), 200
+    except Exception as err:
+        logger.error(f"Error getting monthly top 10: {err}")
+        return jsonify({"status": "error", "message": str(err)}), 400
+
+@points.route('/points/monthly/reset', methods=['DELETE'])
+def reset_monthly_points():
+    """
+    Resets monthly points of all members
+    """
+    try:
+        result = eos.db.reset_monthly_points()
+        return jsonify(result), 200
+    except Exception as err:
+        logger.error(f"Error resetting monthly points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400

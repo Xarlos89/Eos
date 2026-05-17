@@ -147,6 +147,7 @@ class PromptDropdown(discord.ui.Select):
                 "\n5. Ping - This role is for server notifications and pingable events. "
                 "\n6. Verified - This role is for verification of users. Allows access to the server. (DANGEROUS!)"
                 "\n7. Quarantine - This role is for quarantining user until moderation action is taken. "
+                "\n8. Yapper - This role is for the most active user of last month. "
             )
             for title, view in self.main_menu[1]:
                 await interaction.channel.send(f"### **{title}**", view=view)
