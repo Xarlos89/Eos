@@ -46,6 +46,16 @@ class DB:
             logger.error(f"Error fetching logging: {err}")
             return {"status": "error", "message": str(err)}
 
+    def get_log_setting_by_name(self, name):
+        logger.debug("API attempting to contact DB for get_log_setting_by_name...")
+        try:
+            self.cursor.execute("SELECT * FROM logging WHERE name = %s", (name,))
+            result = self.cursor.fetchone()
+            return {"status": "ok", "logging": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching logging: {err}")
+            return {"status": "error", "message": str(err)}
+
     def get_log_settings(self):
         logger.debug("API attempting to contact DB for get_log_settings...")
         try:
@@ -75,6 +85,15 @@ class DB:
             logger.error(f"Error updating log setting: {err}")
             return {"status": "error", "message": str(err)}
 
+    def update_logging_by_name(self, name, value):
+        logger.debug(f"API attempting to contact DB for update_logging with log name:{name} - Value:{value}")
+        try:
+            self.cursor.execute("UPDATE logging SET value = %s WHERE name = %s", (value, name))
+            return {"status": "ok", "message": "Log setting updated successfully"}
+        except OperationalError as err:
+            logger.error(f"Error updating log setting: {err}")
+            return {"status": "error", "message": str(err)}
+
     def add_log_setting(self, name, value):
         logger.debug(f"API attempting to contact DB for add_log with name:{name} - Value:{value}")
         try:
@@ -91,6 +110,15 @@ class DB:
             return {"status": "ok", "message": f"Log with ID {log_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting log setting: {err}")
+            return {"status": "error", "message": str(err)}
+
+    def delete_log_setting_by_name(self, name):
+        logger.debug(f"API attempting to contact DB for delete_log by name: {name}")
+        try:
+            self.cursor.execute("DELETE FROM logging WHERE name = %s", (name,))
+            return {"status": "ok", "message": f"Log with name '{name}' deleted successfully"}
+        except OperationalError as err:
+            logger.error(f"Error deleting log setting by name: {err}")
             return {"status": "error", "message": str(err)}
 
     ##################
