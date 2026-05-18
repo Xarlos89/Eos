@@ -10,7 +10,10 @@ from core.api_helper import API
 
 discord.VoiceClient.warn_nacl = False
 logger = logging.getLogger(__name__)
-setup_logger(level=int(os.getenv("BOT_LOG_LEVEL")), stream_logs=bool(os.getenv("STREAM_LOGS")))
+setup_logger(
+    level=int(os.getenv("BOT_LOG_LEVEL", "20")),
+    stream_logs=os.getenv("STREAM_LOGS", "true").lower() == "true"
+)
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
@@ -87,9 +90,9 @@ def boink() -> None:
         logger.debug('Loading Token from arg.')
         bot.run(token)
 
-    elif os.environ['TOKEN'] is not None:  # if not in args, check the env vars
+    elif token := os.environ.get('TOKEN'):  # if not in args, check the env vars
         logger.debug('Loading Token from environment variable.')
-        bot.run(os.environ['TOKEN'])
+        bot.run(token)
 
     else:
         logger.critical('You must include a bot token...')
