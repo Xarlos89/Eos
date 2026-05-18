@@ -25,7 +25,7 @@ def get_role(role_id=None):
         # Retrieve a single role
         result = eos.db.get_role(role_id)
 
-    return jsonify(result, 200)
+    return jsonify(result), 200
 
 @role.route('/role/<role_id>', methods=['PUT'])
 def update_role(role_id):
@@ -35,9 +35,9 @@ def update_role(role_id):
     if request.method == 'PUT':
         data = request.json
         result = eos.db.update_role(int(role_id), data['value'])
-        return jsonify(result, 200)
+        return jsonify(result), 200
 
-    return jsonify({'message': 'improper request method'}, 405)
+    return jsonify({'message': 'improper request method'}), 405
 
 @role.route('/role', methods=['POST'])
 def add_role():
@@ -47,9 +47,9 @@ def add_role():
     if request.method == 'POST':
         data = request.json
         result = eos.db.add_role(data['name'], data['value'])
-        return jsonify(result, 201)
+        return jsonify(result), 201
 
-    return jsonify({'message': 'improper request method'}, 405)
+    return jsonify({'message': 'improper request method'}), 405
 
 @role.route('/role/<int:role_id>', methods=['DELETE'])
 def delete_role(role_id):
@@ -58,6 +58,6 @@ def delete_role(role_id):
     """
     if request.method == 'DELETE':
         result = eos.db.delete_role(role_id)
-        return jsonify(result, 200)
+        return jsonify(result), 200
 
-    return jsonify({'message': 'improper request method'}, 405)
+    return jsonify({'message': 'improper request method'}), 405

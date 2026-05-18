@@ -44,7 +44,10 @@ class LoggingRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
-
+        if self.mod_log['status'] != 'ok':
+            raise RuntimeError("Failed to fetch mod log settings from API.")
+        logger.info("LoggingRoles cog initialized")
+        
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         """
@@ -63,11 +66,11 @@ class LoggingRoles(commands.Cog):
             responsible_member = audit_log.user
 
             changed_roles = []
-            if self.mod_log[0]["status"] == "ok":
-                if self.mod_log[0]["logging"][2] == "0":
+            if self.mod_log["status"] == "ok":
+                if self.mod_log["logging"][2] == "0":
                     logger.debug(f"log was triggered, but logging is disabled. API: {self.mod_log}")
                     return
-                logs_channel = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(self.mod_log["logging"][2])
 
                 if len(before.roles) > len(after.roles):
                     for role in before.roles:
