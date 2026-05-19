@@ -22,6 +22,7 @@ def embed_message_delete(some_member, some_message, some_moderator=None):
         description=f'{some_moderator.mention if some_moderator is not None else some_member.mention} deleted a message'
                     f'\nIn {some_message.channel}\nMessage '
                     f'author: {some_member.mention}'
+                    f'{f"\n Attachments: {len(some_message.attachments)}" if some_message.attachments else ""}'
         , color=discord.Color.red()
         , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
