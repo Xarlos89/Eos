@@ -1,6 +1,8 @@
 """
 Logging for message deletes
 """
+from importlib.resources import files
+from io import BytesIO
 import os
 import logging
 import datetime
@@ -59,13 +61,30 @@ class LoggingMessageDelete(commands.Cog):
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
         if self.chat_log['status'] != 'ok':
             raise RuntimeError("Failed to fetch chat log settings from API.")
+        
+    async def build_image_embed(self, attachment: discord.Attachment) -> tuple[discord.Embed, discord.File]:
+        """
+        Build an embed for an image attachment.
+        """
+        embed = discord.Embed(
+            title="Deleted Image Attachment",
+            description=f"Filename: {attachment.filename}",
+            color=discord.Color.red(),
+            timestamp=datetime.datetime.now(datetime.timezone.utc)
+        )
+        
+        data = await attachment.read()
+        file = discord.File(BytesIO(data), filename=attachment.filename)
+        embed.set_image(url=f"attachment://{attachment.filename}")
+        return embed, file 
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message):
+    async def on_message_delete(self, message) -> None:
         """
         If a mod deletes, take the audit log event. If a user deletes, handle it normally.
         """
-        if message.author.guild.id != int(os.getenv("MASTER_GUILD")) or \
+        
+        if message.author.guild.id != int(os.getenv("MASTER_GUILD", 0)) or \
                 message.author.guild.id is None:
             logger.warning(">> on_message_delete fired, but not in master guild. Ignoring event.")
             return
@@ -73,23 +92,37 @@ class LoggingMessageDelete(commands.Cog):
         if message.channel.id == self.staff_channel:
             logger.debug("Message delete in staff channel was ignored.")
             return
-
+        
         audit_log = [entry async for entry in message.guild.audit_logs(limit=1)][0]
+        
         if self.chat_log["status"] == "ok":
             if self.chat_log["logging"][2] == "0":
                 logger.debug(f"log was triggered, but logging is disabled. API: {self.chat_log}")
                 return
             logs_channel = await self.bot.fetch_channel(self.chat_log["logging"][2])
-
+            
+            
+            file_embeds = []
+            if len(message.attachments) > 0:
+                for attachment in message.attachments:
+                    if attachment.content_type and attachment.content_type.startswith('image/'):
+                        logger.debug(f"Image attachment detected in deleted message, {attachment.filename}:{attachment.url}")
+                        file_embeds.append(await self.build_image_embed(attachment))
+            
             if str(audit_log.action) == 'AuditLogAction.message_delete':
                 # Then a moderator deleted a message.
                 embed = embed_message_delete(audit_log.target, message, audit_log.user)
                 await logs_channel.send(embed=embed)
-
+                if file_embeds:
+                    for embed, file in file_embeds:
+                        await logs_channel.send(embed=embed, file=file)
             else:
                 # Otherwise, the author deleted it.
                 username = message.author
                 await logs_channel.send(embed=embed_message_delete(username, message))
+                if file_embeds:
+                    for embed, file in file_embeds:
+                        await logs_channel.send(embed=embed, file=file)
         else:
             logger.critical(f"API error. API response not ok. -> {self.chat_log}")
 
