@@ -35,10 +35,10 @@ class Settings(commands.Cog):
         server_settings = self.bot.api.get_all_settings()
         log_settings = self.bot.api.get_all_log_settings()
         try:
-            if server_settings[0]["status"] != "ok":
+            if server_settings["status"] != "ok":
                 await ctx.send(f"Failed to retrieve settings: {server_settings['message']}")
                 return
-            if log_settings[0]["status"] != "ok":
+            if log_settings["status"] != "ok":
                 await ctx.send(f"Failed to retrieve settings: {log_settings['message']}")
                 return
         except Exception as e:
@@ -51,13 +51,13 @@ class Settings(commands.Cog):
                         colour=0x000000,
                         timestamp=datetime.datetime.now())
 
-        for setting in server_settings[0]["setting"]:
+        for setting in server_settings["setting"]:
             value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
             embed.add_field(name=""
                             , value=f"**{setting[1]}**:{value}"
                             , inline=False)
 
-        for setting in log_settings[0]["logging"]:
+        for setting in log_settings["logging"]:
             value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
             embed.add_field(name=f""
                             , value=f"**{setting[1]}**:{value}"
@@ -82,9 +82,9 @@ class Settings(commands.Cog):
         server_settings = self.bot.api.get_all_settings()
 
         # Pull the names out of the returned JSON
-        logging_types = [item for item in channel_settings[0]['logging']]
-        role_types = [role for role in role_settings[0]['roles']]
-        setting_types = [setting for setting in server_settings[0]['setting']]
+        logging_types = [item for item in channel_settings['logging']]
+        role_types = [role for role in role_settings['roles']]
+        setting_types = [setting for setting in server_settings['setting']]
 
         # Get the names of the available channels and roles to map
         channels = [channel for channel in ctx.guild.text_channels if "log" in channel.name]

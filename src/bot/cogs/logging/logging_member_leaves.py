@@ -30,8 +30,17 @@ class LoggingLeaves(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.verification_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
+        setting = self.bot.api.get_one_role('6')
+        if setting["status"] == "ok":
+            self.verification_role = int(setting["roles"][2])  # Verification role ID
+        else:
+            self.verification_role = 0
+            # exits the init of the cog and also removes it from the bot so there are no conflicts with failure
+            raise RuntimeError("Failed to fetch verification role from API.")
+        
         self.join_log = self.bot.api.get_one_log_setting("2")  # Join_log
+        
+        logger.info("LoggingLeaves cog initialized")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -47,11 +56,11 @@ class LoggingLeaves(commands.Cog):
         if self.verification_role in [role.id for role in member.roles]:
             return
 
-        if self.join_log[0]["status"] == "ok":
-            if self.join_log[0]["logging"][2] == "0":
+        if self.join_log["status"] == "ok":
+            if self.join_log["logging"][2] == "0":
                 logger.debug(f"log was triggered, but logging is disabled. API: {self.join_log}")
                 return
-            logs_channel = await self.bot.fetch_channel(self.join_log[0]["logging"][2])
+            logs_channel = await self.bot.fetch_channel(self.join_log["logging"][2])
 
             audit_log = [entry async for entry in member.guild.audit_logs(limit=1)][0]
 

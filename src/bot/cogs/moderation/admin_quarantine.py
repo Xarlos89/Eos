@@ -67,10 +67,13 @@ class AdminQuarantine(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.naughty_role = self.bot.api.get_one_role('7')[0]['roles'][2]  # quarantine role ID
-        self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
+        self.naughty_role = self.bot.api.get_one_role('7')['roles'][2]  # quarantine role ID
+        self.verified_role = self.bot.api.get_one_role('6')['roles'][2]  # Verification role ID
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
-
+        if self.mod_log['status'] != 'ok' or self.naughty_role['status'] != 'ok' or self.verified_role['status'] != 'ok':
+            raise RuntimeError("Failed to fetch mod log settings from API.")
+        
+        
     @app_commands.command()
     @is_moderator()
     @is_master_guild()
@@ -94,7 +97,7 @@ class AdminQuarantine(commands.Cog):
             if not target.guild_permissions.administrator:
                 message_counter = 0
 
-                mod_log = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
+                mod_log = await self.bot.fetch_channel(self.mod_log["logging"][2])
                 verified_role = get(interaction.guild.roles, id=int(self.verified_role))
                 naughty_role = get(interaction.guild.roles, id=int(self.naughty_role))
 
@@ -144,7 +147,7 @@ class AdminQuarantine(commands.Cog):
         await interaction.response.defer()
         logger.info(f"{interaction.user.name} used the release command on {target.name}")
         if not target.bot:
-            mod_log = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
+            mod_log = await self.bot.fetch_channel(self.mod_log["logging"][2])
             verified_role = get(interaction.guild.roles, id=int(self.verified_role))
             naughty_role = get(interaction.guild.roles, id=int(self.naughty_role))
 

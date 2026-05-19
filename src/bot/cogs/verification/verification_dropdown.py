@@ -31,10 +31,10 @@ def embed_verified_success(name, amount):
 class VerificationSelector(discord.ui.Select):
     def __init__(self, bot):
         self.bot = bot
-        self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
-        self.join_log = self.bot.api.get_one_log_setting('2')[0]['logging'][2]
-        self.verification_log = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
-        self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
+        self.verified_role = self.bot.api.get_one_role('6')['roles'][2]
+        self.join_log = self.bot.api.get_one_log_setting('2')['logging'][2]
+        self.verification_log = self.bot.api.get_one_log_setting('1')['logging'][2]
+        self.verification_channel = self.bot.api.get_one_setting('1')['setting'][2]
 
         self.robot = [discord.SelectOption(
             label="I'm a robot."
@@ -97,9 +97,9 @@ class Verification(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot  # Passed in from main.py
-        self.join_log = self.bot.api.get_one_log_setting('4')[0]['logging'][2]
-        self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
-        self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
+        self.join_log = self.bot.api.get_one_log_setting('4')['logging'][2]
+        self.verification_channel = self.bot.api.get_one_setting('1')['setting'][2]
+        self.verified_role = self.bot.api.get_one_role('6')['roles'][2]
 
     @commands.command()
     async def verify(self, ctx):
