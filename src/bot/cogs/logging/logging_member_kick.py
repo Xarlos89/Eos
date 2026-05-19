@@ -35,6 +35,7 @@ class LoggingKicks(commands.Cog):
         self.bot = bot
         setting = self.bot.api.get_one_role('6')
         if setting["status"] == "ok":
+            logger.debug(f"API call successful. Retrieved verification role: {setting}")
             self.verification_role = setting["roles"][2]  # Verification role ID
         else:
             self.verification_role = 0

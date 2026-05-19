@@ -50,13 +50,19 @@ class LoggingMessageEdit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         setting = self.bot.api.get_one_setting('3')
-        if setting["status"] == "ok":
-            self.staff_channel = setting["setting"][2]  # Staff Channel ID
-        else:
-            self.staff_channel = 0
+        if setting['status'] != 'ok':
             logger.error(f"API error. API response not ok. -> {setting}")
+            return 
+        else:
+            self.staff_channel = setting['setting'][2]
+            logger.debug(f"LoggingMessageDelete cog initialized. Staff channel ID: {self.staff_channel}")
 
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
+        if self.chat_log['status'] != 'ok':
+            logger.error(f"API error. API response not ok. -> {self.chat_log}")
+            return
+        else:
+            logger.debug(f"LoggingMessageDelete cog initialized. Chat log setting: {self.chat_log}")
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before, message_after):
