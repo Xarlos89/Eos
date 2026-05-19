@@ -28,42 +28,46 @@ class Settings(commands.Cog):
     @is_admin()
     @commands.hybrid_command()
     async def settings(self, ctx: commands.Context):
-       """
-       List all available settings.
-       """
+        """
+        List all available settings.
+        """
 
-       server_settings = self.bot.api.get_all_settings()
-       log_settings = self.bot.api.get_all_log_settings()
+        server_settings = self.bot.api.get_all_settings()
+        log_settings = self.bot.api.get_all_log_settings()
+        try:
+            if server_settings[0]["status"] != "ok":
+                await ctx.send(f"Failed to retrieve settings: {server_settings['message']}")
+                return
+            if log_settings[0]["status"] != "ok":
+                await ctx.send(f"Failed to retrieve settings: {log_settings['message']}")
+                return
+        except Exception as e:
+            logger.error(f"Error retrieving settings: {e}")
+            await ctx.send("An error occurred while retrieving settings.")
+            return
 
-       if server_settings[0]["status"] != "ok":
-           await ctx.send(f"Failed to retrieve settings: {server_settings['message']}")
-           return
-       if log_settings[0]["status"] != "ok":
-           await ctx.send(f"Failed to retrieve settings: {log_settings['message']}")
-           return
+        embed = discord.Embed(title="-- Settings --",
+                        description="Here, you can see the current settings for the server.",
+                        colour=0x000000,
+                        timestamp=datetime.datetime.now())
 
-       embed = discord.Embed(title="-- Settings --",
-                      description="Here, you can see the current settings for the server.",
-                      colour=0x000000,
-                      timestamp=datetime.datetime.now())
+        for setting in server_settings[0]["setting"]:
+            value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
+            embed.add_field(name=""
+                            , value=f"**{setting[1]}**:{value}"
+                            , inline=False)
 
-       for setting in server_settings[0]["setting"]:
-           value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
-           embed.add_field(name=""
-                           , value=f"**{setting[1]}**:{value}"
-                           , inline=False)
-
-       for setting in log_settings[0]["logging"]:
-           value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
-           embed.add_field(name=f""
-                           , value=f"**{setting[1]}**:{value}"
-                           , inline=False)
+        for setting in log_settings[0]["logging"]:
+            value = f"<#{setting[2]}>" if setting[2] != '0' else 'Off'
+            embed.add_field(name=f""
+                            , value=f"**{setting[1]}**:{value}"
+                            , inline=False)
 
 
-       embed.set_footer(text=ctx.guild.name,
+        embed.set_footer(text=ctx.guild.name,
                         icon_url=ctx.guild.icon)
 
-       await ctx.send(embed=embed)
+        await ctx.send(embed=embed)
 
     @is_master_guild()
     @is_admin()

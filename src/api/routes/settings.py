@@ -18,7 +18,7 @@ def get_setting(setting_id=None):
     :param setting_id: Optional integer ID of a specific setting
     :return: JSON response with setting
     """
-    if setting_id is None or setting_id == 0:        # Retrieve all settings
+    if setting_id:        # Retrieve all settings
         result = eos.db.get_settings()
     else:
         # Retrieve a single setting

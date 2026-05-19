@@ -48,8 +48,8 @@ class Points(commands.Cog):
         Users that exist in the DB will not be synced.
         """
         added = 0
-        for user in ctx.guild.members:
-            self.bot.api.add_user_to_points(user.id)
+        for user in ctx.guild.members: # type: ignore
+            self.bot.api.add_user_to_points(user.id) # type: ignore
             added += 1
         await ctx.reply(
             embed=embed_info(
