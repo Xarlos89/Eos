@@ -30,7 +30,14 @@ class LoggingLeaves(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.verification_role = self.bot.api.get_one_role('6')['roles'][2]  # Verification role ID
+        setting = self.bot.api.get_one_role('6')
+        if setting["status"] == "ok":
+            self.verification_role = setting["roles"][2]  # Verification role ID
+        else:
+            self.verification_role = 0
+            logger.error(f"API error. API response not ok. -> {setting}")
+            return
+        
         self.join_log = self.bot.api.get_one_log_setting("2")  # Join_log
 
     @commands.Cog.listener()

@@ -49,7 +49,13 @@ class LoggingMessageEdit(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.staff_channel = self.bot.api.get_one_setting('3')['setting'][2] # Staff Channel ID
+        setting = self.bot.api.get_one_setting('3')
+        if setting["status"] == "ok":
+            self.staff_channel = setting["setting"][2]  # Staff Channel ID
+        else:
+            self.staff_channel = 0
+            logger.error(f"API error. API response not ok. -> {setting}")
+
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
 
     @commands.Cog.listener()

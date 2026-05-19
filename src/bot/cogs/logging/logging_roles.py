@@ -44,7 +44,7 @@ class LoggingRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
-
+        
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         """

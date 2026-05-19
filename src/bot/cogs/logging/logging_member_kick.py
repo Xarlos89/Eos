@@ -33,7 +33,14 @@ class LoggingKicks(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.verification_role = self.bot.api.get_one_role('6')['roles'][2]  # Verification role ID
+        setting = self.bot.api.get_one_role('6')
+        if setting["status"] == "ok":
+            self.verification_role = setting["roles"][2]  # Verification role ID
+        else:
+            self.verification_role = 0
+            logger.error(f"API error. API response not ok. -> {setting}")
+            
+            
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
     @commands.Cog.listener()
