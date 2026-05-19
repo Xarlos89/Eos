@@ -20,9 +20,8 @@ def embed_message_delete(some_member, some_message, some_moderator=None):
         title=f'<:red_circle:1043616578744357085> Deleted Message'
         ,
         description=f'{some_moderator.mention if some_moderator is not None else some_member.mention} deleted a message'
-                    f'\nIn {some_message.channel}\nMessage '
-                    f'author: {some_member.mention}'
-                    f'{f"\n Attachments: {len(some_message.attachments)}" if some_message.attachments else ""}'
+                    f'\nIn {some_message.channel}\n'
+                    f'Message author: {some_member.mention}'
         , color=discord.Color.red()
         , timestamp=datetime.datetime.now(datetime.timezone.utc)
     )
@@ -35,11 +34,21 @@ def embed_message_delete(some_member, some_message, some_moderator=None):
         the_message = some_message.content[0:1020] + '...'
     else:
         the_message = some_message.content
-    embed.add_field(
-        name='Message: '
-        , value=the_message
-        , inline=True
-    )
+    if len(the_message) == 0:
+        the_message = "*No text content*"
+    else: 
+        embed.add_field(
+            name='Message: '
+            , value=the_message
+            , inline=True
+        )
+        
+    if some_message.attachments:
+        embed.add_field(
+            name='Attachments: '
+            , value='\n'.join([attachment.url for attachment in some_message.attachments])
+            , inline=False
+        )
 
     return embed
 
