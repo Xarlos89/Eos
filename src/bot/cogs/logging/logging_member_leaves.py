@@ -32,11 +32,11 @@ class LoggingLeaves(commands.Cog):
         self.bot = bot
         setting = self.bot.api.get_one_role('6')
         if setting["status"] == "ok":
-            self.verification_role = setting["roles"][2]  # Verification role ID
+            self.verification_role = int(setting["roles"][2])  # Verification role ID
         else:
             self.verification_role = 0
-            logger.error(f"API error. API response not ok. -> {setting}")
-            return
+            # exits the init of the cog and also removes it from the bot so there are no conflicts with failure
+            raise RuntimeError("Failed to fetch verification role from API.")
         
         self.join_log = self.bot.api.get_one_log_setting("2")  # Join_log
         

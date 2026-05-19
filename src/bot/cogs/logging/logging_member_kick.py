@@ -35,10 +35,11 @@ class LoggingKicks(commands.Cog):
         self.bot = bot
         setting = self.bot.api.get_one_role('6')
         if setting["status"] == "ok":
-            self.verification_role = setting["roles"][2]  # Verification role ID
+            self.verification_role = int(setting["roles"][2])  # Verification role ID
         else:
             self.verification_role = 0
-            logger.error(f"API error. API response not ok. -> {setting}")
+            raise RuntimeError("Failed to fetch verification role from API.")
+
             
             
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log

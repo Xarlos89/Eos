@@ -126,6 +126,7 @@ class DB:
             result = self.cursor.fetchone()
             return {"status": "ok", "setting": result}
         except OperationalError as err:
+            logger.error(f"Error fetching setting: {err}")
             return {"status": "error", "message": str(err)}
 
     def get_settings(self):
@@ -135,7 +136,7 @@ class DB:
             result = self.cursor.fetchall()
             return {"status": "ok", "setting": result}
         except OperationalError as err:
-            logger.error(f"Error fetching setting: {err}")
+            logger.error(f"Error fetching settings: {err}")
             return {"status": "error", "message": str(err)}
 
 

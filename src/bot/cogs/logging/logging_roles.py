@@ -44,6 +44,8 @@ class LoggingRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
+        if self.mod_log['status'] != 'ok':
+            raise RuntimeError("Failed to fetch mod log settings from API.")
         logger.info("LoggingRoles cog initialized")
         
     @commands.Cog.listener()

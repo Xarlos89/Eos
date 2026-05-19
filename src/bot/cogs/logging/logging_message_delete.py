@@ -52,16 +52,13 @@ class LoggingMessageDelete(commands.Cog):
         setting = self.bot.api.get_one_setting('3')
         
         if setting['status'] != 'ok':
-            logger.error(f"API error. API response not ok. -> {setting}")
-            return 
+            raise RuntimeError("Failed to fetch staff channel setting from API.")
         else:
             self.staff_channel = setting['setting'][2]
 
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
         if self.chat_log['status'] != 'ok':
-            logger.error(f"API error. API response not ok. -> {self.chat_log}")
-            return
-        logger.info("LoggingMessageDelete cog loaded successfully.")
+            raise RuntimeError("Failed to fetch chat log settings from API.")
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
