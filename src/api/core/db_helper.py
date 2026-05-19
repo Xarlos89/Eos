@@ -51,7 +51,9 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM logging") # case sensitive
             result = self.cursor.fetchall()
-            return {"status": "ok", "logging": result}
+            response = {"status": "ok", "logging": result}
+            logger.debug(f"DB Response:\n{response}")
+            return response
         except OperationalError as err:
             logger.error(f"Error fetching logging: {err}")
             return {"status": "error", "message": str(err)}
@@ -61,7 +63,9 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM logging")
             result = self.cursor.fetchall()
-            return {"status": "ok", "logging": result}
+            response = {"status": "ok", "logging": result}
+            logger.debug(f"DB Response:\n{response}")
+            return response
         except OperationalError as err:
             logger.error(f"Error fetching logging: {err}")
             return {"status": "error", "message": str(err)}
@@ -96,6 +100,16 @@ class DB:
     ##################
     ##   Settings   ##
     ##################
+    
+    # {'status': 'ok', 
+    #  'setting': [
+    #       (3, 'Staff Channel', '1506111576946511923'),
+    #       (1, 'Verification Channel', '1506114864828121158'), 
+    #       (4, 'Bot Spam Channel', '1506114864828121158'), 
+    #       (2, 'Quarantine Channel', '1506114864828121158')
+    #   ]
+    # }
+    
     def get_setting(self, setting_id):
         logger.debug("API attempting to contact DB for get_setting...")
         try:
