@@ -49,7 +49,7 @@ class LoggingMessageDelete(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.staff_channel = self.bot.api.get_one_setting('3')['setting'][2]  # Staff Channel ID
+        self.staff_channel = self.bot.api.get_one_setting('3')#['setting'][2]  # Staff Channel ID
         logger.debug(f"LoggingMessageDelete cog initialized. Staff channel ID: {self.staff_channel}")
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
         logger.debug(f"LoggingMessageDelete cog initialized. Chat log settings: {self.chat_log}")
