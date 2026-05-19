@@ -35,9 +35,6 @@ class Settings(commands.Cog):
         server_settings = self.bot.api.get_all_settings()
         log_settings = self.bot.api.get_all_log_settings()
         try:
-            logger.debug(f"Server settings response: {server_settings}")
-            logger.debug(f"Log settings response: {log_settings}")
-            # {"status": "error", "message": str(err)} or  return {"status": "ok", "setting": result}
             if server_settings[0]["status"] != "ok":
                 await ctx.send(f"Failed to retrieve settings: {server_settings['message']}")
                 return
