@@ -46,6 +46,15 @@ class DB:
             logger.error(f"Error fetching logging: {err}")
             return {"status": "error", "message": str(err)}
 
+    # {
+        # 'status': 'ok', 
+        # 'setting': [
+            # (3, 'Staff Channel', '1506111576946511923'), 
+            # (1, 'Verification Channel', '1506114864828121158'), 
+            # (4, 'Bot Spam Channel', '1506114864828121158'), 
+            # (2, 'Quarantine Channel', '1506114864828121158')
+        # ]
+    # }
     def get_log_settings(self):
         logger.debug("API attempting to contact DB for get_log_settings...")
         try:
@@ -115,11 +124,8 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM serversettings where id = %s", (setting_id,))
             result = self.cursor.fetchone()
-            response = {"status": "ok", "setting": result}
-            logger.debug(f"DB Response:\n{response}")
-            return response
+            return {"status": "ok", "setting": result}
         except OperationalError as err:
-            logger.error(f"Error fetching setting: {err}")
             return {"status": "error", "message": str(err)}
 
     def get_settings(self):
@@ -127,9 +133,7 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM serversettings") # case sensitive
             result = self.cursor.fetchall()
-            response = {"status": "ok", "setting": result}
-            logger.debug(f"DB Response:\n{response}")
-            return response
+            return {"status": "ok", "setting": result}
         except OperationalError as err:
             logger.error(f"Error fetching setting: {err}")
             return {"status": "error", "message": str(err)}
