@@ -31,7 +31,7 @@ class LoggingBans(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.verification_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
+        self.verification_role = self.bot.api.get_one_role('6')['roles'][2]  # Verification role ID
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
     @commands.Cog.listener()
@@ -50,11 +50,11 @@ class LoggingBans(commands.Cog):
 
         audit_log = [entry async for entry in member.guild.audit_logs(limit=1)][0]
 
-        if self.mod_log[0]["status"] == "ok":
-            if self.mod_log[0]["logging"][2] == "0":
-                logger.debug(f"log was triggered, but logging is disabled. API: {self.join_log}")
+        if self.mod_log["status"] == "ok":
+            if self.mod_log["logging"][2] == "0":
+                logger.debug(f"log was triggered, but logging is disabled. API: {self.mod_log}")
                 return
-            logs_channel = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
+            logs_channel = await self.bot.fetch_channel(self.mod_log["logging"][2])
 
             if str(audit_log.action) == "AuditLogAction.ban":
                 if audit_log.target == member:

@@ -57,14 +57,14 @@ class LoggingMessageDelete(commands.Cog):
         else:
             self.staff_channel = setting['setting'][2]
             logger.debug(f"LoggingMessageDelete cog initialized. Staff channel ID: {self.staff_channel}")
-            
+
         #{'logging': [3, 'Chat Log', '1394473942537994363'], 'status': 'ok'}
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
         if self.chat_log['status'] != 'ok':
             logger.error(f"API error. API response not ok. -> {self.chat_log}")
             return
         else:
-            logger.debug(f"LoggingMessageDelete cog initialized. Chat log settings: {self.chat_log}")
+            logger.debug(f"LoggingMessageDelete cog initialized. Chat log setting: {self.chat_log}")
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
