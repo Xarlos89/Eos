@@ -101,9 +101,11 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM serversettings where id = %s", (setting_id,))
             result = self.cursor.fetchone()
-            return {"status": "ok", "setting": result}
+            response = {"status": "ok", "setting": result}
+            logger.debug(f"DB Response:\n{response}")
+            return response
         except OperationalError as err:
-            logger.error(f"Error fetching logging: {err}")
+            logger.error(f"Error fetching setting: {err}")
             return {"status": "error", "message": str(err)}
 
     def get_settings(self):
@@ -111,7 +113,9 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM serversettings") # case sensitive
             result = self.cursor.fetchall()
-            return {"status": "ok", "setting": result}
+            response = {"status": "ok", "setting": result}
+            logger.debug(f"DB Response:\n{response}")
+            return response
         except OperationalError as err:
             logger.error(f"Error fetching setting: {err}")
             return {"status": "error", "message": str(err)}
