@@ -24,7 +24,7 @@ def get_setting(setting_id=None):
         # Retrieve a single setting
         result = eos.db.get_setting(setting_id)
 
-    return jsonify(result),200
+    return jsonify(result), 200
 
 
 @settings.route('/settings/<setting_id>', methods=['PUT'])
@@ -35,7 +35,7 @@ def update_setting(setting_id):
     if request.method == 'PUT':
         data = request.json
         result = eos.db.update_setting(int(setting_id), data['value'])
-        return jsonify(result) 200
+        return jsonify(result), 200
 
     return jsonify({'message': 'improper request method'}), 405
 
@@ -47,7 +47,7 @@ def add_setting():
     if request.method == 'POST':
         data = request.json
         result = eos.db.add_setting(data['name'], data['value'])
-        return jsonify(result, 201)
+        return jsonify(result), 201
 
     return jsonify({'message': 'improper request method'}), 405
 
@@ -58,6 +58,6 @@ def delete_setting(setting_id):
     """
     if request.method == 'DELETE':
         result = eos.db.delete_setting(setting_id)
-        return jsonify(result, 200)
+        return jsonify(result), 200
 
     return jsonify({'message': 'improper request method'}), 405
