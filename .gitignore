@@ -2,6 +2,11 @@
 .env
 /src/db/postgres-data/
 
+/src/*docker
+src/docker-compose.yml
+
+scratchpad/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -131,10 +136,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
+.vscode/
 
 # Rope project settings
 .ropeproject
@@ -157,3 +159,6 @@ dmypy.json
 cython_debug/
 
 /.obsidian/
+src/docker-compose.yml
+src/docker-compose.yml
+src/docker-compose.yml
