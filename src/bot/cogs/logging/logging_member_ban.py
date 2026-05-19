@@ -39,7 +39,8 @@ class LoggingBans(commands.Cog):
             logger.error(f"API error. API response not ok. -> {setting}")
         
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
-
+        logger.info("LoggingBans cog initialized")
+        
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         """

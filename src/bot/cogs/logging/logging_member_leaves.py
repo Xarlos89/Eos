@@ -39,6 +39,8 @@ class LoggingLeaves(commands.Cog):
             return
         
         self.join_log = self.bot.api.get_one_log_setting("2")  # Join_log
+        
+        logger.info("LoggingLeaves cog initialized")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
