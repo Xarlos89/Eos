@@ -32,6 +32,8 @@ services:
     image: eos-api:latest
     networks:
       - eos
+    ports:
+      - "5000:5000"
     depends_on:
       migration:
         condition: service_completed_successfully
@@ -48,6 +50,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    
 
   postgres:
     container_name: db
