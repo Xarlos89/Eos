@@ -65,9 +65,16 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
         except Exception as e:
             logger.error(f"Error adding ticket to database: {e}")
             await thread.send("There was an error saving the ticket to the database")
+        try:
+            await interaction.response.send_message(content=f"Your ticket has been created! {thread.jump_url}", ephemeral=True)
+        except Exception as e:
+            await interaction.channel.send(content=f"Your ticket has been created! {thread.jump_url}")
+            logger.error(f"Error sending followup message: {e}")
+            
+    async def on_error(self, interaction: discord.Interaction, error: Exception):
+        await interaction.followup.send("An error occurred while creating your ticket. Please try again later.", ephemeral=True)
         
-        await interaction.followup.send(f"Your ticket has been created! {thread.jump_url}", ephemeral=True)
-        
+        logger.error(f"Error in TicketReasonModal: {error} \nTraceback: {error.__traceback__}", exc_info=True)
         
 class TicketDropdown(discord.ui.Select):
     def __init__(self, bot):
