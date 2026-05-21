@@ -337,4 +337,13 @@ class DB:
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
         
+    def get_open_tickets(self):
+        logger.debug("API attempting to contact DB for get_open_tickets...")
+        try:
+            self.cursor.execute("SELECT * FROM tickets WHERE status = 'open'")
+            result = self.cursor.fetchall()
+            return {"status": "ok", "tickets": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching open tickets: {err}")
+            return {"status": "error", "message": str(err)}
     
