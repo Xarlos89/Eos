@@ -33,7 +33,7 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
         guild = interaction.guild
         channel = self.bot.api.get_one_setting('5')
         staff_role = self.bot.api.get_one_role('3')
-        staff_role = staff_role if staff_role['status'] == 'ok' else None
+        staff_role = staff_role['roles'][2] if staff_role['status'] == 'ok' else None
         
         if channel is None or channel['setting'][2] == "0":
             logger.warning("Ticket Channel not set in db. Cannot create ticket.")
