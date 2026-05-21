@@ -130,7 +130,7 @@ class TicketManager(commands.Cog):
         
         await interaction.response.send_message("creating ticket...", view=TicketView(self.bot), ephemeral=True)
 
-    @app_commands.command(description="Close a ticket in the current channel.")
+    @app_commands.command(name="close_ticket", description="Close a ticket in the current channel.")
     async def close_ticket(self, interaction: discord.Interaction):
         """
         Closes the ticket in the current channel.
