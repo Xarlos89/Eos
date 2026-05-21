@@ -44,6 +44,21 @@ def update_ticket(thread_id):
 
     return jsonify({'message': 'improper request method'}), 405
 
+@tickets.route('/tickets/<int:thread_id>', methods=['PATCH'])
+def close_ticket(thread_id):
+    """
+    Close a specific ticket in the database.
+    """
+    if request.method == 'PATCH':
+        try:
+            result = eos.db.update_ticket_status(thread_id, "closed")
+            return jsonify(result), 200
+        except Exception as e:
+            logger.error(f"Error closing ticket in database: {e}")
+            return jsonify({'status': 'error', 'message': 'An error occurred while closing the ticket.'}), 500
+
+    return jsonify({'message': 'improper request method'}), 405
+
 @tickets.route('/tickets', methods=['POST'])
 def add_ticket():
     """
