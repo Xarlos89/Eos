@@ -61,7 +61,7 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
             f'\n\n please provide any additional information here and our staff will assist you as soon as possible.'
         )
         
-        self.bot.api.create_ticket(interaction.user.id, thread.id, option, self.description.value)
+        self.bot.api.add_ticket(interaction.user.id, thread.id, option, self.description.value)
         
         await interaction.followup.send(f"Your ticket has been created! {thread.jump_url}", ephemeral=True)
         
