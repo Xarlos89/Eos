@@ -51,8 +51,9 @@ def add_ticket():
     """
     if request.method == 'POST':
         data = request.json
+    
         try:
-            result = eos.db.add_ticket(data)
+            result = eos.db.add_ticket(data["ticket_id"], data["creator_id"], data["channel_id"], data.get("status", "open")) 
             return jsonify(result), 201
         except Exception as e:
             logger.error(f"Error adding ticket to database: {e}")

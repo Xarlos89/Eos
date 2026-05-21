@@ -178,12 +178,13 @@ class API:
         
     def add_ticket(self,ticket_id, user_id, channel_id):
         """Adds a new ticket to the database"""
-        logger.debug(f"Bot called the add_ticket endpoint. User ID: {user_id} - Channel ID: {channel_id}")
         data = {
             'ticket_id': ticket_id,
             'creator_id': user_id,
             'channel_id': channel_id,
         }
+        logger.debug(f"Bot called the add_ticket endpoint. sending data: {data}")
+
         return requests.post(f"{self.api}/tickets", json=data).json()
     
     def update_ticket_status(self, ticket_id, new_status):
