@@ -135,10 +135,9 @@ class AddTicketModal(commands.Cog):
         A simple command with a view.
         """       
         logger.info("%s used the %s command.", interaction.user.name, interaction.command.name) # type: ignore
-        await interaction.response.defer()
         
-        await interaction.followup.send(
-            "Do you need help, or do you have a question for the Staff?",
+        await interaction.response.send_message(
+            "creating ticket...",   
             view=TicketView(self.bot),
             ephemeral=True,
         )
