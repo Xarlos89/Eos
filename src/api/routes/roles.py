@@ -61,3 +61,4 @@ def delete_role(role_id):
         return jsonify(result), 200
 
     return jsonify({'message': 'improper request method'}), 405
+

@@ -55,15 +55,19 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
         await thread.add_user(interaction.user) # type: ignore
         
         await thread.send(
-            f'<@&{staff_role}> -- {interaction.user.mention} has created a ticket\n'
-            f'Type: {option}\n'
+            f'<@&{staff_role}>\n ## {interaction.user.mention} has created a ticket\n'
+            f'** Type: ** {option}\n'
             f'{self.description.value}'
-            f'\n\n please provide any additional information here and our staff will assist you as soon as possible.'
+            f'\n\n _ please provide any additional information here and our staff will assist you as soon as possible. _'
         )
-        
-        self.bot.api.add_ticket(interaction.user.id, thread.id, option, self.description.value)
+        try: 
+            self.bot.api.add_ticket(interaction.user.id, thread.id, option, self.description.value)
+        except Exception as e:
+            logger.error(f"Error adding ticket to database: {e}")
+            await thread.send("There was an error saving the ticket to the database")
         
         await interaction.followup.send(f"Your ticket has been created! {thread.jump_url}", ephemeral=True)
+        
         
 class TicketDropdown(discord.ui.Select):
     def __init__(self, bot):
