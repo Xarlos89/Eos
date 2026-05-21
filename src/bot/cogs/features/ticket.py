@@ -106,17 +106,14 @@ class TicketView(discord.ui.View):
 
     
 
-class AddTicketModal(commands.Cog):
+class TicketManager(commands.Cog):
     """
     This is the slash command that sends our UI element.
     """
 
     def __init__(self, bot):
         self.bot = bot
-        
         ticket_channel = self.bot.api.get_one_setting('5')
-        
-        
         if ticket_channel is None or ticket_channel['setting'][2] == "0":
             logger.warning("Ticket Channel not set in db. Ticket commands will not work until this is set.")
             raise RuntimeError("Ticket Channel not set in db. Ticket commands will not work until this is set.")
@@ -133,8 +130,40 @@ class AddTicketModal(commands.Cog):
         
         await interaction.response.send_message("creating ticket...", view=TicketView(self.bot), ephemeral=True)
 
+    @app_commands.command(description="Close a ticket in the current channel.")
+    async def close_ticket(self, interaction: discord.Interaction):
+        """
+        Closes the ticket in the current channel.
+        """
+        logger.info("%s used the %s command.", interaction.user.name, interaction.command.name) # type: ignore
+        thread = interaction.channel
+        
+        
+        if str(thread.parent_id) != self.ticket_channel: #type: ignore
+            await interaction.response.send_message("This command can only be used in a ticket thread.", ephemeral=True)
+            return
+        
+        
+        try:
+            self.bot.api.close_ticket(interaction.channel_id)
+            data = self.bot.api.get_ticket(thread.id) # type: ignore
+            if data is None or data['status'] != 'ok':
+                logger.warning(f"Ticket data not found for channel {thread.id}. Cannot close ticket.")
+            
+            try: 
+                close = self.bot.api.update_ticket_status(thread.id, "closed") # type: ignore
+                if close is None or close['status'] != 'ok':
+                    logger.warning(f"Failed to update ticket status to closed for channel {thread.id}.")
+            except Exception as e:
+                logger.error(f"Error updating ticket status to closed for channel {thread.id}: {e}")
+                
+            await interaction.response.send_message("This thread is unknown to the DB", ephemeral=True)
+            
+        except Exception as e:
+            logger.error(f"Error closing ticket: {e}")
+            await interaction.response.send_message("There was an error closing the ticket. Please try again later.", ephemeral=True)
     
 
 async def setup(bot: commands.Bot) -> None:
     """boink"""
-    await bot.add_cog(AddTicketModal(bot))
+    await bot.add_cog(TicketManager(bot))
