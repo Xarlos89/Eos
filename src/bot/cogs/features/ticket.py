@@ -153,10 +153,19 @@ class TicketManager(commands.Cog):
                 close = self.bot.api.update_ticket_status(thread.id, "closed") # type: ignore
                 if close is None or close['status'] != 'ok':
                     logger.warning(f"Failed to update ticket status to closed for channel {thread.id}.")
+                else:
+                    await interaction.response.send_message("This thread is unknown to the DB", ephemeral=True)
+                    try:
+                        await thread.send(f"This ticket has been closed by {interaction.user.mention}.")
+                        await thread.edit(archived=True, locked=True) # type: ignore
+                    except Exception as e:
+                        logger.error(f"Error archiving and locking thread {thread.id}: {e}")
+                        await interaction.response.send_message("Ticket status updated to closed, but there was an error archiving the thread.", ephemeral=True) 
+                        
+                        
             except Exception as e:
                 logger.error(f"Error updating ticket status to closed for channel {thread.id}: {e}")
-                
-            await interaction.response.send_message("This thread is unknown to the DB", ephemeral=True)
+                await interaction.response.send_message("This thread is unknown to the DB", ephemeral=True)
             
         except Exception as e:
             logger.error(f"Error closing ticket: {e}")
