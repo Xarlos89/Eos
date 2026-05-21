@@ -32,6 +32,8 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
     async def on_submit(self, interaction: discord.Interaction):
         guild = interaction.guild
         channel = self.bot.api.get_one_setting('5')
+        staff_role = self.bot.api.get_one_role('3')
+        staff_role = staff_role if staff_role['status'] == 'ok' else None
         
         if channel is None or channel['setting'][2] == "0":
             logger.warning("Ticket Channel not set in db. Cannot create ticket.")
@@ -53,7 +55,7 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
         await thread.add_user(interaction.user) # type: ignore
         
         await thread.send(
-            f'<@&{self.staff_role}> -- {interaction.user.mention} has created a ticket\n'
+            f'<@&{staff_role}> -- {interaction.user.mention} has created a ticket\n'
             f'Type: {option}\n'
             f'{self.description.value}'
             f'\n\n please provide any additional information here and our staff will assist you as soon as possible.'
@@ -103,9 +105,6 @@ class AddTicketModal(commands.Cog):
         
         ticket_channel = self.bot.api.get_one_setting('5')
         
-        staff_role = self.bot.api.get_one_role('3')
-        
-        self.staff_role = staff_role if staff_role['status'] == 'ok' else None
         
         if ticket_channel is None or ticket_channel['setting'][2] == "0":
             logger.warning("Ticket Channel not set in db. Ticket commands will not work until this is set.")
