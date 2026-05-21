@@ -14,6 +14,8 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
     This modal appears when the user selects a ticket type.
     It allows them to provide a reason or description for the ticket.
     """
+       
+    
     
     options = [
             discord.SelectOption(
@@ -40,8 +42,8 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
         )
     
     description = discord.ui.TextInput(
-        label="Please describe the issue or reason for the ticket. ", 
-        style=discord.TextStyle.paragraph, 
+        label="Please describe The Issue...", 
+        style=discord.TextStyle.short, 
         required=True, max_length=1000
         )
 
@@ -83,7 +85,7 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
         
         self.bot.db.create_ticket(interaction.user.id, thread.id, option, self.description.value)
         
-        await interaction.response.send_message(f"Your ticket has been created! {thread.jump_url}", ephemeral=True)
+        await interaction.followup.send(f"Your ticket has been created! {thread.jump_url}", ephemeral=True)
         
 
 class TicketView(discord.ui.View):
@@ -122,11 +124,7 @@ class AddTicketModal(commands.Cog):
         """       
         logger.info("%s used the %s command.", interaction.user.name, interaction.command.name) # type: ignore
         
-        await interaction.response.send_message(
-            "creating ticket...",   
-            view=TicketView(self.bot),
-            ephemeral=True,
-        )
+        await interaction.response.send_modal(TicketReasonModal(self.bot))
 
 
 async def setup(bot: commands.Bot) -> None:
