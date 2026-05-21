@@ -168,18 +168,18 @@ class API:
     ##    Ticket    ##
     ##################
     
-    def get_ticket(self, ticket_id=None):
+    def get_ticket(self, thread_id=None):
         """Retrieves ticket(s) from the database"""
-        logger.debug(f"Bot called the get_ticket endpoint. Ticket ID: {ticket_id if ticket_id else 'All tickets'}")
-        if ticket_id is None:
+        logger.debug(f"Bot called the get_ticket endpoint. Thread ID: {thread_id if thread_id else 'All tickets'}")
+        if thread_id is None:
             return requests.get(f"{self.api}/tickets").json()
         else:
-            return requests.get(f"{self.api}/tickets/{ticket_id}").json()
+            return requests.get(f"{self.api}/tickets/{thread_id}").json()
         
-    def add_ticket(self,ticket_id, user_id, channel_id):
+    def add_ticket(self,thread_id, user_id, channel_id):
         """Adds a new ticket to the database"""
         data = {
-            'ticket_id': ticket_id,
+            'thread_id': thread_id,
             'creator_id': user_id,
             'channel_id': channel_id,
         }
@@ -187,17 +187,17 @@ class API:
 
         return requests.post(f"{self.api}/tickets", json=data).json()
     
-    def update_ticket_status(self, ticket_id, new_status):
+    def update_ticket_status(self, thread_id, new_status):
         """Updates the status of an existing ticket in the database"""
-        logger.debug(f"Bot called the update_ticket_status endpoint. Ticket ID: {ticket_id} - New Status: {new_status}")
+        logger.debug(f"Bot called the update_ticket_status endpoint. Thread ID: {thread_id} - New Status: {new_status}")
         data = {
             'status': new_status
         }
-        return requests.put(f"{self.api}/tickets/{ticket_id}", json=data).json()
+        return requests.put(f"{self.api}/tickets/{thread_id}", json=data).json()
     
-    def delete_ticket(self, ticket_id):
+    def delete_ticket(self, thread_id):
         """Deletes a ticket from the database"""
-        logger.debug(f"Bot called the delete_ticket endpoint. Ticket ID: {ticket_id}")
-        return requests.delete(f"{self.api}/tickets/{ticket_id}").json()
+        logger.debug(f"Bot called the delete_ticket endpoint. Thread ID: {thread_id}")
+        return requests.delete(f"{self.api}/tickets/{thread_id}").json()
     
     

@@ -270,12 +270,12 @@ class DB:
     ##    Ticket    ##
     ##################
     
-    def get_ticket(self, ticket_id: int):
-        """Fetches a specific ticket from the database by its ID."""
+    def get_ticket(self, thread_id: int):
+        """Fetches a specific ticket from the database by its thread ID."""
         
         logger.debug("API attempting to contact DB for get_ticket...")
         try:
-            self.cursor.execute("SELECT * FROM tickets where ticket_id = %s", (ticket_id,))
+            self.cursor.execute("SELECT * FROM tickets where thread_id = %s", (thread_id,))
             result = self.cursor.fetchone()
             return {"status": "ok", "ticket": result}
         except OperationalError as err:
@@ -294,31 +294,47 @@ class DB:
             logger.error(f"Error fetching tickets: {err}")
             return {"status": "error", "message": str(err)}
         
-    def add_ticket(self, ticket_id: int, creator_id: int, channel_id: int, status: str = 'open'):
+    def add_ticket(self, thread_id: int, creator_id: int, channel_id: int, status: str = 'open'):
         """
         Add a new ticket to the database.
         Args:
-            - ticket_id: The unique ID of the ticket (e.g., thread ID).
+            - thread_id: The unique ID of the ticket (e.g., thread ID).
             - creator_id: The Discord ID of the user who created the ticket.
             - channel_id: The Discord ID of the channel associated with the ticket.
             - status: The current status of the ticket (e.g., 'open', 'closed')
         
         """
         
-        logger.debug(f"API attempting to contact DB for add_ticket with ticket_id:{ticket_id} - creator_id:{creator_id} - channel_id:{channel_id} - status:{status}")
+        logger.debug(f"API attempting to contact DB for add_ticket with thread_id:{thread_id} - creator_id:{creator_id} - channel_id:{channel_id} - status:{status}")
         try:
-            self.cursor.execute("INSERT INTO tickets (id, ticket_id, creator_id, channel_id, status) VALUES (%s, %s, %s, %s, %s)", (None, ticket_id, creator_id, channel_id, status))
+            self.cursor.execute(
+                """
+                INSERT INTO tickets (
+                    thread_id, 
+                    creator_id, 
+                    channel_id, 
+                    status
+                ) 
+                VALUES (%s, %s, %s, %s)""", 
+                (
+                    thread_id, 
+                    creator_id, 
+                    channel_id, 
+                    status
+                )
+            )
+            
             self.conn.commit()
             return {"status": "ok", "message": "New ticket added successfully"}
         except OperationalError as err:
             logger.error(f"Error adding new ticket: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
-    
-    def update_ticket_status(self, ticket_id: int, status: str):
-        logger.debug(f"API attempting to contact DB for update_ticket_status with ticket_id:{ticket_id} - status:{status}")
+            
+    def update_ticket_status(self, thread_id: int, status: str):
+        logger.debug(f"API attempting to contact DB for update_ticket_status with thread_id:{thread_id} - status:{status}")
         try:
-            self.cursor.execute("UPDATE tickets SET status = %s WHERE ticket_id = %s", (status, ticket_id))
+            self.cursor.execute("UPDATE tickets SET status = %s WHERE thread_id = %s", (status, thread_id))
             self.conn.commit()
             return {"status": "ok", "message": "Ticket status updated successfully"}
         except OperationalError as err:
@@ -326,12 +342,12 @@ class DB:
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
         
-    def delete_ticket(self, ticket_id: int):
-        logger.debug(f"API attempting to contact DB for delete_ticket with ticket_id:{ticket_id}")
+    def delete_ticket(self, thread_id: int):
+        logger.debug(f"API attempting to contact DB for delete_ticket with thread_id:{thread_id}")
         try:
-            self.cursor.execute("DELETE FROM tickets WHERE ticket_id = %s", (ticket_id,))
+            self.cursor.execute("DELETE FROM tickets WHERE thread_id = %s", (thread_id,))
             self.conn.commit()
-            return {"status": "ok", "message": f"Ticket with ID {ticket_id} deleted successfully"}
+            return {"status": "ok", "message": f"Ticket with thread ID {thread_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting ticket: {err}")
             self.conn.rollback()
