@@ -331,6 +331,23 @@ class DB:
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
             
+    def close_ticket(self, thread_id: int):
+        """
+        Close a specific ticket in the database by updating its status to 'closed'.
+        Args:
+            - thread_id: The unique ID of the ticket (e.g., thread ID) to be closed.
+        """
+        
+        logger.debug(f"API attempting to contact DB for close_ticket with thread_id:{thread_id}")
+        try:
+            self.cursor.execute("UPDATE tickets SET status = 'closed' WHERE thread_id = %s", (thread_id,))
+            self.conn.commit()
+            return {"status": "ok", "message": f"Ticket with thread ID {thread_id} closed successfully"}
+        except OperationalError as err:
+            logger.error(f"Error closing ticket: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+            
     def update_ticket_status(self, thread_id: int, status: str):
         logger.debug(f"API attempting to contact DB for update_ticket_status with thread_id:{thread_id} - status:{status}")
         try:

@@ -145,7 +145,6 @@ class TicketManager(commands.Cog):
         
         
         try:
-            self.bot.api.close_ticket(interaction.channel_id)
             data = self.bot.api.get_ticket(thread.id) # type: ignore
             if data is None or data['status'] != 'ok':
                 logger.warning(f"Ticket data not found for channel {thread.id}. Cannot close ticket.")
