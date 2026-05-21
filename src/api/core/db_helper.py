@@ -39,7 +39,7 @@ class DB:
     def get_log_setting(self, setting_id):
         logger.debug("API attempting to contact DB for get_log_setting...")
         try:
-            self.cursor.execute("SELECT * FROM logging WHERE ticket_id = %s", (setting_id,))
+            self.cursor.execute("SELECT * FROM logging where id = %s", (setting_id,))
             result = self.cursor.fetchone()
             return {"status": "ok", "logging": result}
         except OperationalError as err:
@@ -73,7 +73,7 @@ class DB:
     def update_logging(self, log_id, value):
         logger.debug(f"API attempting to contact DB for update_logging with log ID:{log_id} - Value:{value}")
         try:
-            self.cursor.execute("UPDATE logging SET value = %s WHERE ticket_id = %s", (value, log_id))
+            self.cursor.execute("UPDATE logging SET value = %s WHERE id = %s", (value, log_id))
             return {"status": "ok", "message": "Log setting updated successfully"}
         except OperationalError as err:
             logger.error(f"Error updating log setting: {err}")
@@ -91,7 +91,7 @@ class DB:
     def delete_log_setting(self, log_id):
         logger.debug(f"API attempting to contact DB for delete_log with log_ID:{log_id}")
         try:
-            self.cursor.execute("DELETE FROM logging WHERE ticket_id = %s", (log_id,))
+            self.cursor.execute("DELETE FROM logging WHERE id = %s", (log_id,))
             return {"status": "ok", "message": f"Log with ID {log_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting log setting: {err}")
@@ -104,7 +104,7 @@ class DB:
     def get_setting(self, setting_id):
         logger.debug("API attempting to contact DB for get_setting...")
         try:
-            self.cursor.execute("SELECT * FROM serversettings WHERE ticket_id = %s", (setting_id,))
+            self.cursor.execute("SELECT * FROM serversettings where id = %s", (setting_id,))
             result = self.cursor.fetchone()
             return {"status": "ok", "setting": result}
         except OperationalError as err:
@@ -125,7 +125,7 @@ class DB:
     def update_setting(self, setting_id, value):
         logger.debug(f"API attempting to contact DB for update_setting with setting ID:{setting_id} - Value:{value}")
         try:
-            self.cursor.execute("UPDATE serversettings SET value = %s WHERE ticket_id = %s", (value, setting_id))
+            self.cursor.execute("UPDATE serversettings SET value = %s WHERE id = %s", (value, setting_id))
             return {"status": "ok", "message": "Setting updated successfully"}
         except OperationalError as err:
             logger.error(f"Error updating setting: {err}")
@@ -143,7 +143,7 @@ class DB:
     def delete_setting(self, log_id):
         logger.debug(f"API attempting to contact DB for delete_setting with setting_ID:{log_id}")
         try:
-            self.cursor.execute("DELETE FROM serversettings WHERE ticket_id = %s", (log_id,))
+            self.cursor.execute("DELETE FROM serversettings WHERE id = %s", (log_id,))
             return {"status": "ok", "message": f"Setting with ID {log_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting setting: {err}")
@@ -157,7 +157,7 @@ class DB:
     def get_role(self, role_id):
         logger.debug("API attempting to contact DB for get_role...")
         try:
-            self.cursor.execute("SELECT * FROM roles WHERE ticket_id = %s", (role_id,))
+            self.cursor.execute("SELECT * FROM roles where id = %s", (role_id,))
             result = self.cursor.fetchone()
             return {"status": "ok", "roles": result}
         except OperationalError as err:
@@ -177,7 +177,7 @@ class DB:
     def update_role(self, role_id, value):
         logger.debug(f"API attempting to contact DB for update_role with role ID:{role_id} - Value:{value}")
         try:
-            self.cursor.execute("UPDATE roles SET value = %s WHERE ticket_id = %s", (value, role_id))
+            self.cursor.execute("UPDATE roles SET value = %s WHERE id = %s", (value, role_id))
             return {"status": "ok", "message": "role updated successfully"}
         except OperationalError as err:
             logger.error(f"Error updating role: {err}")
@@ -195,10 +195,12 @@ class DB:
     def delete_role(self, role_id):
         logger.debug(f"API attempting to contact DB for delete_role with role_ID:{role_id}")
         try:
-            self.cursor.execute("DELETE FROM roles WHERE ticket_id = %s", (role_id,))
+            self.cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))
+            self.conn.commit()
             return {"status": "ok", "message": f"role with ID {role_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting role: {err}")
+            self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     ##################
@@ -273,7 +275,7 @@ class DB:
         
         logger.debug("API attempting to contact DB for get_ticket...")
         try:
-            self.cursor.execute("SELECT * FROM tickets WHERE ticket_id = %s", (ticket_id,))
+            self.cursor.execute("SELECT * FROM tickets where ticket_id = %s", (ticket_id,))
             result = self.cursor.fetchone()
             return {"status": "ok", "ticket": result}
         except OperationalError as err:
@@ -305,28 +307,34 @@ class DB:
         
         logger.debug(f"API attempting to contact DB for add_ticket with ticket_id:{ticket_id} - creator_id:{creator_id} - channel_id:{channel_id} - status:{status}")
         try:
-            self.cursor.execute("INSERT INTO tickets (id, creator_id, channel_id, status) VALUES (%s, %s, %s, %s)", (ticket_id, creator_id, channel_id, status))
+            self.cursor.execute("INSERT INTO tickets (id, ticket_id, creator_id, channel_id, status) VALUES (%s, %s, %s, %s, %s)", (None, ticket_id, creator_id, channel_id, status))
+            self.conn.commit()
             return {"status": "ok", "message": "New ticket added successfully"}
         except OperationalError as err:
             logger.error(f"Error adding new ticket: {err}")
+            self.conn.rollback()
             return {"status": "error", "message": str(err)}
     
     def update_ticket_status(self, ticket_id: int, status: str):
         logger.debug(f"API attempting to contact DB for update_ticket_status with ticket_id:{ticket_id} - status:{status}")
         try:
             self.cursor.execute("UPDATE tickets SET status = %s WHERE ticket_id = %s", (status, ticket_id))
+            self.conn.commit()
             return {"status": "ok", "message": "Ticket status updated successfully"}
         except OperationalError as err:
             logger.error(f"Error updating ticket status: {err}")
+            self.conn.rollback()
             return {"status": "error", "message": str(err)}
         
     def delete_ticket(self, ticket_id: int):
         logger.debug(f"API attempting to contact DB for delete_ticket with ticket_id:{ticket_id}")
         try:
             self.cursor.execute("DELETE FROM tickets WHERE ticket_id = %s", (ticket_id,))
+            self.conn.commit()
             return {"status": "ok", "message": f"Ticket with ID {ticket_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting ticket: {err}")
+            self.conn.rollback()
             return {"status": "error", "message": str(err)}
         
     
