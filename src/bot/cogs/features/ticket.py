@@ -105,6 +105,7 @@ class TicketView(discord.ui.View):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
+        self.add_item(TicketDropdown(bot))
 
     
 
