@@ -57,7 +57,7 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
         await thread.send(
             f'<@&{staff_role}>\n## {interaction.user.mention} has created a ticket\n'
             f'** Type: ** {option}\n'
-            f'{self.description.value}'
+            f'"{self.description.value}" - {interaction.user.nick}\n\n'
             f'\n\n _ please provide any additional information here and our staff will assist you as soon as possible. _'
         )
         try: 
