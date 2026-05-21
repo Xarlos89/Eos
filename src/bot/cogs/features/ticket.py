@@ -61,7 +61,7 @@ class TicketReasonModal(discord.ui.Modal, title="Create Ticket"):
             f'\n\n _ please provide any additional information here and our staff will assist you as soon as possible. _'
         )
         try: 
-            self.bot.api.add_ticket(interaction.user.id, thread.id, option, self.description.value)
+            self.bot.api.add_ticket(thread.id, interaction.user.id, channel.id)
         except Exception as e:
             logger.error(f"Error adding ticket to database: {e}")
             await thread.send("There was an error saving the ticket to the database")
