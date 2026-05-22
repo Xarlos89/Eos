@@ -159,3 +159,5 @@ dmypy.json
 cython_debug/
 
 /.obsidian/
+src/bot/cogs/moderation/admin_detect_spam_message.py
+.gitignore
