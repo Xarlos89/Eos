@@ -72,21 +72,13 @@ class LoggingMessageDelete(commands.Cog):
         if self.chat_log['status'] != 'ok':
             raise RuntimeError("Failed to fetch chat log settings from API.")
         
-    async def build_image_embed(self, attachment: discord.Attachment) -> tuple[discord.Embed, discord.File]:
+    async def build_image_embed(self, attachment: discord.Attachment) -> discord.File:
         """
-        Build an embed for an image attachment.
+        Return File for message to be included with the logging embed. 
         """
-        embed = discord.Embed(
-            title="Deleted Image Attachment",
-            description=f"Filename: {attachment.filename}",
-            color=discord.Color.red(),
-            timestamp=datetime.datetime.now(datetime.timezone.utc)
-        )
-        
         data = await attachment.read()
         file = discord.File(BytesIO(data), filename=attachment.filename)
-        embed.set_image(url=f"attachment://{attachment.filename}")
-        return embed, file 
+        return file 
 
     @commands.Cog.listener()
     async def on_message_delete(self, message) -> None:
@@ -122,17 +114,13 @@ class LoggingMessageDelete(commands.Cog):
             if str(audit_log.action) == 'AuditLogAction.message_delete':
                 # Then a moderator deleted a message.
                 embed = embed_message_delete(audit_log.target, message, audit_log.user)
-                await logs_channel.send(embed=embed)
-                if file_embeds:
-                    for embed, file in file_embeds:
-                        await logs_channel.send(embed=embed, file=file)
+                await logs_channel.send(embed=embed,files=file_embeds)
+                
             else:
                 # Otherwise, the author deleted it.
                 username = message.author
-                await logs_channel.send(embed=embed_message_delete(username, message))
-                if file_embeds:
-                    for embed, file in file_embeds:
-                        await logs_channel.send(embed=embed, file=file)
+                await logs_channel.send(embed=embed_message_delete(username, message),files=file_embeds)
+                
         else:
             logger.critical(f"API error. API response not ok. -> {self.chat_log}")
 
