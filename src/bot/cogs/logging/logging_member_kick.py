@@ -63,7 +63,7 @@ class LoggingKicks(commands.Cog):
 
         if self.mod_log["status"] == "ok":
             if self.mod_log["logging"][2] == "0":
-                logger.debug(f"log was triggered, but logging is disabled. API: {self.mod_log}")
+                logger.warning(f"log was triggered, but logging is disabled. API: {self.mod_log}")
                 return
             logs_channel = await self.bot.fetch_channel(self.mod_log["logging"][2])
 

@@ -186,13 +186,13 @@ class Points(commands.Cog):
             await ctx.reply(embed=embed_info("Error!", "You must provide a required argument.", discord.Color.dark_gray()))
         elif isinstance(error, commands.MissingPermissions):
             logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
-            await ctx.send('For one reason, or another, YOU cannot use this command.')
+            await ctx.reply('For one reason, or another, YOU cannot use this command.')
 
     @sync_users.error
     async def sync_users_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
             logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
-            await ctx.send('For one reason, or another, YOU cannot use this command.')
+            await ctx.reply('For one reason, or another, YOU cannot use this command.')
 
     #@update_points.error
     #async def update_points_command_error(self, ctx, error):

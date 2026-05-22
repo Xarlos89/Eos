@@ -30,7 +30,7 @@ def database_health_check():
     if request.method == 'GET':
         try:
             hc = eos.db.database_health_check()
-            return jsonify(hc, 200)
+            return jsonify(hc), 200
 
         except TypeError as ded:
             return jsonify({"status": "unhealthy", "error": "DB unreachable"}), 404

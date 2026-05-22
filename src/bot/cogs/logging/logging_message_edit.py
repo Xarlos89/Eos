@@ -58,7 +58,7 @@ class LoggingMessageEdit(commands.Cog):
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
         if self.chat_log['status'] != 'ok':
             raise RuntimeError("Failed to fetch chat log settings from API.")
-        logger.info("LoggingMessageEdit cog initialized")
+        
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before, message_after):

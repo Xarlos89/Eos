@@ -36,7 +36,7 @@ def get_log_setting(log_id=None):
 #     """
 #     result = eos.db.get_log_settings()
 #
-#     return jsonify(result, 200)
+#     return jsonify(result), 200
 
 @logs.route('/logging/<log_id>', methods=['PUT'])
 def update_log_setting(log_id):
@@ -58,7 +58,7 @@ def add_log_setting():
     if request.method == 'POST':
         data = request.json
         result = eos.db.add_log_setting(data['name'], data['value'])
-        return jsonify(result, 201)
+        return jsonify(result), 201
 
     return jsonify({'message': 'improper request method'}), 405
 

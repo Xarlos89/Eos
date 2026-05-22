@@ -33,7 +33,7 @@ class LoggingNameChanges(commands.Cog):
         self.user_log = self.bot.api.get_one_log_setting("4")  # User_log
         if self.user_log['status'] != 'ok':
             raise RuntimeError("Failed to fetch user log settings from API.")
-        logger.info("LoggingNameChanges cog initialized")
+        
         
     @commands.Cog.listener()
     async def on_member_update(self, before, after):

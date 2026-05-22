@@ -195,12 +195,10 @@ class DB:
     def delete_role(self, role_id):
         logger.debug(f"API attempting to contact DB for delete_role with role_ID:{role_id}")
         try:
-            self.cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))
-            self.conn.commit()
+            self.cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))            
             return {"status": "ok", "message": f"role with ID {role_id} deleted successfully"}
         except OperationalError as err:
-            logger.error(f"Error deleting role: {err}")
-            self.conn.rollback()
+            logger.error(f"Error deleting role: {err}")            
             return {"status": "error", "message": str(err)}
 
     ##################
@@ -220,12 +218,10 @@ class DB:
 
     def update_points(self, user_id, value):
         try:
-            self.cursor.execute("UPDATE users SET points = points + %s WHERE discord_id = %s", (value, user_id))
-            self.conn.commit()
+            self.cursor.execute("UPDATE users SET points = points + %s WHERE discord_id = %s", (value, user_id))            
             return {"status": "ok", "message": "points updated successfully"}
         except OperationalError as err:
             logger.error(f"Error updating points: {err}")
-            self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     def add_user_to_points(self, user_id):
@@ -234,11 +230,11 @@ class DB:
                 "INSERT INTO users (discord_id, points) VALUES (%s, 0) ON CONFLICT (discord_id) DO NOTHING;"
                 , (user_id,)
             )
-            # self.conn.commit()
+            # 
             return {"status": "ok", "message": "New user added to 'points' successfully"}
         except OperationalError as err:
             logger.error(f"Error adding new user: {err}")
-            # self.conn.rollback()
+            # 
             return {"status": "error", "message": str(err)}
 
     def remove_user_from_points(self, user_id):
@@ -246,13 +242,13 @@ class DB:
             self.cursor.execute("DELETE FROM users WHERE discord_id = %s", (user_id,))
             affected_rows = self.cursor.rowcount
             if affected_rows > 0:
-                self.conn.commit()
+                
                 return {"status": "ok", "message": f"User with ID: {user_id} deleted successfully"}
             else:
                 return {"status": "not_found", "message": f"No user found with ID: {user_id}"}
         except OperationalError as err:
             logger.error(f"Error deleting user: {err}")
-            self.conn.rollback()
+            
             return {"status": "error", "message": str(err)}
 
     def get_top_10(self):
@@ -262,7 +258,7 @@ class DB:
             return {"status": "ok", "message": result}
         except OperationalError as err:
             logger.error(f"Error deleting user: {err}")
-            self.conn.rollback()
+            
             return {"status": "error", "message": str(err)}
         
         
@@ -324,11 +320,11 @@ class DB:
                 )
             )
             
-            self.conn.commit()
+            
             return {"status": "ok", "message": "New ticket added successfully"}
         except OperationalError as err:
             logger.error(f"Error adding new ticket: {err}")
-            self.conn.rollback()
+            
             return {"status": "error", "message": str(err)}
             
     def close_ticket(self, thread_id: int):
@@ -341,33 +337,33 @@ class DB:
         logger.debug(f"API attempting to contact DB for close_ticket with thread_id:{thread_id}")
         try:
             self.cursor.execute("UPDATE tickets SET status = 'closed' WHERE thread_id = %s", (thread_id,))
-            self.conn.commit()
+            
             return {"status": "ok", "message": f"Ticket with thread ID {thread_id} closed successfully"}
         except OperationalError as err:
             logger.error(f"Error closing ticket: {err}")
-            self.conn.rollback()
+            
             return {"status": "error", "message": str(err)}
             
     def update_ticket_status(self, thread_id: int, status: str):
         logger.debug(f"API attempting to contact DB for update_ticket_status with thread_id:{thread_id} - status:{status}")
         try:
             self.cursor.execute("UPDATE tickets SET status = %s WHERE thread_id = %s", (status, thread_id))
-            self.conn.commit()
+            
             return {"status": "ok", "message": "Ticket status updated successfully"}
         except OperationalError as err:
             logger.error(f"Error updating ticket status: {err}")
-            self.conn.rollback()
+            
             return {"status": "error", "message": str(err)}
         
     def delete_ticket(self, thread_id: int):
         logger.debug(f"API attempting to contact DB for delete_ticket with thread_id:{thread_id}")
         try:
             self.cursor.execute("DELETE FROM tickets WHERE thread_id = %s", (thread_id,))
-            self.conn.commit()
+            
             return {"status": "ok", "message": f"Ticket with thread ID {thread_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting ticket: {err}")
-            self.conn.rollback()
+            
             return {"status": "error", "message": str(err)}
         
     def get_open_tickets(self):

@@ -59,8 +59,7 @@ class LoggingVerification(commands.Cog):
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
         guild_id = member.guild.id
-
-        if guild_id != os.getenv("MASTER_GUILD"):
+        if guild_id != int(os.getenv("MASTER_GUILD")):
             logger.warning("on_member_join fired, but not in master guild. Ignoring event.")
             return
 
