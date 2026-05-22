@@ -5,7 +5,7 @@ ARG FLASK_RUN_PORT=5000
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=1 \
-    UV_LINK_MODE=copy \ 
+    UV_LINK_MODE=copy \
     UV_PROJECT_ENVIRONMENT=/api/.venv
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.14 /uv /uvx /usr/local/bin/
