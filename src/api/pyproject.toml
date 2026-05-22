@@ -5,6 +5,6 @@ description = "Source files for the backend API made with flask."
 requires-python = ">=3.12"
 dependencies = [
     "flask==3.1.0",
-    "gunicorn==23.0.0",
+    "gunicorn==26.0.0",
     "psycopg[binary]==3.3.3",
 ]
