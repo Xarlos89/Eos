@@ -51,7 +51,9 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM logging") # case sensitive
             result = self.cursor.fetchall()
-            return {"status": "ok", "logging": result}
+            response = {"status": "ok", "logging": result}
+            logger.debug(f"DB Response:\n{response}")
+            return response
         except OperationalError as err:
             logger.error(f"Error fetching logging: {err}")
             return {"status": "error", "message": str(err)}
@@ -61,7 +63,9 @@ class DB:
         try:
             self.cursor.execute("SELECT * FROM logging")
             result = self.cursor.fetchall()
-            return {"status": "ok", "logging": result}
+            response = {"status": "ok", "logging": result}
+            logger.debug(f"DB Response:\n{response}")
+            return response
         except OperationalError as err:
             logger.error(f"Error fetching logging: {err}")
             return {"status": "error", "message": str(err)}
@@ -96,6 +100,7 @@ class DB:
     ##################
     ##   Settings   ##
     ##################
+
     def get_setting(self, setting_id):
         logger.debug("API attempting to contact DB for get_setting...")
         try:
@@ -103,7 +108,7 @@ class DB:
             result = self.cursor.fetchone()
             return {"status": "ok", "setting": result}
         except OperationalError as err:
-            logger.error(f"Error fetching logging: {err}")
+            logger.error(f"Error fetching setting: {err}")
             return {"status": "error", "message": str(err)}
 
     def get_settings(self):
@@ -113,7 +118,7 @@ class DB:
             result = self.cursor.fetchall()
             return {"status": "ok", "setting": result}
         except OperationalError as err:
-            logger.error(f"Error fetching setting: {err}")
+            logger.error(f"Error fetching settings: {err}")
             return {"status": "error", "message": str(err)}
 
 
@@ -148,6 +153,7 @@ class DB:
     ##################
     ##   roles   ##
     ##################
+    
     def get_role(self, role_id):
         logger.debug("API attempting to contact DB for get_role...")
         try:
@@ -190,9 +196,11 @@ class DB:
         logger.debug(f"API attempting to contact DB for delete_role with role_ID:{role_id}")
         try:
             self.cursor.execute("DELETE FROM roles WHERE id = %s", (role_id,))
+            self.conn.commit()
             return {"status": "ok", "message": f"role with ID {role_id} deleted successfully"}
         except OperationalError as err:
             logger.error(f"Error deleting role: {err}")
+            self.conn.rollback()
             return {"status": "error", "message": str(err)}
 
     ##################
@@ -256,3 +264,119 @@ class DB:
             logger.error(f"Error deleting user: {err}")
             self.conn.rollback()
             return {"status": "error", "message": str(err)}
+        
+        
+    ##################
+    ##    Ticket    ##
+    ##################
+    
+    def get_ticket(self, thread_id: int):
+        """Fetches a specific ticket from the database by its thread ID."""
+        
+        logger.debug("API attempting to contact DB for get_ticket...")
+        try:
+            self.cursor.execute("SELECT * FROM tickets where thread_id = %s", (thread_id,))
+            result = self.cursor.fetchone()
+            return {"status": "ok", "ticket": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching ticket: {err}")
+            return {"status": "error", "message": str(err)}
+    
+    def get_tickets(self):
+        """Fetches all tickets from the database."""
+        
+        logger.debug("API attempting to contact DB for get_tickets...")
+        try:
+            self.cursor.execute("SELECT * FROM tickets")
+            result = self.cursor.fetchall()
+            return {"status": "ok", "tickets": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching tickets: {err}")
+            return {"status": "error", "message": str(err)}
+        
+    def add_ticket(self, thread_id: int, creator_id: int, channel_id: int, status: str = 'open'):
+        """
+        Add a new ticket to the database.
+        Args:
+            - thread_id: The unique ID of the ticket (e.g., thread ID).
+            - creator_id: The Discord ID of the user who created the ticket.
+            - channel_id: The Discord ID of the channel associated with the ticket.
+            - status: The current status of the ticket (e.g., 'open', 'closed')
+        
+        """
+        
+        logger.debug(f"API attempting to contact DB for add_ticket with thread_id:{thread_id} - creator_id:{creator_id} - channel_id:{channel_id} - status:{status}")
+        try:
+            self.cursor.execute(
+                """
+                INSERT INTO tickets (
+                    thread_id, 
+                    creator_id, 
+                    channel_id, 
+                    status
+                ) 
+                VALUES (%s, %s, %s, %s)""", 
+                (
+                    thread_id, 
+                    creator_id, 
+                    channel_id, 
+                    status
+                )
+            )
+            
+            self.conn.commit()
+            return {"status": "ok", "message": "New ticket added successfully"}
+        except OperationalError as err:
+            logger.error(f"Error adding new ticket: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+            
+    def close_ticket(self, thread_id: int):
+        """
+        Close a specific ticket in the database by updating its status to 'closed'.
+        Args:
+            - thread_id: The unique ID of the ticket (e.g., thread ID) to be closed.
+        """
+        
+        logger.debug(f"API attempting to contact DB for close_ticket with thread_id:{thread_id}")
+        try:
+            self.cursor.execute("UPDATE tickets SET status = 'closed' WHERE thread_id = %s", (thread_id,))
+            self.conn.commit()
+            return {"status": "ok", "message": f"Ticket with thread ID {thread_id} closed successfully"}
+        except OperationalError as err:
+            logger.error(f"Error closing ticket: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+            
+    def update_ticket_status(self, thread_id: int, status: str):
+        logger.debug(f"API attempting to contact DB for update_ticket_status with thread_id:{thread_id} - status:{status}")
+        try:
+            self.cursor.execute("UPDATE tickets SET status = %s WHERE thread_id = %s", (status, thread_id))
+            self.conn.commit()
+            return {"status": "ok", "message": "Ticket status updated successfully"}
+        except OperationalError as err:
+            logger.error(f"Error updating ticket status: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+        
+    def delete_ticket(self, thread_id: int):
+        logger.debug(f"API attempting to contact DB for delete_ticket with thread_id:{thread_id}")
+        try:
+            self.cursor.execute("DELETE FROM tickets WHERE thread_id = %s", (thread_id,))
+            self.conn.commit()
+            return {"status": "ok", "message": f"Ticket with thread ID {thread_id} deleted successfully"}
+        except OperationalError as err:
+            logger.error(f"Error deleting ticket: {err}")
+            self.conn.rollback()
+            return {"status": "error", "message": str(err)}
+        
+    def get_open_tickets(self):
+        logger.debug("API attempting to contact DB for get_open_tickets...")
+        try:
+            self.cursor.execute("SELECT * FROM tickets WHERE status = 'open'")
+            result = self.cursor.fetchall()
+            return {"status": "ok", "tickets": result}
+        except OperationalError as err:
+            logger.error(f"Error fetching open tickets: {err}")
+            return {"status": "error", "message": str(err)}
+    

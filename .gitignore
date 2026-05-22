@@ -1,6 +1,8 @@
 /.idea/
 .env
 /src/db/postgres-data/
+.gitignore
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -157,3 +159,5 @@ dmypy.json
 cython_debug/
 
 /.obsidian/
+src/bot/cogs/moderation/admin_detect_spam_message.py
+.gitignore

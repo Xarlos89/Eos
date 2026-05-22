@@ -49,8 +49,16 @@ class LoggingMessageEdit(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.staff_channel = self.bot.api.get_one_setting('3')[0]['setting'][2] # Staff Channel ID
+        setting = self.bot.api.get_one_setting('3')
+        if setting['status'] != 'ok':
+            raise RuntimeError("Failed to fetch staff channel setting from API.")
+        else:
+            self.staff_channel = setting['setting'][2]
+
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
+        if self.chat_log['status'] != 'ok':
+            raise RuntimeError("Failed to fetch chat log settings from API.")
+        logger.info("LoggingMessageEdit cog initialized")
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before, message_after):
@@ -71,12 +79,12 @@ class LoggingMessageEdit(commands.Cog):
             return
 
         elif message_before.content != message_after.content:
-            if self.chat_log[0]["status"] == "ok":
-                if self.chat_log[0]["logging"][2] == "0":
+            if self.chat_log["status"] == "ok":
+                if self.chat_log["logging"][2] == "0":
                     logger.debug(f"log was triggered, but logging is disabled. API: {self.chat_log}")
                     return
 
-                logs_channel = await self.bot.fetch_channel(self.chat_log[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(self.chat_log["logging"][2])
 
                 # This guy here makes sure we use the displayed name inside the guild.
                 if message_after.author.nick is None:

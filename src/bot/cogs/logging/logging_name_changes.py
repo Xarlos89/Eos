@@ -31,7 +31,10 @@ class LoggingNameChanges(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.user_log = self.bot.api.get_one_log_setting("4")  # User_log
-
+        if self.user_log['status'] != 'ok':
+            raise RuntimeError("Failed to fetch user log settings from API.")
+        logger.info("LoggingNameChanges cog initialized")
+        
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         """
@@ -54,11 +57,11 @@ class LoggingNameChanges(commands.Cog):
             username_after = after.nick
 
         if before.nick != after.nick and before.nick is not None:
-            if self.user_log[0]["status"] == "ok":
-                if self.user_log[0]["logging"][2] == "0":
+            if self.user_log["status"] == "ok":
+                if self.user_log["logging"][2] == "0":
                     logger.debug(f"log was triggered, but logging is disabled. API: {self.user_log}")
                     return
-                logs_channel = await self.bot.fetch_channel(self.user_log[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(self.user_log["logging"][2])
 
                 embed = embed_name_change(username_before, username_after)
 

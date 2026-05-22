@@ -17,7 +17,8 @@ VALUES
     ('Verification Channel', '0'),
     ('Quarantine Channel', '0'),
     ('Staff Channel', '0'),
-    ('Bot Spam Channel', '0');
+    ('Bot Spam Channel', '0'),
+    ('Ticket Channel', '0');
 
 
 -- Create logging table
@@ -63,3 +64,13 @@ CREATE TABLE IF NOT EXISTS users (
 );
 ALTER TABLE users
  ADD CONSTRAINT unique_discord_id UNIQUE (discord_id);
+
+-- Create open tickets table
+CREATE TABLE IF NOT EXISTS tickets (
+    id SERIAL PRIMARY KEY,
+    thread_id BIGINT NOT NULL UNIQUE,
+    channel_id BIGINT NOT NULL,
+    creator_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50) DEFAULT 'open'
+);

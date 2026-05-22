@@ -19,11 +19,11 @@ class LoggingVerification(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
-        self.verification_log = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
-        self.join_log = self.bot.api.get_one_log_setting('2')[0]['logging'][2]
-        self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
-        self.naughty_role = self.bot.api.get_one_role('7')[0]['roles'][2]
+        self.verification_channel = self.bot.api.get_one_setting('1')['setting'][2]
+        self.verification_log = self.bot.api.get_one_log_setting('1')['logging'][2]
+        self.join_log = self.bot.api.get_one_log_setting('2')['logging'][2]
+        self.verified_role = self.bot.api.get_one_role('6')['roles'][2]
+        self.naughty_role = self.bot.api.get_one_role('7')['roles'][2]
 
     async def log_unverified_join(self, member, logging_channel):
         await logging_channel.send(f"<@{member.id}> joined, but has not verified.")
@@ -60,7 +60,7 @@ class LoggingVerification(commands.Cog):
         guild = member.guild
         guild_id = member.guild.id
 
-        if guild_id != int(os.getenv("MASTER_GUILD")):
+        if guild_id != os.getenv("MASTER_GUILD"):
             logger.warning("on_member_join fired, but not in master guild. Ignoring event.")
             return
 

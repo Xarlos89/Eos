@@ -48,8 +48,8 @@ class Points(commands.Cog):
         Users that exist in the DB will not be synced.
         """
         added = 0
-        for user in ctx.guild.members:
-            self.bot.api.add_user_to_points(user.id)
+        for user in ctx.guild.members: # type: ignore
+            self.bot.api.add_user_to_points(user.id) # type: ignore
             added += 1
         await ctx.reply(
             embed=embed_info(
@@ -101,9 +101,11 @@ class Points(commands.Cog):
         if update_points['status'] == 'ok':
             await ctx.reply(
                 embed=embed_info(
-                    ""
-                    , f"{amount.lstrip('-+')} points {'removed from' if amount.startswith('-') else 'added to'} {user.display_name}"
-                    , discord.Color.green() if not amount.startswith('-') else discord.Color.red()
+                    "",
+                    f"{abs(amount)} points "
+                    f"{'removed from' if amount < 0 else 'added to'} "
+                    f"{user.display_name}",
+                    discord.Color.red() if amount < 0 else discord.Color.green()
                 )
             )
         else:
@@ -181,12 +183,10 @@ class Points(commands.Cog):
         Error handling for the >update_points command.
         """
         if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.reply(
-                embed=embed_info(
-                    "Error!", "You must provide a required argument."
-                    , discord.Color.dark_gray()
-                )
-            )
+            await ctx.reply(embed=embed_info("Error!", "You must provide a required argument.", discord.Color.dark_gray()))
+        elif isinstance(error, commands.MissingPermissions):
+            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
+            await ctx.send('For one reason, or another, YOU cannot use this command.')
 
     @sync_users.error
     async def sync_users_command_error(self, ctx, error):
@@ -194,11 +194,11 @@ class Points(commands.Cog):
             logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
             await ctx.send('For one reason, or another, YOU cannot use this command.')
 
-    @update_points.error
-    async def update_points_command_error(self, ctx, error):
-        if isinstance(error, commands.CheckFailure):
-            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
-            await ctx.send('For one reason, or another, YOU cannot use this command.')
+    #@update_points.error
+    #async def update_points_command_error(self, ctx, error):
+    #    if isinstance(error, commands.CheckFailure):
+    #        logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
+    #    await ctx.send('For one reason, or another, YOU cannot use this command.')
 
 
 async def setup(bot: commands.Bot) -> None:
