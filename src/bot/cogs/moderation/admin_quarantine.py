@@ -67,12 +67,15 @@ class AdminQuarantine(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.naughty_role = self.bot.api.get_one_role('7')['roles'][2]  # quarantine role ID
-        self.verified_role = self.bot.api.get_one_role('6')['roles'][2]  # Verification role ID
-        self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
+        self.naughty_role = self.bot.api.get_one_role('7')
+        self.verified_role = self.bot.api.get_one_role('6')
+        self.mod_log = self.bot.api.get_one_log_setting('5')  # mod_log
         if self.mod_log['status'] != 'ok' or self.naughty_role['status'] != 'ok' or self.verified_role['status'] != 'ok':
             raise RuntimeError("Failed to fetch mod log settings from API.")
-        
+        else:
+            self.naughty_role = self.naughty_role['roles'][2]
+            self.verified_role = self.verified_role['roles'][2]
+            self.mod_log = self.mod_log['logging'][2]
         
     @app_commands.command()
     @is_moderator()
