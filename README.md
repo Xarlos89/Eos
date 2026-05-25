@@ -234,5 +234,3 @@ See LICENSE file for details.
 Contributions are welcome! Feel free to open issues and pull requests.
 
 ---
-
-**Created with ❤️ – Happy coding!**
