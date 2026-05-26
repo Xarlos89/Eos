@@ -18,18 +18,8 @@ class API:
     #        Health checks       #
     ##############################
 
-    def api_health_check(self):
-        """Returns the healthcheck status of the API"""
-        logger.debug("Bot called API healthcheck endpoint.")
-        return requests.get(f"{self.api}/hc_api").json()
-
-    def database_health_check(self):
-        """Returns the healthcheck status of the API"""
-        logger.debug("Bot called database healthcheck endpoint.")
-        return requests.get(f"{self.api}/hc_db").json()
-
     async def async_api_health_check(self):
-        """Hopefully returns healthcheck status of the API"""
+        """Returns healthcheck status of the API"""
         logger.debug("Bot called API healthcheck endpoint.")
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{self.api}/hc_api") as response:
