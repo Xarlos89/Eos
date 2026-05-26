@@ -43,7 +43,7 @@ class Health(commands.Cog):
 
         logger.debug("healthcheck command used.")
 
-        hc_api = self.bot.api.api_health_check()
+        hc_api = await self.bot.api.async_api_health_check()
         logger.debug(hc_api)
         try:
             status_api = hc_api[0]['status']
