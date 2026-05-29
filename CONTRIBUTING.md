@@ -43,7 +43,7 @@ For Windows-
 
 ### Managing dependencies via uv
 
-To add any dependency you must first know which under which workspace you want to add them to (`eos-api` or `eos-bot`).
+To add any dependency you must first know under which workspace you want to add them to (`eos-api` or `eos-bot`).
 Once you know that, run the following command to add it to the particular workspace-
 ```bash
 uv add --package <WORKSPACE-NAME> <LIBRARY-NAME>
