@@ -129,7 +129,7 @@ class Points(commands.Cog):
                     "Top 10 Point Earners",
                     "\n".join(
                         [
-                            f"{index + 1}. {user_name} - {points}"
+                            f"{index + 1}. {user_name} - {points:,}"
                             for index, (user_name, points) in enumerate(data)
                         ]
                     ),

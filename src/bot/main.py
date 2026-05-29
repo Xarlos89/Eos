@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from pathlib import Path
 
 import discord
 from __logger__ import setup_logger
@@ -33,16 +34,20 @@ async def load_cogs(robot: commands.Bot) -> None:
     None: This function does not return any value.
     """
     logger.info("Loading Cogs...")
-    for directory in os.listdir("cogs"):
-        if not directory.startswith("_"):
-            for file in os.listdir(f"cogs/{directory}"):
-                if file.endswith(".py") and not file.startswith("_"):
-                    logger.info(f"\\{directory}\\{file}")
+
+    cogs_path = Path(__file__).parent / "cogs"
+
+    for directory in cogs_path.iterdir():
+        if directory.is_dir() and not directory.name.startswith("_"):
+            for file in directory.glob("*.py"):
+                if not file.stem.startswith("_"):
+                    logger.info(f"\\{directory.name}\\{file.name}")
                     try:
-                        await robot.load_extension(f"cogs.{directory}.{file[:-3]}")
+                        await robot.load_extension(f"cogs.{directory.name}.{file.stem}")
                     except Exception as e:
                         logger.warning("- - - Cog failed to load!!")
                         logger.warning(f"- - - {e}")
+
     logger.info("... Success.")
 
 

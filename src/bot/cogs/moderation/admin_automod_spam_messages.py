@@ -102,7 +102,7 @@ class ModerationSpamMessages(commands.Cog):
                 f"|{attachment.filename}|{attachment.size}|{attachment.content_type}".encode()
             ).hexdigest()
 
-        now = datetime.now().astimezone()
+        now = datetime.datetime.now(datetime.timezone.utc)
         record = self.records.get(
             author_id,
             {
@@ -233,7 +233,7 @@ class ModerationSpamMessages(commands.Cog):
                 f"You already posted this in {first_channel.mention}"
             )
         finally:
-            fifteen_seconds = datetime.now().astimezone() + datetime.timedelta(
+            fifteen_seconds = datetime.datetime.now().astimezone() + datetime.timedelta(
                 seconds=15
             )
             await message.author.timeout(
@@ -259,7 +259,7 @@ class ModerationSpamMessages(commands.Cog):
 
             quarantine_channel = self.bot.api.get_one_setting("2")[0]["setting"][2]
             quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
-            thirty_seconds = datetime.now().astimezone() + datetime.timedelta(
+            thirty_seconds = datetime.datetime.now().astimezone() + datetime.timedelta(
                 seconds=30
             )
 
@@ -284,7 +284,7 @@ class ModerationSpamMessages(commands.Cog):
             self.records[author_id] = {
                 "last_message": None,
                 "occurrence": 0.0,
-                "last_update": datetime.now().astimezone(),
+                "last_update": datetime.datetime.now().astimezone(),
                 "stage": 0,
                 "messages": [],
             }
