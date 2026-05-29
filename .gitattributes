@@ -7,17 +7,17 @@
 * text=auto eol=lf
 
 # Explicitly declare text files
-*.cfg   text eol=lf
-*.env*  text eol=lf
-*.ini   text eol=lf
-*.md    text eol=lf
-*.py    text eol=lf
-*.sh text eol=lf
-*.sql text eol=lf
-*.toml  text eol=lf
-*.txt   text eol=lf
-*.yaml text eol=lf
-*.yml text eol=lf
+*.cfg       text eol=lf
+*.env*      text eol=lf
+*.ini       text eol=lf
+*.md        text eol=lf
+*.py        text eol=lf
+*.sh        text eol=lf
+*.sql       text eol=lf
+*.toml      text eol=lf
+*.txt       text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
 Dockerfile* text eol=lf
 
 # Binary files — never diff or merge
