@@ -68,17 +68,19 @@ uv sync
 We use [pre-commit](https://pre-commit.com) to run formatting, linting and security checks before each commit.
 
 Install the hooks once after cloning:
-
 ```bash
-pre-commit install
+uv run --dev pre-commit install
 ```
 
 After this, the checks run automatically whenever you `git commit`. Stage your changes with `git add <file>` first; if a hook modifies a file (e.g. ruff reformats it), re-stage it and commit again.
 
 To run the checks manually against everything without committing:
-
 ```bash
-pre-commit run --all-files
+uv run --dev pre-commit run --all-files
+```
+Or via `Make`-
+```bash
+make pre-commit
 ```
 
 Note: running a service locally still depends on its surroundings — the bot needs the API reachable (`FLASK_URL`), and both need a populated `src/.env`. The easiest setup is to keep Postgres (and optionally the API) running in Docker while you run the service you're editing locally.
