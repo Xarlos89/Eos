@@ -1,12 +1,13 @@
 """
 Admin command for kicking a user.
 """
-import logging
+
 import datetime
+import logging
 
 import discord
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
 
 from .._checks import is_master_guild, is_moderator
 
@@ -18,23 +19,10 @@ def embed_info(message):
     Embedding for general things
     """
     embed = discord.Embed(
-        title=''
-        , description=message
-        , color=discord.Color.red()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
-    )
-    return embed
-
-
-def embed_info(message):
-    """
-    Embedding for generl things
-    """
-    embed = discord.Embed(
-        title=''
-        , description=message
-        , color=discord.Color.red()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title="",
+        description=message,
+        color=discord.Color.red(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     return embed
 
@@ -51,7 +39,13 @@ class AdminMute(commands.Cog):
     @is_master_guild()
     @app_commands.command()
     @commands.has_permissions(moderate_members=True)
-    async def mute_member(self, interaction: discord.Interaction, target: discord.Member, time: float, reason: str):
+    async def mute_member(
+        self,
+        interaction: discord.Interaction,
+        target: discord.Member,
+        time: float,
+        reason: str,
+    ):
         """
         Moderation command to mute a member.
 
@@ -71,32 +65,52 @@ class AdminMute(commands.Cog):
                 # Message the user, informing them of their fate
                 await interaction.response.defer()
                 try:
-                    await target.send(f"## You were muted by {interaction.user.name}.\n" f"**Time:** {time} minutes")
-                except:
+                    await target.send(
+                        f"## You were muted by {interaction.user.name}.\n"
+                        f"**Time:** {time} minutes"
+                    )
+                except discord.errors.Forbidden:
                     logger.info(f"{target.name} was muted, but cannot be sent a DM.")
                 # Then we do the mute
-                await target.timeout(datetime.timedelta(minutes=float(time)), reason=None)
-                logger.info("%s muted %s for %s minutes. Reason: %s", interaction.user.name, target.name, time,
-                            reason)
+                await target.timeout(
+                    datetime.timedelta(minutes=float(time)), reason=None
+                )
+                logger.info(
+                    "%s muted %s for %s minutes. Reason: %s",
+                    interaction.user.name,
+                    target.name,
+                    time,
+                    reason,
+                )
                 # Then we publicly announce what happened.
                 await interaction.followup.send(
                     embed=embed_info(
-                        f"**{interaction.user.name}** muted **{target.name}** for {time} minutes" f"\n**Reason:** {reason}")
+                        f"**{interaction.user.name}** muted **{target.name}** for {time} minutes"
+                        f"\n**Reason:** {reason}"
+                    )
                 )
             else:
-                await interaction.channel.send(embed=embed_info("You can't mute an Admin."))
+                await interaction.channel.send(
+                    embed=embed_info("You can't mute an Admin.")
+                )
         else:
             await interaction.channel.send(embed=embed_info("You cant mute a bot."))
 
     @mute_member.error
     async def mute_error(self, ctx, error):
         if isinstance(error, commands.MemberNotFound):
-            await ctx.channel.send(embed=embed_info(
-                f"User was not found, please check the name and use a mention."))
+            await ctx.channel.send(
+                embed=embed_info(
+                    "User was not found, please check the name and use a mention."
+                )
+            )
 
         if isinstance(error, commands.CheckFailure):
-            await ctx.channel.send(embed=embed_info(
-                f"{ctx.author.mention}, you dont have permission to mute users. The staff has been notified."))
+            await ctx.channel.send(
+                embed=embed_info(
+                    f"{ctx.author.mention}, you dont have permission to mute users. The staff has been notified."
+                )
+            )
 
 
 async def setup(bot) -> None:

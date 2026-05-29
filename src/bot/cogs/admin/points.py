@@ -1,9 +1,10 @@
-import logging
 import datetime
+import logging
+
 import discord
 from discord.ext import commands
 
-from .._checks import is_master_guild, is_admin
+from .._checks import is_admin, is_master_guild
 
 logger = logging.getLogger(__name__)
 
@@ -13,10 +14,10 @@ def embed_info(title, message, color):
     Embedding for avatar change alerts.
     """
     embed = discord.Embed(
-        title=f'{title}'
-        , description=f'{message}'
-        , color=color
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title=f"{title}",
+        description=f"{message}",
+        color=color,
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     return embed
 
@@ -35,6 +36,7 @@ class Points(commands.Cog):
 
     The cog interacts with an external API to store and manage user points and includes error handling and logging for various operations.
     """
+
     def __init__(self, bot: commands.Bot) -> None:
         """Initialization of the points Class"""
         self.bot = bot
@@ -52,11 +54,7 @@ class Points(commands.Cog):
             self.bot.api.add_user_to_points(user.id)
             added += 1
         await ctx.reply(
-            embed=embed_info(
-                ""
-                , f"Added {added} users"
-                , discord.Color.lighter_gray()
-            )
+            embed=embed_info("", f"Added {added} users", discord.Color.lighter_gray())
         )
 
     @commands.hybrid_command()
@@ -70,12 +68,12 @@ class Points(commands.Cog):
             The user you want to get the points of.
         """
         points = self.bot.api.get_points(user.id)
-        if points['status'] == 'ok':
+        if points["status"] == "ok":
             await ctx.reply(
                 embed=embed_info(
-                    ""
-                    , f"{user.display_name} has {points['points'][0]} points"
-                    , discord.Color.lighter_gray()
+                    "",
+                    f"{user.display_name} has {points['points'][0]} points",
+                    discord.Color.lighter_gray(),
                 )
             )
         else:
@@ -85,7 +83,9 @@ class Points(commands.Cog):
     @is_admin()
     @is_master_guild()
     @commands.hybrid_command()
-    async def update_points(self, ctx: commands.Context, user: discord.Member, amount: int) -> None:
+    async def update_points(
+        self, ctx: commands.Context, user: discord.Member, amount: int
+    ) -> None:
         """
         Updates the points of a specific member.
 
@@ -98,16 +98,18 @@ class Points(commands.Cog):
         """
 
         update_points = self.bot.api.update_points(user.id, int(amount))
-        if update_points['status'] == 'ok':
+        if update_points["status"] == "ok":
             await ctx.reply(
                 embed=embed_info(
-                    ""
-                    , f"{amount.lstrip('-+')} points {'removed from' if amount.startswith('-') else 'added to'} {user.display_name}"
-                    , discord.Color.green() if not amount.startswith('-') else discord.Color.red()
+                    "",
+                    f"{amount.lstrip('-+')} points {'removed from' if amount.startswith('-') else 'added to'} {user.display_name}",
+                    discord.Color.green()
+                    if not amount.startswith("-")
+                    else discord.Color.red(),
                 )
             )
         else:
-            await ctx.reply(f"Oopsie. Unexpected error. Check the logs.")
+            await ctx.reply("Oopsie. Unexpected error. Check the logs.")
             logger.critical(update_points)
 
     @commands.hybrid_command()
@@ -116,23 +118,26 @@ class Points(commands.Cog):
         Gets the top 10 users in the DB with the most points.
         """
         top10 = self.bot.api.top_10()
-        if top10['status'] == 'ok':
-
+        if top10["status"] == "ok":
             data = []
-            for user in top10['message']:
+            for user in top10["message"]:
                 user_obj = self.bot.get_user(int(user[0]))
                 data.append((user_obj.display_name, user[1]))
 
             await ctx.reply(
                 embed=embed_info(
-                    "Top 10 Point Earners"
-                    , "\n".join([f"{index + 1}. {user_name} - {points:,}"
-                              for index, (user_name, points) in enumerate(data)])
-                    , discord.Color.yellow()
+                    "Top 10 Point Earners",
+                    "\n".join(
+                        [
+                            f"{index + 1}. {user_name} - {points:,}"
+                            for index, (user_name, points) in enumerate(data)
+                        ]
+                    ),
+                    discord.Color.yellow(),
                 )
             )
         else:
-            await ctx.reply(f"Oopsie. Unexpected error. Check the logs.")
+            await ctx.reply("Oopsie. Unexpected error. Check the logs.")
             logger.critical(top10)
 
     @commands.Cog.listener()
@@ -144,7 +149,9 @@ class Points(commands.Cog):
         if message.author.bot:
             return
         msg = message.content.split()
-        logger.debug(f"Updating {len(msg)} points for {message.author.display_name} for sending a message.")
+        logger.debug(
+            f"Updating {len(msg)} points for {message.author.display_name} for sending a message."
+        )
         self.bot.api.update_points(message.author.id, int(len(msg)))
 
     @commands.Cog.listener()
@@ -156,8 +163,10 @@ class Points(commands.Cog):
         if message.author.bot:
             return
         msg = message.content.split()
-        logger.debug(f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message.")
-        self.bot.api.update_points(message.author.id, int(len(msg))*-1)
+        logger.debug(
+            f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message."
+        )
+        self.bot.api.update_points(message.author.id, int(len(msg)) * -1)
 
     @commands.Cog.listener()
     async def on_member_join(self, member) -> None:
@@ -183,22 +192,27 @@ class Points(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.reply(
                 embed=embed_info(
-                    "Error!", "You must provide a required argument."
-                    , discord.Color.dark_gray()
+                    "Error!",
+                    "You must provide a required argument.",
+                    discord.Color.dark_gray(),
                 )
             )
 
     @sync_users.error
     async def sync_users_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
-            await ctx.send('For one reason, or another, YOU cannot use this command.')
+            logger.warning(
+                f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so."
+            )
+            await ctx.send("For one reason, or another, YOU cannot use this command.")
 
     @update_points.error
     async def update_points_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
-            await ctx.send('For one reason, or another, YOU cannot use this command.')
+            logger.warning(
+                f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so."
+            )
+            await ctx.send("For one reason, or another, YOU cannot use this command.")
 
 
 async def setup(bot: commands.Bot) -> None:

@@ -4,7 +4,6 @@ Uses PistonAPI to run code in the server.
 
 import logging
 import os
-from sys import api_version
 
 import discord
 from discord import Message

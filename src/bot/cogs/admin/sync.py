@@ -1,8 +1,8 @@
-import os
 import logging
+
 from discord.ext import commands
 
-from .._checks import is_master_guild, is_admin
+from .._checks import is_admin, is_master_guild
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +28,10 @@ class CommandSync(commands.Cog):
     @sync.error
     async def sync_command_error(self, ctx, error):
         if isinstance(error, commands.CheckFailure):
-            logger.warning(f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so.")
-            await ctx.send('For one reason, or another, YOU cannot use this command.')
+            logger.warning(
+                f"{ctx.author.name} has attempted to use the {ctx.invoked_with} command, and was not allowed to do so."
+            )
+            await ctx.send("For one reason, or another, YOU cannot use this command.")
 
 
 async def setup(bot: commands.Bot) -> None:
