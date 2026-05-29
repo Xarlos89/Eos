@@ -63,15 +63,9 @@ And then don't forget to re-sync your dependencies-
 uv sync
 ```
 
-You can also install `pre-commit` as a uv-managed tool so it's available without activating a venv:
-
-```bash
-uv tool install pre-commit
-```
-
 ## pre-commit
 
-We use [pre-commit](https://pre-commit.com) to run formatting and linting checks (black, isort, flake8, mypy, bandit, and a few file hygiene hooks) before each commit.
+We use [pre-commit](https://pre-commit.com) to run formatting, linting and security checks before each commit.
 
 Install the hooks once after cloning:
 
