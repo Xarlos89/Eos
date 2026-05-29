@@ -15,23 +15,9 @@ repos:
       - id: bandit
         # args:  [--skip=B101]  # Skip "assert_used" warnings
 
-  - repo: https://github.com/psf/black
-    rev: 26.3.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.15
     hooks:
-      - id: black
-
-  - repo: https://github.com/pycqa/isort
-    rev: 8.0.1
-    hooks:
-      - id: isort
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.3.0
-    hooks:
-      - id: flake8
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.1.0
-    hooks:
-      - id: mypy
-        additional_dependencies: [flask, types-Flask]
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format

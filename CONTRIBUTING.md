@@ -9,7 +9,7 @@ Some short guidelines and points on contributing to Eos.
 
 ## pre-commit
 
-We use [pre-commit](https://pre-commit.com) to run formatting and linting checks (black, isort, flake8, mypy, bandit, and a few file hygiene hooks) before each commit.
+We use [pre-commit](https://pre-commit.com) to run formatting and linting checks (ruff for formatting + linting, bandit, and a few file hygiene hooks) before each commit.
 
 Install the hooks once after cloning:
 
@@ -17,7 +17,7 @@ Install the hooks once after cloning:
 pre-commit install
 ```
 
-After this, the checks run automatically whenever you `git commit`. Stage your changes with `git add <file>` first; if a hook modifies a file (e.g. black reformats it), re-stage it and commit again.
+After this, the checks run automatically whenever you `git commit`. Stage your changes with `git add <file>` first; if a hook modifies a file (e.g. ruff reformats it), re-stage it and commit again.
 
 To run the checks manually against everything without committing:
 
