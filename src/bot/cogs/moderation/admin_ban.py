@@ -1,9 +1,9 @@
 """
 Admin command for kicking a user.
 """
-import os
-import logging
+
 import datetime
+import logging
 
 import discord
 from discord import app_commands
@@ -19,10 +19,10 @@ def embed_info(message):
     Embedding for things you cant do.
     """
     embed = discord.Embed(
-        title=''
-        , description=message
-        , color=discord.Color.red()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title="",
+        description=message,
+        color=discord.Color.red(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     return embed
 
@@ -39,7 +39,9 @@ class AdminBan(commands.Cog):
     @is_master_guild()
     @commands.has_permissions(ban_members=True)
     @app_commands.command()
-    async def ban_member(self, interaction: discord.Interaction, target: discord.Member, reason: str):
+    async def ban_member(
+        self, interaction: discord.Interaction, target: discord.Member, reason: str
+    ):
         """
         Moderation command to ban a member from the server.
 
@@ -64,24 +66,41 @@ class AdminBan(commands.Cog):
                 )
                 # Then we do the ban
                 await target.ban(reason=f"{interaction.user.name} - {reason}")
-                logger.info("{%s} banned {%s}. Reason: {%s}", interaction.user.name, target.name, reason)
+                logger.info(
+                    "{%s} banned {%s}. Reason: {%s}",
+                    interaction.user.name,
+                    target.name,
+                    reason,
+                )
                 # Then we publicly announce what happened.
                 await interaction.followup.send(
-                    embed=embed_info(f"**{interaction.user.name}** banned **{target.name}**" f"\n**Reason:** {reason}"))
+                    embed=embed_info(
+                        f"**{interaction.user.name}** banned **{target.name}**"
+                        f"\n**Reason:** {reason}"
+                    )
+                )
             else:
-                await interaction.channel.send(embed=embed_info("You can't ban an Admin."))
+                await interaction.channel.send(
+                    embed=embed_info("You can't ban an Admin.")
+                )
         else:
             await interaction.channel.send(embed=embed_info("You cant ban a bot."))
 
     @ban_member.error
     async def ban_error(self, ctx, error):
         if isinstance(error, commands.MemberNotFound):
-            await ctx.channel.send(embed=embed_info(
-                f"User was not found, please check the name and use a mention."))
+            await ctx.channel.send(
+                embed=embed_info(
+                    "User was not found, please check the name and use a mention."
+                )
+            )
 
         if isinstance(error, commands.CheckFailure):
-            await ctx.channel.send(embed=embed_info(
-                f"{ctx.author.mention}, you dont have permission to ban users. The staff has been notified."))
+            await ctx.channel.send(
+                embed=embed_info(
+                    f"{ctx.author.mention}, you dont have permission to ban users. The staff has been notified."
+                )
+            )
 
 
 async def setup(bot) -> None:

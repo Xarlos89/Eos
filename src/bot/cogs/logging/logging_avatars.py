@@ -2,11 +2,12 @@
 Logs user avatar changes.
 TODO: Would be cool to add an API that detects nasty images here.
 """
-import logging
+
 import datetime
+import logging
+
 import discord
 from discord.ext import commands
-
 
 logger = logging.getLogger(__name__)
 
@@ -16,14 +17,12 @@ def embed_avatar(before, after):
     Embedding for avatar change alerts.
     """
     embed = discord.Embed(
-        title=f'{before} updated their profile picture!'
-        , color=discord.Color.dark_grey()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title=f"{before} updated their profile picture!",
+        color=discord.Color.dark_grey(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
 
-    embed.set_thumbnail(
-        url=after.avatar
-    )
+    embed.set_thumbnail(url=after.avatar)
 
     return embed
 
@@ -51,9 +50,13 @@ class LoggingAvatars(commands.Cog):
         if before.avatar != after.avatar:
             if self.user_log[0]["status"] == "ok":
                 if self.user_log[0]["logging"][2] == "0":
-                    logger.debug(f"log was triggered, but logging is disabled. API: {self.user_log}")
+                    logger.debug(
+                        f"log was triggered, but logging is disabled. API: {self.user_log}"
+                    )
                     return
-                logs_channel = await self.bot.fetch_channel(self.user_log[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(
+                    self.user_log[0]["logging"][2]
+                )
 
                 embed = embed_avatar(before, after)
 

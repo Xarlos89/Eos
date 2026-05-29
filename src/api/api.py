@@ -1,22 +1,21 @@
-import os
 import logging
-from flask import Flask, jsonify
-from werkzeug.exceptions import HTTPException
+import os
 
 from __logger__ import setup_logger
-
+from core.db_helper import DB
+from flask import Flask, jsonify
 from routes.healthchecks import health_checks
 from routes.logging import logs
-from routes.settings import settings
 from routes.points import points
 from routes.roles import role
-
-from core.db_helper import DB
+from routes.settings import settings
+from werkzeug.exceptions import HTTPException
 
 logger = logging.getLogger(__name__)
 setup_logger(
     level=int(os.getenv("API_LOG_LEVEL", "20")),
-    stream_logs=os.getenv("STREAM_LOGS", "true").lower())
+    stream_logs=os.getenv("STREAM_LOGS", "true").lower(),
+)
 
 
 app = Flask(__name__)
@@ -29,6 +28,7 @@ app.register_blueprint(settings)
 app.register_blueprint(points)
 app.register_blueprint(role)
 
+
 # Error handlers
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -36,10 +36,8 @@ def handle_exception(e):
     app.logger.error(f"Unhandled exception: {str(e)}")
 
     # Return a JSON response with a generic error message
-    return jsonify({
-        "error": "An unexpected error occurred",
-        "details": str(e)
-    }), 500
+    return jsonify({"error": "An unexpected error occurred", "details": str(e)}), 500
+
 
 @app.errorhandler(HTTPException)
 def handle_http_exception(e):
@@ -47,8 +45,6 @@ def handle_http_exception(e):
     app.logger.error(f"HTTP exception: {str(e)}")
 
     # Return a JSON response with details about the HTTP error
-    return jsonify({
-        "error": str(e),
-        "status_code": e.code,
-        "description": e.description
-    }), e.code
+    return jsonify(
+        {"error": str(e), "status_code": e.code, "description": e.description}
+    ), e.code

@@ -1,9 +1,11 @@
 """
 logs when a username is changed.
 """
-import os
-import logging
+
 import datetime
+import logging
+import os
+
 import discord
 from discord.ext import commands
 
@@ -15,10 +17,10 @@ def embed_name_change(username_before, username_after):
     Embedding for user name change alerts.
     """
     embed = discord.Embed(
-        title=""
-        , description=f"{username_before} changed their name to {username_after}"
-        , color=discord.Color.dark_grey()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title="",
+        description=f"{username_before} changed their name to {username_after}",
+        color=discord.Color.dark_grey(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     return embed
 
@@ -37,11 +39,11 @@ class LoggingNameChanges(commands.Cog):
         """
         Just checking if the name before is != to the name after.
         """
-        if before.guild.id != int(os.getenv("MASTER_GUILD")) or \
-                before.guild.id is None:
-            logger.warning("on_member_update fired, but not in master guild. Ignoring event.")
+        if before.guild.id != int(os.getenv("MASTER_GUILD")) or before.guild.id is None:
+            logger.warning(
+                "on_member_update fired, but not in master guild. Ignoring event."
+            )
             return
-
 
         if before.nick is None:
             username_before = before
@@ -56,9 +58,13 @@ class LoggingNameChanges(commands.Cog):
         if before.nick != after.nick and before.nick is not None:
             if self.user_log[0]["status"] == "ok":
                 if self.user_log[0]["logging"][2] == "0":
-                    logger.debug(f"log was triggered, but logging is disabled. API: {self.user_log}")
+                    logger.debug(
+                        f"log was triggered, but logging is disabled. API: {self.user_log}"
+                    )
                     return
-                logs_channel = await self.bot.fetch_channel(self.user_log[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(
+                    self.user_log[0]["logging"][2]
+                )
 
                 embed = embed_name_change(username_before, username_after)
 

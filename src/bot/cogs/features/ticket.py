@@ -1,6 +1,7 @@
 """
 This cog allows us to create tickets.
 """
+
 import logging
 
 import discord
@@ -23,10 +24,12 @@ class AddTicketButton(commands.Cog):
         """
         A simple command with a view.
         """
-        
-        logger.info("%s used the %s command.", interaction.user.name, interaction.command.name)
+
+        logger.info(
+            "%s used the %s command.", interaction.user.name, interaction.command.name
+        )
         await interaction.response.defer()
-        
+
         await interaction.followup.send(
             "Do you need help, or do you have a question for the Staff?",
             view=MakeATicket(self.bot),
@@ -53,8 +56,12 @@ class MakeATicket(discord.ui.View):
         button.disabled = True
         await interaction.edit_original_response(view=self)
 
-        support = interaction.channel #TODO: guild specific settings for a support channel
-        staff = interaction.guild.get_role(self.bot.api.get_one_role("3")[0]["roles"][2])  # Staff
+        support = (
+            interaction.channel
+        )  # TODO: guild specific settings for a support channel
+        staff = interaction.guild.get_role(
+            self.bot.api.get_one_role("3")[0]["roles"][2]
+        )  # Staff
 
         ticket = await support.create_thread(
             name=f"[Ticket] - {interaction.user}",
@@ -70,7 +77,9 @@ class MakeATicket(discord.ui.View):
 
         await ticket.add_user(interaction.user)
         await interaction.delete_original_response()
-        await ticket.send(f"**{interaction.user.mention}, we have received your ticket.**")
+        await ticket.send(
+            f"**{interaction.user.mention}, we have received your ticket.**"
+        )
         await ticket.send("To better help you, please describe your issue.")
 
 
