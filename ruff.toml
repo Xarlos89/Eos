@@ -1,0 +1,7 @@
+line-length = 88
+
+[lint]
+select = ["E", "F", "I"]
+# The formatter owns line length; E501 only fires on lines it can't break
+# (long strings / log messages), so we don't enforce it in the linter.
+ignore = ["E501"]

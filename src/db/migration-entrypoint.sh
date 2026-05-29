@@ -19,7 +19,7 @@ if [ "$RUN_MIGRATIONS_BEFORE_STARTUP" = "true" ]; then
 
     psql -h "$POSTGRES_HOST" \
         -U "$POSTGRES_USER" \
-        -d "$POSTGRES_DATABASE" \
+        -d "$POSTGRES_DB" \
         -f "$MIGRATION_FILE_PATH"
 
     echo ""

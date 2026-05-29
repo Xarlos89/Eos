@@ -73,7 +73,7 @@ Install the hooks once after cloning:
 pre-commit install
 ```
 
-After this, the checks run automatically whenever you `git commit`. Stage your changes with `git add <file>` first; if a hook modifies a file (e.g. black reformats it), re-stage it and commit again.
+After this, the checks run automatically whenever you `git commit`. Stage your changes with `git add <file>` first; if a hook modifies a file (e.g. ruff reformats it), re-stage it and commit again.
 
 To run the checks manually against everything without committing:
 
