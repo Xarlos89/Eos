@@ -29,21 +29,56 @@ pre-commit run --all-files
 
 The bot and API normally run via `docker compose` (see the README). For quicker iteration or debugging you can run them directly on your machine using [uv](https://docs.astral.sh/uv/), a fast Python package manager.
 
-Install `uv`:
+You can find the installation instruction for `uv` from [here](https://docs.astral.sh/uv/getting-started/installation/)
+
+The project is split into two workspaces namely:
+- `eos-api`: Source for the API backend made with `flask`.
+- `eos-bot`: Source for the bot implementation made with `discord.py
+
+`eos-api` workspace is located under `src/api/` and `eos-bot` workspace is located under `src/bot/`
+
+Similarly, dependencies are split into two files: `src/api/pyproject.toml` and `src/bot/pyproject.toml` for the API and Bot source respectively. For the most part you won't be needing to manually edit these files.
+
+### Setting up uv environment
+
+In your project run the following command to setup your environment-
 
 ```bash
-# macOS / Linux
-curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync
 ```
 
-Dependencies are split into two files: `src/api/requirements-api.txt` and `src/bot/requirements-bot.txt`. Create a virtual environment and install whichever service you're working on:
+Activate your virtual environment for your respective OS-
 
+For Linux / MacOS-
 ```bash
-uv venv                                       # create .venv
-source .venv/bin/activate                     # Windows: .venv\Scripts\activate
+source .venv/bin/activate
+```
+For Windows-
+```
+.venv\Scripts\Activate.ps1  # For Windows PowerShell
+.venv\Scripts\activate.bat  # For Windows Command Prompt
+```
 
-uv pip install -r src/bot/requirements-bot.txt   # for the bot
-uv pip install -r src/api/requirements-api.txt   # for the API
+### Managing dependencies via uv
+
+To add any dependency you must first know which under which workspace you want to add them to (`eos-api` or `eos-bot`).
+Once you know that, run the following command to add it to the particular workspace-
+```bash
+uv add --package <WORKSPACE-NAME> <LIBRARY-NAME>
+```
+
+For example if you want to add `Django` to the api workspace, the command will be-
+```bash
+uv add --package eos-api Django
+```
+
+To remove a dependency, you can do so like-
+```bash
+uv remove --package eos-bot Django
+```
+And then don't forget to re-sync your dependencies-
+```bash
+uv sync
 ```
 
 You can also install `pre-commit` as a uv-managed tool so it's available without activating a venv:
