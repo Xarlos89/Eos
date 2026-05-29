@@ -3,14 +3,24 @@ A Discord.py bot, utilizing docker.
 
 Discord.py bot  **<->**  Flask API  **<->**  Postgres DB
 
+What it does:
+- **Verification** — on-join DM flow and an "are you a robot" dropdown that gates new members.
+- **Moderation** — ban, kick, mute, purge, quarantine/release, and server-wide lockdown/unlock.
+- **Points** — points awarded automatically per message, with a leaderboard.
+- **Logging** — audit events posted to configured log channels.
+- **Fun / utility** — cat facts, "let me Google that" links, an in-Discord Python runner, and support tickets.
+
 ---
-# Installation
-To run this bot, first install Docker.
-Then:
-1. Copy the example env file `cd src/ && cp .env.EXAMPLE .env`
-2. Replace "YOUR_DISCORD_BOT_TOKEN_HERE" with your Discord Bot token and MASTER_GUILD with the ID of the main guild that your bot will be active in.
+# Quick Start
+
+**Prerequisites:** Docker (with Docker Compose) installed, and a Discord bot token.
+
+1. Copy the example env file: `cd src/ && cp .env.EXAMPLE .env`
+2. Replace "YOUR_DISCORD_BOT_TOKEN_HERE" with your Discord Bot token and `MASTER_GUILD` with the ID of the main guild that your bot will be active in.
 3. `docker compose up -d`
 4. The bot should come online. You can use the `>hc` command to run a healthcheck on the system.
+
+## Configuration
 
 If you already have postgres installed on your system then you may have conflicting ports, in that case change the `POSTGRES_PORT` to a free port in the `.env`, usually `5433`. Then rebuild by using following command:
 ```
@@ -48,6 +58,10 @@ The Bot is running using Discord.py with cog-based commands.
 Cogs are located at `src/bot/cogs/` and are separated by their purpose: `admin/`, `features/`, `logging/`, `moderation/`, `verification/`.
 
 The functions that connect the bot to the API are at `src/bot/core/api_helper.py` and serve as an abstraction over the HTTP requests happening in the background.
+
+---
+# Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, the PR workflow, pre-commit setup, and local development with uv.
 
 ---
 # Commands
