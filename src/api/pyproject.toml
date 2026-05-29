@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Source files for the backend API made with flask."
 requires-python = ">=3.12"
 dependencies = [
-    "flask==3.1.0",
+    "flask==3.1.3",
     "gunicorn==26.0.0",
     "psycopg[binary]==3.3.3",
 ]
