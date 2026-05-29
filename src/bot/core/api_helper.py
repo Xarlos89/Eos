@@ -1,3 +1,4 @@
+import aiohttp
 import os
 import requests
 import logging
@@ -17,15 +18,19 @@ class API:
     #        Health checks       #
     ##############################
 
-    def api_health_check(self):
-        """Returns the healthcheck status of the API"""
+    async def async_api_health_check(self):
+        """Returns healthcheck status of the API"""
         logger.debug("Bot called API healthcheck endpoint.")
-        return requests.get(f"{self.api}/hc_api").json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{self.api}/hc_api") as response:
+                return await response.json()
 
-    def database_health_check(self):
-        """Returns the healthcheck status of the API"""
+    async def async_database_health_check(self):
+        """Returns the healcheck status of the DB"""
         logger.debug("Bot called database healthcheck endpoint.")
-        return requests.get(f"{self.api}/hc_db").json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{self.api}/hc_db") as response:
+                return await response.json()
 
     ##############################
     #           Logging          #
