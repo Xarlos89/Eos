@@ -15,6 +15,16 @@ class API:
         logger.info("Initializing API...")
         self.api = os.getenv("FLASK_URL")
         self.headers = {"Content-Type": "application/json"}
+        self.session = None
+
+    async def setup(self):
+        timeout = aiohttp.ClientTimeout(total=10)
+
+        self.session = aiohttp.ClientSession(
+            headers = self.headers,
+            timeout = timeout
+        )
+
         logger.info("API initialized.")
 
     ##############################
