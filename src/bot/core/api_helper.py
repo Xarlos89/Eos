@@ -176,19 +176,21 @@ class API:
     #            Points          #
     ##############################
 
-    def add_user_to_points(self, user_id):
+    async def add_user_to_points(self, user_id):
         logger.debug(f"Bot called the add_user_to_points endpoint. User ID: {user_id}")
-        return requests.post(
-            f"{self.api}/points/{user_id}/add", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.post(f"{self.api}/points/{user_id}/add") as response:
+            data = await response.json()
+            return data
 
-    def delete_user_from_points(self, user_id):
+    async def delete_user_from_points(self, user_id):
         logger.debug(
             f"Bot called the delete_user_from_points endpoint. User ID: {user_id}"
         )
-        return requests.delete(
+        with self.session.delete(
             f"{self.api}/points/{user_id}", timeout=REQUEST_TIMEOUT
-        ).json()
+        ) as response:
+            data = await response.json()
+            return data
 
     async def get_points(self, user_id):
         logger.debug(f"Bot called the get_points endpoint. User ID: {user_id}")

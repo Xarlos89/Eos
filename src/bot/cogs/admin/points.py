@@ -51,7 +51,7 @@ class Points(commands.Cog):
         """
         added = 0
         for user in ctx.guild.members:
-            self.bot.api.add_user_to_points(user.id)
+            await self.bot.api.add_user_to_points(user.id)
             added += 1
         await ctx.reply(
             embed=embed_info("", f"Added {added} users", discord.Color.lighter_gray())
@@ -123,8 +123,7 @@ class Points(commands.Cog):
                 embed=embed_info(
                     "",
                     f"{abs(amount)} points {'removed from' if amount < 0 else 'added to'} {user.display_name}",
-                    discord.Color.green() if not amount < 0
-                    else discord.Color.red(),
+                    discord.Color.green() if not amount < 0 else discord.Color.red(),
                 )
             )
         else:
@@ -206,7 +205,7 @@ class Points(commands.Cog):
         logger.debug(
             f"Updating {len(msg)} points for {message.author.display_name} for sending a message."
         )
-        self.bot.api.update_points(message.author.id, int(len(msg)))
+        await self.bot.api.update_points(message.author.id, int(len(msg)))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -236,7 +235,7 @@ class Points(commands.Cog):
         On user leave/kick/ban, remove them from the database
         """
         logger.debug(f"Removing {member.display_name} from the points DB.")
-        self.bot.api.delete_user_from_points(member.id)
+        await self.bot.api.delete_user_from_points(member.id)
 
     @update_points.error
     async def on_command_error(self, ctx: commands.Context, error):
