@@ -39,7 +39,8 @@ class Health(commands.Cog):
 
         logger.debug("healthcheck command used.")
 
-        hc_api = await self.bot.api.async_api_health_check()
+        results = await self.bot.api.health_check()
+        hc_api = results["api_status"]
         logger.debug(hc_api)
         try:
             status_api = hc_api[0]["status"]
@@ -56,7 +57,7 @@ class Health(commands.Cog):
             else discord.Color.red(),
         }
 
-        hc_db = await self.bot.api.async_database_health_check()
+        hc_db = results["db_status"]
         logger.debug(hc_db)
         try:
             status_db = hc_db[0]["status"]
@@ -77,4 +78,4 @@ class Health(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(Health(bot))
+    await bot.add_cog()
