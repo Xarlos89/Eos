@@ -20,10 +20,7 @@ class API:
     async def setup(self):
         timeout = aiohttp.ClientTimeout(total=10)
 
-        self.session = aiohttp.ClientSession(
-            headers = self.headers,
-            timeout = timeout
-        )
+        self.session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
 
         logger.info("API initialized.")
 
@@ -41,7 +38,6 @@ class API:
             async with session.get(f"{self.api}/hc_api") as response:
                 results["db_status"] = await response.json()
             return results
-
 
     ##############################
     #           Logging          #
@@ -215,9 +211,13 @@ class API:
             f"{self.api}/points/{user_id}/update", json=data, timeout=REQUEST_TIMEOUT
         ).json()
 
-    def top_10(self):
+    async def top_10(self):
         logger.debug("Bot called the top_10 endpoint.")
-        return requests.get(f"{self.api}/points/top10", timeout=REQUEST_TIMEOUT).json()
+        async with self.session.get(
+            f"{self.api}/points/top10", timeout=REQUEST_TIMEOUT
+        ) as response:
+            data = await response.json()
+            return data
 
     def monthly_top_point_earner(self):
         logger.debug("Bot called monthly top point earner.")

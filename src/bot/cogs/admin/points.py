@@ -137,7 +137,7 @@ class Points(commands.Cog):
         """
         Gets the top 10 users in the DB with the most points.
         """
-        top10 = self.bot.api.top_10()
+        top10 = await self.bot.api.top_10()
         if top10["status"] == "ok":
             data = []
             for user in top10["message"]:
