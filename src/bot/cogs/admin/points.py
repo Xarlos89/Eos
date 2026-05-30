@@ -67,7 +67,7 @@ class Points(commands.Cog):
         user : discord.Member
             The user you want to get the points of.
         """
-        points = self.bot.api.get_points(user.id)
+        points = await self.bot.api.get_points(user.id)
         if points["status"] == "ok":
             await ctx.reply(
                 embed=embed_info(
