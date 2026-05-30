@@ -117,14 +117,13 @@ class Points(commands.Cog):
             The amount you want to update. Can be a positive or negative integer.
         """
 
-        update_points = self.bot.api.update_points(user.id, int(amount))
+        update_points = await self.bot.api.update_points(user.id, int(amount))
         if update_points["status"] == "ok":
             await ctx.reply(
                 embed=embed_info(
                     "",
-                    f"{amount.lstrip('-+')} points {'removed from' if amount.startswith('-') else 'added to'} {user.display_name}",
-                    discord.Color.green()
-                    if not amount.startswith("-")
+                    f"{abs(amount)} points {'removed from' if amount < 0 else 'added to'} {user.display_name}",
+                    discord.Color.green() if not amount < 0
                     else discord.Color.red(),
                 )
             )
