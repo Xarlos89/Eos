@@ -202,14 +202,16 @@ class API:
             f"{self.api}/points/monthly/{user_id}", timeout=REQUEST_TIMEOUT
         ).json()
 
-    def update_points(self, user_id, amount):
+    async def update_points(self, user_id, amount):
         logger.debug(
             f"Bot called the update_points endpoint. User ID: {user_id} - Points: {amount}"
         )
         data = {"value": amount}
-        return requests.post(
-            f"{self.api}/points/{user_id}/update", json=data, timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.post(
+            f"{self.api}/points/{user_id}/update", json=data
+        ) as response:
+            data = await response.json()
+            return data
 
     async def top_10(self):
         logger.debug("Bot called the top_10 endpoint.")
