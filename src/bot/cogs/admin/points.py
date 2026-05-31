@@ -180,10 +180,14 @@ class Points(commands.Cog):
 
             await ctx.reply(
                 embed=embed_info(
-                    "Top 10 Point Earners This Month"
-                    , "\n".join([f"{index + 1}. {user_name} - {points}"
-                              for index, (user_name, points) in enumerate(data)])
-                    , discord.Color.yellow()
+                    "Top 10 Point Earners This Month",
+                    "\n".join(
+                        [
+                            f"{index + 1}. {user_name} - {points:,}"
+                            for index, (user_name, points) in enumerate(data)
+                        ]
+                    ),
+                    discord.Color.yellow(),
                 )
             )
         else:
