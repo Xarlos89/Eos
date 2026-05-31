@@ -270,7 +270,7 @@ class DB:
         try:
             self.cursor.execute(
                 "UPDATE users SET points = points + %s, monthly_points = monthly_points + %s WHERE discord_id = %s",
-                (value, user_id),
+                (value, value, user_id),
             )
             self.conn.commit()
             return {"status": "ok", "message": "points updated successfully"}
