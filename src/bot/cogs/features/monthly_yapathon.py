@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 # NOTE: Currently this time is not customizable through /update_settings
 TIME = datetime.time(hour=0, minute=0, second=0, tzinfo=datetime.timezone.utc)
+DATE = 1
 
 
 class MonthlyYapathon(commands.Cog):
@@ -34,7 +35,7 @@ class MonthlyYapathon(commands.Cog):
         """
         Function that is called to appoint monthly yapper.
         """
-        if datetime.datetime.now(datetime.timezone.utc).day == 1:
+        if datetime.datetime.now(datetime.timezone.utc).day == DATE:
             logger.info(f"Bot running appoint_monthly_yapper.")
 
             monthly_top_point_earner = self.bot.api.monthly_top_point_earner()
