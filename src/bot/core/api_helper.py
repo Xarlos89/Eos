@@ -196,7 +196,9 @@ class API:
 
     def get_monthly_points(self, user_id):
         logger.debug(f"Bot called the get_monthly_points endpoint. User Id: {user_id}")
-        return requests.get(f"{self.api}/points/monthly/{user_id}").json()
+        return requests.get(
+            f"{self.api}/points/monthly/{user_id}", timeout=REQUEST_TIMEOUT
+        ).json()
 
     def update_points(self, user_id, amount):
         logger.debug(
@@ -209,9 +211,7 @@ class API:
 
     def top_10(self):
         logger.debug("Bot called the top_10 endpoint.")
-        return requests.get(
-            f"{self.api}/points/top10", timeout=REQUEST_TIMEOUT
-        ).json()
+        return requests.get(f"{self.api}/points/top10", timeout=REQUEST_TIMEOUT).json()
 
     def monthly_top_point_earner(self):
         logger.debug("Bot called monthly top point earner.")
@@ -236,13 +236,18 @@ class API:
     ##############################
 
     def get_parameter(self, parameter_name):
-        logger.debug(f"Bot called parameters endpoint to get parameter {parameter_name}")
+        logger.debug(
+            f"Bot called parameters endpoint to get parameter {parameter_name}"
+        )
         return requests.get(
             f"{self.api}/parameters/{parameter_name}", timeout=REQUEST_TIMEOUT
         ).json()
 
     def set_parameter(self, parameter_name, parameter_value):
-        logger.debug(f"Bot called parameters endpoint to set {parameter_name} to {parameter_value}")
+        logger.debug(
+            f"Bot called parameters endpoint to set {parameter_name} to {parameter_value}"
+        )
         return requests.post(
-            f"{self.api}/parameters/set/{parameter_name}/{parameter_value}", timeout=REQUEST_TIMEOUT
+            f"{self.api}/parameters/set/{parameter_name}/{parameter_value}",
+            timeout=REQUEST_TIMEOUT,
         ).json()

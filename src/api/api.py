@@ -6,10 +6,10 @@ from core.db_helper import DB
 from flask import Flask, jsonify
 from routes.healthchecks import health_checks
 from routes.logging import logs
+from routes.parameters import parameters
 from routes.points import points
 from routes.roles import role
 from routes.settings import settings
-from routes.parameters import parameters
 from werkzeug.exceptions import HTTPException
 
 logger = logging.getLogger(__name__)
@@ -47,8 +47,6 @@ def handle_http_exception(e):
     app.logger.error(f"HTTP exception: {str(e)}")
 
     # Return a JSON response with details about the HTTP error
-    return jsonify({
-        "error": str(e),
-        "status_code": e.code,
-        "description": e.description
-    }), e.code
+    return jsonify(
+        {"error": str(e), "status_code": e.code, "description": e.description}
+    ), e.code

@@ -256,7 +256,9 @@ class DB:
 
     def get_monthly_points_for_user(self, user_id):
         try:
-            self.cursor.execute("SELECT monthly_points FROM users WHERE discord_id = %s", (user_id,))
+            self.cursor.execute(
+                "SELECT monthly_points FROM users WHERE discord_id = %s", (user_id,)
+            )
             result = self.cursor.fetchone()
             if result is not None:
                 return {"status": "ok", "monthly_points": result}
@@ -329,7 +331,9 @@ class DB:
 
     def get_monthly_top_point_earner(self):
         try:
-            self.cursor.execute("SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 1")
+            self.cursor.execute(
+                "SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 1"
+            )
             result = self.cursor.fetchone()
             return {"status": "ok", "message": result}
         except OperationalError as err:
@@ -339,7 +343,9 @@ class DB:
 
     def get_monthly_top_10(self):
         try:
-            self.cursor.execute("SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 10")
+            self.cursor.execute(
+                "SELECT discord_id, monthly_points FROM users ORDER BY monthly_points DESC LIMIT 10"
+            )
             result = self.cursor.fetchall()
             return {"status": "ok", "message": result}
         except OperationalError as err:
@@ -362,7 +368,10 @@ class DB:
     ################
     def get_parameter(self, parameter_name):
         try:
-            self.cursor.execute("SELECT parameter_value FROM parameters WHERE parameter_name = %s", (parameter_name,))
+            self.cursor.execute(
+                "SELECT parameter_value FROM parameters WHERE parameter_name = %s",
+                (parameter_name,),
+            )
             result = self.cursor.fetchone()
             return {"status": "ok", "message": result}
         except OperationalError as err:
@@ -372,7 +381,10 @@ class DB:
 
     def set_parameter(self, parameter_name, parameter_value):
         try:
-            self.cursor.execute("UPDATE parameters SET parameter_value = %s WHERE parameter_name = %s", (parameter_value, parameter_name))
+            self.cursor.execute(
+                "UPDATE parameters SET parameter_value = %s WHERE parameter_name = %s",
+                (parameter_value, parameter_name),
+            )
             self.conn.commit()
             return {"status": "ok", "message": "parameter set successfully"}
         except OperationalError as err:

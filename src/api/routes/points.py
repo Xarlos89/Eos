@@ -25,7 +25,8 @@ def get_points(user_id):
         logger.error(f"Error fetching points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
-@points.route('/points/monthly/<user_id>', methods=['GET'])
+
+@points.route("/points/monthly/<user_id>", methods=["GET"])
 def get_monthly_points(user_id):
     """
     Retrieve monthly points of the user.
@@ -41,7 +42,8 @@ def get_monthly_points(user_id):
         logger.error(f"Error fetching monthly points: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
-@points.route('/points/<user_id>/update', methods=['POST'])
+
+@points.route("/points/<user_id>/update", methods=["POST"])
 def update_points(user_id):
     """
     Update points for a user.
@@ -107,7 +109,8 @@ def top10():
         logger.error(f"Error getting top 10: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
-@points.route('/points/monthly/top', methods=['GET'])
+
+@points.route("/points/monthly/top", methods=["GET"])
 def top_monthly():
     """
     Grabs the top point earner of the month
@@ -119,7 +122,8 @@ def top_monthly():
         logger.error(f"Error getting monthly top point earner: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
-@points.route('/points/monthly/top10', methods=['GET'])
+
+@points.route("/points/monthly/top10", methods=["GET"])
 def monthly_top10():
     """
     Grabs the top 10 point earners of the month
@@ -131,7 +135,8 @@ def monthly_top10():
         logger.error(f"Error getting monthly top 10: {err}")
         return jsonify({"status": "error", "message": str(err)}), 400
 
-@points.route('/points/monthly/reset', methods=['DELETE'])
+
+@points.route("/points/monthly/reset", methods=["DELETE"])
 def reset_monthly_points():
     """
     Resets monthly points of all members

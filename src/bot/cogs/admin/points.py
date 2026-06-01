@@ -81,17 +81,19 @@ class Points(commands.Cog):
             logger.critical(points)
 
     @commands.hybrid_command()
-    async def get_monthly_points(self, ctx: commands.Context, user: discord.Member) -> None:
+    async def get_monthly_points(
+        self, ctx: commands.Context, user: discord.Member
+    ) -> None:
         """
         Gets the monthly points of a specific member. Takes a Mention, returns an embed.
         """
         monthly_points = self.bot.api.get_monthly_points(user.id)
-        if monthly_points['status'] == 'ok':
+        if monthly_points["status"] == "ok":
             await ctx.reply(
                 embed=embed_info(
-                    ""
-                    , f"{user.display_name} has {monthly_points['monthly_points'][0]} points"
-                    , discord.Color.lighter_gray()
+                    "",
+                    f"{user.display_name} has {monthly_points['monthly_points'][0]} points",
+                    discord.Color.lighter_gray(),
                 )
             )
         else:
@@ -140,7 +142,7 @@ class Points(commands.Cog):
             data = []
             for user in top10["message"]:
                 user_obj = self.bot.get_user(int(user[0]))
-                if user_obj == None:
+                if user_obj is None:
                     continue
 
                 data.append((user_obj.display_name, user[1]))
@@ -168,12 +170,11 @@ class Points(commands.Cog):
         Takes no args, returns an embed.
         """
         monthly_top10 = self.bot.api.monthly_top_10()
-        if monthly_top10['status'] == 'ok':
-
+        if monthly_top10["status"] == "ok":
             data = []
-            for user in monthly_top10['message']:
+            for user in monthly_top10["message"]:
                 user_obj = self.bot.get_user(int(user[0]))
-                if user_obj == None:
+                if user_obj is None:
                     continue
 
                 data.append((user_obj.display_name, user[1]))
@@ -191,7 +192,7 @@ class Points(commands.Cog):
                 )
             )
         else:
-            await ctx.reply(f"Oopsie. Unexpected error. Check the logs.")
+            await ctx.reply("Oopsie. Unexpected error. Check the logs.")
             logger.critical(monthly_top10)
 
     @commands.Cog.listener()

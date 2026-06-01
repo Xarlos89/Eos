@@ -1,15 +1,15 @@
-from flask import Blueprint, jsonify, request
-from flask import current_app as eos
 import logging
 
+from flask import Blueprint, jsonify
+from flask import current_app as eos
 
 logger = logging.getLogger(__name__)
 
 # Define a Blueprint
-parameters = Blueprint('parameters', __name__)
+parameters = Blueprint("parameters", __name__)
 
 
-@parameters.route('/parameters/<parameter_name>', methods=['GET'])
+@parameters.route("/parameters/<parameter_name>", methods=["GET"])
 def get_parameter(parameter_name):
     """
     Retrieve the value of a parameter from the DB.
@@ -22,7 +22,9 @@ def get_parameter(parameter_name):
         return jsonify({"status": "error", "message": str(err)}), 400
 
 
-@parameters.route('/parameters/set/<parameter_name>/<parameter_value>', methods=['POST'])
+@parameters.route(
+    "/parameters/set/<parameter_name>/<parameter_value>", methods=["POST"]
+)
 def set_parameter(parameter_name, parameter_value):
     """
     Set the value of a parameter in the DB
