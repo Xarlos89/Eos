@@ -32,7 +32,6 @@ class API:
                 results["db_status"] = await response.json()
             return results
 
-
     ##############################
     #           Logging          #
     ##############################
