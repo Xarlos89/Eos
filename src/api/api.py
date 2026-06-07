@@ -6,6 +6,7 @@ from core.db_helper import DB
 from flask import Flask, jsonify
 from routes.healthchecks import health_checks
 from routes.logging import logs
+from routes.parameters import parameters
 from routes.points import points
 from routes.roles import role
 from routes.settings import settings
@@ -27,6 +28,7 @@ app.register_blueprint(logs)
 app.register_blueprint(settings)
 app.register_blueprint(points)
 app.register_blueprint(role)
+app.register_blueprint(parameters)
 
 
 # Error handlers
