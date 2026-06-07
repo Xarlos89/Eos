@@ -51,7 +51,7 @@ class Points(commands.Cog):
         """
         added = 0
         for user in ctx.guild.members:
-            self.bot.api.add_user_to_points(user.id)
+            await self.bot.api.add_user_to_points(user.id)
             added += 1
         await ctx.reply(
             embed=embed_info("", f"Added {added} users", discord.Color.lighter_gray())
@@ -67,7 +67,7 @@ class Points(commands.Cog):
         user : discord.Member
             The user you want to get the points of.
         """
-        points = self.bot.api.get_points(user.id)
+        points = await self.bot.api.get_points(user.id)
         if points["status"] == "ok":
             await ctx.reply(
                 embed=embed_info(
@@ -117,15 +117,13 @@ class Points(commands.Cog):
             The amount you want to update. Can be a positive or negative integer.
         """
 
-        update_points = self.bot.api.update_points(user.id, int(amount))
+        update_points = await self.bot.api.update_points(user.id, int(amount))
         if update_points["status"] == "ok":
             await ctx.reply(
                 embed=embed_info(
                     "",
-                    f"{amount.lstrip('-+')} points {'removed from' if amount.startswith('-') else 'added to'} {user.display_name}",
-                    discord.Color.green()
-                    if not amount.startswith("-")
-                    else discord.Color.red(),
+                    f"{abs(amount)} points {'removed from' if amount < 0 else 'added to'} {user.display_name}",
+                    discord.Color.green() if not amount < 0 else discord.Color.red(),
                 )
             )
         else:
@@ -137,7 +135,7 @@ class Points(commands.Cog):
         """
         Gets the top 10 users in the DB with the most points.
         """
-        top10 = self.bot.api.top_10()
+        top10 = await self.bot.api.top_10()
         if top10["status"] == "ok":
             data = []
             for user in top10["message"]:
@@ -207,7 +205,7 @@ class Points(commands.Cog):
         logger.debug(
             f"Updating {len(msg)} points for {message.author.display_name} for sending a message."
         )
-        self.bot.api.update_points(message.author.id, int(len(msg)))
+        await self.bot.api.update_points(message.author.id, int(len(msg)))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -221,7 +219,7 @@ class Points(commands.Cog):
         logger.debug(
             f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message."
         )
-        self.bot.api.update_points(message.author.id, int(len(msg)) * -1)
+        await self.bot.api.update_points(message.author.id, int(len(msg)) * -1)
 
     @commands.Cog.listener()
     async def on_member_join(self, member) -> None:
@@ -229,7 +227,7 @@ class Points(commands.Cog):
         On user join, add them to the database
         """
         logger.debug(f"Adding {member.display_name} to the points DB.")
-        self.bot.api.add_user_to_points(member.id)
+        await self.bot.api.add_user_to_points(member.id)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member) -> None:
@@ -237,7 +235,7 @@ class Points(commands.Cog):
         On user leave/kick/ban, remove them from the database
         """
         logger.debug(f"Removing {member.display_name} from the points DB.")
-        self.bot.api.delete_user_from_points(member.id)
+        await self.bot.api.delete_user_from_points(member.id)
 
     @update_points.error
     async def on_command_error(self, ctx: commands.Context, error):

@@ -15,6 +15,13 @@ class API:
         logger.info("Initializing API...")
         self.api = os.getenv("FLASK_URL")
         self.headers = {"Content-Type": "application/json"}
+        self.session = None
+
+    async def setup(self):
+        timeout = aiohttp.ClientTimeout(total=10)
+
+        self.session = aiohttp.ClientSession(headers=self.headers, timeout=timeout)
+
         logger.info("API initialized.")
 
     ##############################
@@ -31,7 +38,6 @@ class API:
             async with session.get(f"{self.api}/hc_api") as response:
                 results["db_status"] = await response.json()
             return results
-
 
     ##############################
     #           Logging          #
@@ -170,25 +176,25 @@ class API:
     #            Points          #
     ##############################
 
-    def add_user_to_points(self, user_id):
+    async def add_user_to_points(self, user_id):
         logger.debug(f"Bot called the add_user_to_points endpoint. User ID: {user_id}")
-        return requests.post(
-            f"{self.api}/points/{user_id}/add", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.post(f"{self.api}/points/{user_id}/add") as response:
+            data = await response.json()
+            return data
 
-    def delete_user_from_points(self, user_id):
+    async def delete_user_from_points(self, user_id):
         logger.debug(
             f"Bot called the delete_user_from_points endpoint. User ID: {user_id}"
         )
-        return requests.delete(
-            f"{self.api}/points/{user_id}", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.delete(f"{self.api}/points/{user_id}") as response:
+            data = await response.json()
+            return data
 
-    def get_points(self, user_id):
+    async def get_points(self, user_id):
         logger.debug(f"Bot called the get_points endpoint. User ID: {user_id}")
-        return requests.get(
-            f"{self.api}/points/{user_id}", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.get(f"{self.api}/points/{user_id}") as response:
+            data = await response.json()
+            return data
 
     def get_monthly_points(self, user_id):
         logger.debug(f"Bot called the get_monthly_points endpoint. User Id: {user_id}")
@@ -196,18 +202,22 @@ class API:
             f"{self.api}/points/monthly/{user_id}", timeout=REQUEST_TIMEOUT
         ).json()
 
-    def update_points(self, user_id, amount):
+    async def update_points(self, user_id, amount):
         logger.debug(
             f"Bot called the update_points endpoint. User ID: {user_id} - Points: {amount}"
         )
         data = {"value": amount}
-        return requests.post(
-            f"{self.api}/points/{user_id}/update", json=data, timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.post(
+            f"{self.api}/points/{user_id}/update", json=data
+        ) as response:
+            data = await response.json()
+            return data
 
-    def top_10(self):
+    async def top_10(self):
         logger.debug("Bot called the top_10 endpoint.")
-        return requests.get(f"{self.api}/points/top10", timeout=REQUEST_TIMEOUT).json()
+        async with self.session.get(f"{self.api}/points/top10") as response:
+            data = await response.json()
+            return data
 
     def monthly_top_point_earner(self):
         logger.debug("Bot called monthly top point earner.")

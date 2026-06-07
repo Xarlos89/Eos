@@ -16,7 +16,6 @@ setup_logger(
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
-bot.api = API()
 
 
 async def load_cogs(robot: commands.Bot) -> None:
@@ -67,6 +66,10 @@ async def setup_hook() -> None:
     None: This function does not return any value.
     """
     logger.debug("Executing set up hook...")
+    bot.api = API()
+    await bot.api.setup()
+    await load_cogs(bot)
+    logger.info("Startup tasks complete")
 
 
 @bot.event
@@ -75,7 +78,6 @@ async def on_ready() -> None:
     The on_ready is executed AFTER the bot logs in.
     """
     logger.debug("Executing on_ready event.")
-    await load_cogs(bot)
     # synced = await bot.tree.sync()
     # logger.info(f"Synced {len(synced)} command(s).")
     logger.info(f"{bot.user.name} is online and ready to go.")
