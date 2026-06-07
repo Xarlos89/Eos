@@ -87,12 +87,12 @@ class API:
     ##############################
     #           Settings         #
     ##############################
-    def get_one_setting(self, flag_id):
+    async def get_one_setting(self, flag_id):
         """Retrieves one setting from the database"""
         logger.debug("Bot called get_one_setting endpoint.")
-        return requests.get(
-            f"{self.api}/settings/{flag_id}", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.get(f"{self.api}/settings/{flag_id}") as response:
+            data = await response.json()
+            return data
 
     def get_all_settings(self):
         """Retrieves all settings from the database"""
@@ -132,12 +132,12 @@ class API:
     ##############################
     #            Roles           #
     ##############################
-    def get_one_role(self, flag_id):
+    async def get_one_role(self, flag_id):
         """Retrieves one role from the database"""
         logger.debug("Bot called get_one_role endpoint.")
-        return requests.get(
-            f"{self.api}/role/{flag_id}", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.get(f"{self.api}/role/{flag_id}") as response:
+            data = await response.json()
+            return data
 
     def get_all_roles(self):
         """Retrieves all roles from the database"""
@@ -241,13 +241,15 @@ class API:
     #        Parameters          #
     ##############################
 
-    def get_parameter(self, parameter_name):
+    async def get_parameter(self, parameter_name):
         logger.debug(
             f"Bot called parameters endpoint to get parameter {parameter_name}"
         )
-        return requests.get(
-            f"{self.api}/parameters/{parameter_name}", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.get(
+            f"{self.api}/parameters/{parameter_name}"
+        ) as response:
+            data = await response.json()
+            return data
 
     def set_parameter(self, parameter_name, parameter_value):
         logger.debug(
