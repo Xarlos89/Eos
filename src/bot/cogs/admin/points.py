@@ -219,7 +219,7 @@ class Points(commands.Cog):
         logger.debug(
             f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message."
         )
-        self.bot.api.update_points(message.author.id, int(len(msg)) * -1)
+        await self.bot.api.update_points(message.author.id, int(len(msg)) * -1)
 
     @commands.Cog.listener()
     async def on_member_join(self, member) -> None:
@@ -227,7 +227,7 @@ class Points(commands.Cog):
         On user join, add them to the database
         """
         logger.debug(f"Adding {member.display_name} to the points DB.")
-        self.bot.api.add_user_to_points(member.id)
+        await self.bot.api.add_user_to_points(member.id)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member) -> None:

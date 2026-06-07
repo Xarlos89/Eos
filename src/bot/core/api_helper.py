@@ -186,17 +186,13 @@ class API:
         logger.debug(
             f"Bot called the delete_user_from_points endpoint. User ID: {user_id}"
         )
-        with self.session.delete(
-            f"{self.api}/points/{user_id}", timeout=REQUEST_TIMEOUT
-        ) as response:
+        async with self.session.delete(f"{self.api}/points/{user_id}") as response:
             data = await response.json()
             return data
 
     async def get_points(self, user_id):
         logger.debug(f"Bot called the get_points endpoint. User ID: {user_id}")
-        async with self.session.get(
-            f"{self.api}/points/{user_id}", timeout=REQUEST_TIMEOUT
-        ) as response:
+        async with self.session.get(f"{self.api}/points/{user_id}") as response:
             data = await response.json()
             return data
 
@@ -219,9 +215,7 @@ class API:
 
     async def top_10(self):
         logger.debug("Bot called the top_10 endpoint.")
-        async with self.session.get(
-            f"{self.api}/points/top10", timeout=REQUEST_TIMEOUT
-        ) as response:
+        async with self.session.get(f"{self.api}/points/top10") as response:
             data = await response.json()
             return data
 
