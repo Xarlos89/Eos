@@ -21,21 +21,17 @@ class API:
     #        Health checks       #
     ##############################
 
-    async def async_api_health_check(self):
-        """Returns healthcheck status of the API"""
-        logger.debug("Bot called API healthcheck endpoint.")
+    async def health_check(self):
+        """Returns the healtcheck status of API and DB"""
         timeout = aiohttp.ClientTimeout(total=REQUEST_TIMEOUT)
         async with aiohttp.ClientSession(timeout=timeout) as session:
+            results = {}
             async with session.get(f"{self.api}/hc_api") as response:
-                return await response.json()
+                results["api_status"] = await response.json()
+            async with session.get(f"{self.api}/hc_api") as response:
+                results["db_status"] = await response.json()
+            return results
 
-    async def async_database_health_check(self):
-        """Returns the healcheck status of the DB"""
-        logger.debug("Bot called database healthcheck endpoint.")
-        timeout = aiohttp.ClientTimeout(total=REQUEST_TIMEOUT)
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.get(f"{self.api}/hc_db") as response:
-                return await response.json()
 
     ##############################
     #           Logging          #
