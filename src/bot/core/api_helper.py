@@ -196,12 +196,6 @@ class API:
             data = await response.json()
             return data
 
-    def get_monthly_points(self, user_id):
-        logger.debug(f"Bot called the get_monthly_points endpoint. User Id: {user_id}")
-        return requests.get(
-            f"{self.api}/points/monthly/{user_id}", timeout=REQUEST_TIMEOUT
-        ).json()
-
     async def update_points(self, user_id, amount):
         logger.debug(
             f"Bot called the update_points endpoint. User ID: {user_id} - Points: {amount}"
@@ -219,23 +213,29 @@ class API:
             data = await response.json()
             return data
 
-    def monthly_top_point_earner(self):
+    async def get_monthly_points(self, user_id):
+        logger.debug(f"Bot called the get_monthly_points endpoint. User Id: {user_id}")
+        async with self.session.get(f"{self.api}/points/monthly/{user_id}") as response:
+            data = await response.json()
+            return data
+
+    async def monthly_top_point_earner(self):
         logger.debug("Bot called monthly top point earner.")
-        return requests.get(
-            f"{self.api}/points/monthly/top", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.get(f"{self.api}/points/monthly/top") as response:
+            data = await response.json()
+            return data
 
-    def monthly_top_10(self):
+    async def monthly_top_10(self):
         logger.debug("Bot called the monthly top_10 endpoint.")
-        return requests.get(
-            f"{self.api}/points/monthly/top10", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.get(f"{self.api}/points/monthly/top10") as response:
+            data = await response.json()
+            return data
 
-    def reset_monthly_points(self):
+    async def reset_monthly_points(self):
         logger.debug("Bot called the reset monthly points endpoint.")
-        return requests.delete(
-            f"{self.api}/points/monthly/reset", timeout=REQUEST_TIMEOUT
-        ).json()
+        async with self.session.delete(f"{self.api}/points/monthly/reset") as response:
+            data = await response.json()
+            return data
 
     ##############################
     #        Parameters          #
