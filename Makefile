@@ -16,4 +16,4 @@ pre-commit:
 
 format:
 	uv run --dev ruff format .
-	uv run --dev  ruff check . --fix
+	uv run --dev ruff check . --fix
