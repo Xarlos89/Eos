@@ -45,17 +45,15 @@ class LoggingNameChanges(commands.Cog):
             )
             return
 
-        if before.nick is None:
-            username_before = before
-        else:
-            username_before = before.nick
+        username_before = before.nick or before.name
+        username_after = after.nick or after.name
 
-        if after.nick is None:
-            username_after = after
-        else:
-            username_after = after.nick
+        logger.debug(f"{username_before}, {username_after}")
 
-        if before.nick != after.nick and before.nick is not None:
+        if username_after == before.name:
+            return
+
+        if username_before != username_after:
             if self.user_log[0]["status"] == "ok":
                 if self.user_log[0]["logging"][2] == "0":
                     logger.debug(
@@ -68,7 +66,7 @@ class LoggingNameChanges(commands.Cog):
 
                 embed = embed_name_change(username_before, username_after)
 
-                await logs_channel.send(f"{username_after.mention}", embed=embed)
+                await logs_channel.send(embed=embed)
             else:
                 logger.critical(f"API error. API response not ok. -> {self.user_log}")
 
