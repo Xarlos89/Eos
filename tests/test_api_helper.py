@@ -4,7 +4,6 @@ import types
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 BOT_SRC = ROOT / "src" / "bot"
 sys.path.insert(0, str(BOT_SRC))
@@ -33,9 +32,8 @@ class FakeResponse:
 
 
 class FakeSession:
-    calls = []
-
     def __init__(self, *args, **kwargs):
+        self.calls = []
         self.timeout = kwargs.get("timeout")
 
     async def __aenter__(self):
@@ -51,8 +49,14 @@ class FakeSession:
 
 class HealthCheckTests(unittest.TestCase):
     def test_health_check_calls_api_and_database_endpoints(self):
-        FakeSession.calls = []
-        api_helper.aiohttp.ClientSession = FakeSession
+        sessions = []
+
+        def make_session(*args, **kwargs):
+            session = FakeSession(*args, **kwargs)
+            sessions.append(session)
+            return session
+
+        api_helper.aiohttp.ClientSession = make_session
         api_helper.aiohttp.ClientTimeout = lambda total: total
 
         api = api_helper.API()
@@ -60,10 +64,8 @@ class HealthCheckTests(unittest.TestCase):
 
         results = asyncio.run(api.health_check())
 
-        self.assertEqual(
-            FakeSession.calls,
-            ["http://eos.test/hc_api", "http://eos.test/hc_db"],
-        )
+        self.assertEqual(len(sessions), 1)
+        self.assertEqual(sessions[0].calls, ["http://eos.test/hc_api", "http://eos.test/hc_db"])
         self.assertEqual(results["api_status"], {"url": "http://eos.test/hc_api"})
         self.assertEqual(results["db_status"], {"url": "http://eos.test/hc_db"})
 
