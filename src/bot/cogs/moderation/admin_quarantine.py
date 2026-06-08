@@ -2,9 +2,9 @@
 Admin command for kicking a user.
 """
 
+import asyncio
 import datetime
 import logging
-import time
 
 import discord
 from discord import app_commands
@@ -137,7 +137,7 @@ class AdminQuarantine(commands.Cog):
                             if message.author.name == target.name:
                                 await message.delete()
                                 message_counter += 1
-                                time.sleep(0.2)  # Avoiding rate limits.
+                                await asyncio.sleep(0.2)  # Avoiding rate limits.
 
                 await mod_log.send(
                     embed=embed_quarantine(interaction.user, target, message_counter)
