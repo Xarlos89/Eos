@@ -1,13 +1,5 @@
----
-name: Bug Fix PR
-about: Propose a bug fix PR.
-title: "[BUG FIX]"
-labels: bug
-
----
-
-## Description of the bug
-<!-- Write a brief explaination of the bug you're fixing. -->
+## Description of your PR
+<!-- Write a brief explaination of what your PR proposes. -->
 
 ## Describe your changes
 <!--

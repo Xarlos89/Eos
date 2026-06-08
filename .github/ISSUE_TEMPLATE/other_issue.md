@@ -5,11 +5,11 @@ title: "[OTHER]"
 
 ---
 
-**Describe the issue**
+## Describe the issue
 <!-- A clear and concise description of the issue. -->
 
-**Screenshots**
+## Screenshots
 <!-- If applicable, add screenshots to help explain your problem. -->
 
-**Additional context**
+## Additional context
 <!-- Add any other context about the problem here. -->
