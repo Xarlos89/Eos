@@ -65,7 +65,7 @@ uv sync
 
 ## pre-commit
 
-We use [pre-commit](https://pre-commit.com) to run formatting, linting and security checks before each commit.
+We use [pre-commit](https://pre-commit.com) to run formatting, linting and security checks before each commit. The same checks run automatically in CI (`.github/workflows/ci.yml`) on every push and pull request to `master`.
 
 Install the hooks once after cloning:
 ```bash
