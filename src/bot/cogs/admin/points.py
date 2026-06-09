@@ -4,6 +4,7 @@ import logging
 import discord
 from discord.ext import commands
 
+from src.bot.cogs import BaseCog
 from src.bot.cogs._checks import is_admin, is_master_guild
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ def embed_info(title, message, color):
     return embed
 
 
-class Points(commands.Cog):
+class Points(BaseCog):
     """
     This cog manages a points-based system for Discord guild members.
 
@@ -39,6 +40,8 @@ class Points(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         """Initialization of the points Class"""
+        super().__init__(logger)
+
         self.bot = bot
 
     @is_admin()
