@@ -34,7 +34,9 @@ class MonthlyYapathon(BaseCog):
         ]
         self.appoint_monthly_yapper.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
+        await super().cog_unload()
+
         self.appoint_monthly_yapper.cancel()
 
     @tasks.loop(time=TIME)
