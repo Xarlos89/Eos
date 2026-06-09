@@ -11,7 +11,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.utils import get
 
-from .._checks import is_master_guild, is_moderator
+from src.bot.cogs._checks import is_master_guild, is_moderator
 
 logger = logging.getLogger(__name__)
 

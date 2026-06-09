@@ -4,7 +4,7 @@ import logging
 import discord
 from discord.ext import commands
 
-from .._checks import is_admin, is_master_guild
+from src.bot.cogs._checks import is_admin, is_master_guild
 
 logger = logging.getLogger(__name__)
 
