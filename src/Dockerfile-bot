@@ -24,4 +24,4 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 RUN useradd -r -M botuser && chown -R botuser:botuser /bot
 USER botuser
 
-CMD ["uv", "run", "--frozen", "--no-cache", "--no-dev", "--package", "eos-bot", "python", "src/bot/main.py"]
+CMD ["uv", "run", "--frozen", "--no-cache", "--no-dev", "--package", "eos-bot", "python", "-m", "src.bot.main"]
