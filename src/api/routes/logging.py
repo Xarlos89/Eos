@@ -25,7 +25,7 @@ def get_log_setting(log_id=None):
         # Retrieve a single setting
         result = eos.db.get_log_setting(log_id)
 
-    return jsonify(result, 200)
+    return jsonify(result), 200
 
 
 # @settings.route('/log_settings', methods=['GET'])
@@ -37,7 +37,7 @@ def get_log_setting(log_id=None):
 #     """
 #     result = eos.db.get_log_settings()
 #
-#     return jsonify(result, 200)
+#     return jsonify(result), 200
 
 
 @logs.route("/logging/<log_id>", methods=["PUT"])
@@ -48,9 +48,9 @@ def update_log_setting(log_id):
     if request.method == "PUT":
         data = request.json
         result = eos.db.update_logging(int(log_id), data["value"])
-        return jsonify(result, 200)
+        return jsonify(result), 200
 
-    return jsonify({"message": "improper request method"}, 405)
+    return jsonify({"message": "improper request method"}), 405
 
 
 @logs.route("/logging", methods=["POST"])
@@ -61,9 +61,9 @@ def add_log_setting():
     if request.method == "POST":
         data = request.json
         result = eos.db.add_log_setting(data["name"], data["value"])
-        return jsonify(result, 201)
+        return jsonify(result), 201
 
-    return jsonify({"message": "improper request method"}, 405)
+    return jsonify({"message": "improper request method"}), 405
 
 
 @logs.route("/logging/<int:log_id>", methods=["DELETE"])
@@ -73,6 +73,6 @@ def delete_log_setting(log_id):
     """
     if request.method == "DELETE":
         result = eos.db.delete_log_setting(log_id)
-        return jsonify(result, 200)
+        return jsonify(result), 200
 
-    return jsonify({"message": "improper request method"}, 405)
+    return jsonify({"message": "improper request method"}), 405
