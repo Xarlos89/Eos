@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 
 import discord
 from discord.ext import commands
@@ -201,6 +202,9 @@ class Points(commands.Cog):
         """
         if message.author.bot:
             return
+        if message.guild.id != int(os.getenv("MASTER_GUILD")):
+            return
+
         msg = message.content.split()
         logger.debug(
             f"Updating {len(msg)} points for {message.author.display_name} for sending a message."
