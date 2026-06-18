@@ -65,7 +65,9 @@ class HealthCheckTests(unittest.TestCase):
         results = asyncio.run(api.health_check())
 
         self.assertEqual(len(sessions), 1)
-        self.assertEqual(sessions[0].calls, ["http://eos.test/hc_api", "http://eos.test/hc_db"])
+        self.assertEqual(
+            sessions[0].calls, ["http://eos.test/hc_api", "http://eos.test/hc_db"]
+        )
         self.assertEqual(results["api_status"], {"url": "http://eos.test/hc_api"})
         self.assertEqual(results["db_status"], {"url": "http://eos.test/hc_db"})
 
