@@ -1,5 +1,5 @@
 ## Description of your PR
-<!-- Write a brief explaination of what your PR proposes. -->
+<!-- Write a brief explanation of what your PR proposes. -->
 
 ## Describe your changes
 <!--
