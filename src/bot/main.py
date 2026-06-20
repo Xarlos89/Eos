@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import sys
@@ -16,6 +17,7 @@ setup_logger(
 
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
+bot.boot_time = datetime.datetime.now()
 
 
 async def load_cogs(robot: commands.Bot) -> None:
