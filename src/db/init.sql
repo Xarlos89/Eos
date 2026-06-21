@@ -1,10 +1,3 @@
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'eos') THEN
-        CREATE DATABASE eos;
-    END IF;
-END $$;
-
 -- Create serversettings table
 CREATE TABLE IF NOT EXISTS serversettings (
     id SERIAL PRIMARY KEY,
