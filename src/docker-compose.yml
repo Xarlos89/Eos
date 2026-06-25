@@ -60,7 +60,7 @@ services:
       retries: 5
       start_period: 20s
     ports:
-      - "127.0.0.1:${POSTGRES_PORT_HOST}:${POSTGRES_PORT}"
+      - "127.0.0.1:${POSTGRES_PORT_HOST:-5432}:${POSTGRES_PORT}"
     networks:
       - eos
     restart: unless-stopped
