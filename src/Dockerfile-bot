@@ -16,12 +16,19 @@ COPY src/bot/pyproject.toml src/bot/pyproject.toml
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev --package eos-bot
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY src/bot ./src/bot
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --package eos-bot
 
+RUN --mount=source=../.git,target=.git,type=bind \
+    git rev-parse --short HEAD > /commit_hash.txt
+
 RUN useradd -r -M botuser && chown -R botuser:botuser /bot
 USER botuser
 
-CMD ["uv", "run", "--frozen", "--no-cache", "--no-dev", "--package", "eos-bot", "python", "src/bot/main.py"]
+ENTRYPOINT ["./src/bot/botrunner.sh"]
