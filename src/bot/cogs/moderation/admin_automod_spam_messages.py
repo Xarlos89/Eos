@@ -96,8 +96,8 @@ class ModerationSpamMessages(commands.Cog):
 
         author_id = message.author.id
         content = message.content or ""
-        if message.attachments:
-            attachment = message.attachments[0]
+        attachment = message.attachments[0] if message.attachments else None
+        if attachment:
             content += hashlib.sha256(
                 f"|{attachment.filename}|{attachment.size}|{attachment.content_type}".encode()
             ).hexdigest()
@@ -142,11 +142,11 @@ class ModerationSpamMessages(commands.Cog):
                 {
                     "message_id": message.id,
                     "channel_id": message.channel.id,
-                    "file_name": message.attachments[0].filename
-                    if not message.content
+                    "file_name": attachment.filename
+                    if attachment and not message.content
                     else None,
-                    "file_url": message.attachments[0].url
-                    if not message.content
+                    "file_url": attachment.url
+                    if attachment and not message.content
                     else None,
                 }
             )
@@ -163,11 +163,11 @@ class ModerationSpamMessages(commands.Cog):
                     {
                         "message_id": message.id,
                         "channel_id": message.channel.id,
-                        "file_name": message.attachments[0].filename
-                        if not message.content
+                        "file_name": attachment.filename
+                        if attachment and not message.content
                         else None,
-                        "file_url": message.attachments[0].url
-                        if not message.content
+                        "file_url": attachment.url
+                        if attachment and not message.content
                         else None,
                     }
                 ],

@@ -31,6 +31,7 @@ class LoggingVerification(commands.Cog):
         await logging_channel.send(f"<@{member.id}> joined, but has not verified.")
 
     async def send_welcome_message(self, guild, member):
+        verification_channel = self.bot.get_channel(int(self.verification_channel))
         welcome_message = f"""
             Hi there, {member.mention}
             I'm Zorak, the moderator of {guild.name}.
@@ -38,7 +39,7 @@ class LoggingVerification(commands.Cog):
             We are very happy that you have decided to join us.
             Before you are allowed to chat, you need to verify that you are NOT a bot.\n
             Dont worry... it's easy.
-            Just go to {self.bot.get_channel(self.verification_log) if self.verification_log is not None else "the verification channel"}
+            Just go to {verification_channel.mention if verification_channel else "the verification channel"}
             and use the **{os.getenv("PREFIX")}verify** command.
 
             After you do, all of {guild.name} is available to you. Have a great time :-)
