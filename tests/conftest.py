@@ -15,9 +15,7 @@ def _is_clashing(name: str) -> bool:
 
 def _purge() -> dict:
     return {
-        name: sys.modules.pop(name)
-        for name in list(sys.modules)
-        if _is_clashing(name)
+        name: sys.modules.pop(name) for name in list(sys.modules) if _is_clashing(name)
     }
 
 

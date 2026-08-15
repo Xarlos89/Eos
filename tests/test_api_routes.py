@@ -38,8 +38,22 @@ def test_db_healthcheck_unhealthy_is_503(client):
 # (path, all-key, one-key, db method names)
 # --------------------------------------------------------------------------
 RESOURCES = [
-    ("/logging", "log_settings", "log_setting", "get_log_settings", "get_log_setting", "update_logging"),
-    ("/settings", "settings", "setting", "get_settings", "get_setting", "update_setting"),
+    (
+        "/logging",
+        "log_settings",
+        "log_setting",
+        "get_log_settings",
+        "get_log_setting",
+        "update_logging",
+    ),
+    (
+        "/settings",
+        "settings",
+        "setting",
+        "get_settings",
+        "get_setting",
+        "update_setting",
+    ),
     ("/role", "roles", "role", "get_roles", "get_role", "update_role"),
 ]
 
