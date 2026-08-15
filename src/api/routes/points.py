@@ -48,7 +48,7 @@ def add_user_to_points(user_id):
     """
     Add a new user to the points table.
     """
-    return respond(eos.db.add_user_to_points(user_id), ok_code=201)
+    return respond(eos.db.add_user_to_points(user_id), w0o0o=201)
 
 
 @points.route("/points/<user_id>", methods=["DELETE"])
