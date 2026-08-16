@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 
 import discord
 from discord.ext import commands
@@ -204,6 +205,9 @@ class Points(BaseCog):
         """
         if message.author.bot:
             return
+        if message.guild is None or message.guild.id != int(os.getenv("MASTER_GUILD")):
+            return
+
         msg = message.content.split()
         logger.debug(
             f"Updating {len(msg)} points for {message.author.display_name} for sending a message."
@@ -218,6 +222,9 @@ class Points(BaseCog):
         """
         if message.author.bot:
             return
+        if message.guild is None or message.guild.id != int(os.getenv("MASTER_GUILD")):
+            return
+
         msg = message.content.split()
         logger.debug(
             f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message."

@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 
 import discord
 from discord.ext import commands
@@ -9,7 +10,7 @@ from src.bot.cogs import BaseCog
 logger = logging.getLogger(__name__)
 
 
-def embed_hc(api, db):
+def embed_hc(api, db, uptime, git_hash):
     """
     Embedding for avatar change alerts.
     """
@@ -26,6 +27,8 @@ def embed_hc(api, db):
     )
     embed.add_field(name=api.get("message"), value=api.get("status_code"), inline=False)
     embed.add_field(name=db.get("message"), value=db.get("status_code"), inline=False)
+    embed.add_field(name="Uptime:", value=uptime, inline=False)
+    embed.add_field(name="Commit Hash:", value=git_hash, inline=False)
     return embed
 
 
@@ -78,7 +81,28 @@ class Health(BaseCog):
             else discord.Color.red(),
         }
 
-        await ctx.reply(embed=embed_hc(api_info, db_info))
+        uptime = self.get_uptime(self.bot.boot_time)
+
+        # Get commit hash from .env file
+        git_hash = os.getenv("GIT_HASH", default="Spam, Spam, Spam, Egg, and Spam!")
+
+        await ctx.reply(embed=embed_hc(api_info, db_info, uptime, git_hash))
+
+    def get_uptime(self, boot_time: datetime.datetime) -> str:
+        """Get uptime from bot"""
+        now = datetime.datetime.now()
+        delta: datetime.timedelta = now - boot_time
+        message = self.format_uptime(delta)
+        return message
+
+    def format_uptime(self, time_delta: datetime.timedelta) -> str:
+        """Format time_delta components for embed message"""
+        total_minutes: int = time_delta.seconds // 60
+        minutes: int = total_minutes % 60
+        hours: int = time_delta.seconds // 3600
+        days: int = time_delta.days
+
+        return f"{days}d {hours}h {minutes}m"
 
 
 async def setup(bot: commands.Bot) -> None:

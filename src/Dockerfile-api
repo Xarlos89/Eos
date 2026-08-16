@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1 \
     UV_LINK_MODE=copy \
     UV_PROJECT_ENVIRONMENT=/api/.venv
 
-COPY --from=ghcr.io/astral-sh/uv:0.11.19 /uv /uvx /usr/local/bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.1 /uv /uvx /usr/local/bin/
 
 WORKDIR /api
 
@@ -30,4 +30,4 @@ ENV HOME="/api" \
     PATH="/api/.venv/bin:$PATH"
 
 EXPOSE ${FLASK_RUN_PORT}
-CMD ["sh", "-c", "exec gunicorn -w 2 --timeout 60 --graceful-timeout 30 --access-logfile - --error-logfile - -b 0.0.0.0:${FLASK_RUN_PORT} --chdir /api/src/api api:app"]
+CMD ["sh", "-c", "exec gunicorn -w 2 --timeout 60 --graceful-timeout 30 --access-logfile - --error-logfile - -b 0.0.0.0:${FLASK_RUN_PORT} --chdir /api src.api.api:app"]

@@ -22,7 +22,8 @@ What it does:
 
 ## Configuration
 
-If you already have postgres installed on your system then you may have conflicting ports, in that case change the `POSTGRES_PORT` to a free port in the `.env`, usually `5433`. Then rebuild by using following command:
+If you already have postgres installed on your system then you may have conflicting ports, in that case change
+the `POSTGRES_PORT_HOST` to a free port in the `.env`, usually `5433`. (Clarification:`POSTGRES_PORT` env variable is only used within the container environment). Then rebuild by using following command:
 ```
 docker compose up -d --build
 ```

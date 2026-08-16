@@ -63,7 +63,6 @@ class AdminMute(BaseCog):
         """
 
         if not target.bot:
-            logger.info("0")
             if not target.guild_permissions.administrator:
                 # Message the user, informing them of their fate
                 await interaction.response.defer()

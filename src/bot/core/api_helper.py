@@ -35,7 +35,7 @@ class API:
             results = {}
             async with session.get(f"{self.api}/hc_api") as response:
                 results["api_status"] = await response.json()
-            async with session.get(f"{self.api}/hc_api") as response:
+            async with session.get(f"{self.api}/hc_db") as response:
                 results["db_status"] = await response.json()
             return results
 
