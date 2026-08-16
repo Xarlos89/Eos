@@ -122,9 +122,11 @@ class Verification(commands.Cog):
     async def verify(self, ctx):
         """Command to verify yourself."""
 
-        if str(type(ctx.channel)) == "<class 'discord.channel.DMChannel'>":
-            await ctx.respond(
-                f"You need to use the command in the {self.bot.get_channel(self.verification_channel).mention} channel."
+        if isinstance(ctx.channel, discord.DMChannel):
+            verification_channel = self.bot.get_channel(int(self.verification_channel))
+            await ctx.send(
+                f"You need to use the command in the "
+                f"{verification_channel.mention if verification_channel else 'verification'} channel."
             )
             return
 

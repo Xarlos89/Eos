@@ -202,7 +202,7 @@ class Points(commands.Cog):
         """
         if message.author.bot:
             return
-        if message.guild.id != int(os.getenv("MASTER_GUILD")):
+        if message.guild is None or message.guild.id != int(os.getenv("MASTER_GUILD")):
             return
 
         msg = message.content.split()
@@ -219,6 +219,9 @@ class Points(commands.Cog):
         """
         if message.author.bot:
             return
+        if message.guild is None or message.guild.id != int(os.getenv("MASTER_GUILD")):
+            return
+
         msg = message.content.split()
         logger.debug(
             f"Updating -{len(msg)} points for {message.author.display_name} for deleting a message."
