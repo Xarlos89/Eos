@@ -135,12 +135,8 @@ class LoggingMessageDelete(BaseCog):
             logger.debug("Message delete in staff channel was ignored.")
             return
 
-        if (
-            message.channel.id == int(self.verification_channel)
-            and (
-                message.author.bot
-                or message.content == self.verification_command
-            )
+        if message.channel.id == int(self.verification_channel) and (
+            message.author.bot or message.content == self.verification_command
         ):
             logger.debug("Message from verification process was ignored.")
             return
