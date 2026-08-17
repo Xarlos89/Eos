@@ -10,12 +10,12 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from ..constants import BG_COLORS, TXT_COLORS
+from ..constants import LATEX_COLORS
 
 logger = logging.getLogger(__name__)
 
 
-def embed_info(title, message, image_url=None):
+def embed_info(title: str, message: str, image_url: str | None = None) -> discord.Embed:
     """
     Embedding for general things
     """
@@ -31,53 +31,46 @@ def embed_info(title, message, image_url=None):
 
 class LaTeX(commands.Cog):
     """
-    # Grabs the svg code from CodeCogs API and converts it to a png for display in an embed.
+    # Generates a LaTeX equation image using the CodeCogs API and displays it in an embed.
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.session = None
+        self.session: aiohttp.ClientSession | None = None
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         self.session = aiohttp.ClientSession()
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         if self.session:
             await self.session.close()
 
-    @app_commands.command()
-    async def latex_bg(self, interaction: discord.Interaction):
+    @app_commands.command(description="Show the available LaTeX colors.")
+    async def latex_colors(self, interaction: discord.Interaction) -> None:
         file = discord.File(
-            Path.cwd().joinpath("src", "bot", "static", "images", "bg_colors.png"),
-            filename="bg_colors.png",
+            Path.cwd().joinpath("src", "bot", "static", "images", "colors.png"),
+            filename="colors.png",
         )
         embed = embed_info(
-            "LaTeX Background Colors",
+            "LaTeX Colors",
             "The following colors are available:",
-            "attachment://bg_colors.png",
+            "attachment://colors.png",
         )
         await interaction.response.send_message(file=file, embed=embed, ephemeral=True)
 
-    @app_commands.command()
-    async def latex_txt(self, interaction: discord.Interaction):
-        file = discord.File(
-            Path.cwd().joinpath("src", "bot", "static", "images", "txt_colors.png"),
-            filename="txt_colors.png",
-        )
-        embed = embed_info(
-            "LaTeX Text Colors",
-            "The following colors are available:",
-            "attachment://txt_colors.png",
-        )
-        await interaction.response.send_message(file=file, embed=embed, ephemeral=True)
-
-    async def latex_available(self, image_path):
+    async def latex_available(self, image_path: str) -> bool:
         try:
+            if not self.session:
+                return False
             async with self.session.get(image_path) as response:
                 return response.status == 200
         except aiohttp.ClientError:
             logger.exception("Failed to fetch LaTeX image from CodeCogs")
             return False
+
+    def normalize_color(self, value: str, default: str) -> str:
+        normalized = value.strip().replace(" ", "").lower()
+        return LATEX_COLORS.get(normalized, default)
 
     @app_commands.command()
     async def latex(
@@ -85,19 +78,19 @@ class LaTeX(commands.Cog):
         interaction: discord.Interaction,
         equation: str,
         *,
-        bg_color: str = "black",
+        bg_color: str = "Black",
         txt_color: str = "White",
-        dpi: int = 200,
-    ):
+        dpi: int = 300,
+    ) -> None:
         """
-        Send a mathematical equation using LaTeX commands
+        Send a mathematical equation using LaTeX.
 
         Parameters
         ----------
-        equation : LaTeX equation (do not include $ on both ends)
-        bg_color : Use `/latex_bg` to see available colors. Default is "black"
-        txt_color : Use '/latex_txt' to see available colors. Default is "White"
-        dpi : Choose an image size. Default is 200
+        equation : LaTeX equation (do not include `$` delimiters).
+        bg_color : Background color. See `/latex_colors` for available colors.
+        txt_color : Text color. See `/latex_colors` for available colors.
+        dpi : Image resolution in DPI (200–500).
         """
         logger.info(
             "%s used the %s command.",
@@ -106,16 +99,13 @@ class LaTeX(commands.Cog):
         )
 
         # check for valid user specified color for text and background
-        bg_color = bg_color.strip().lower().replace(" ", "")
-        txt_color = txt_color.strip().title().replace(" ", "")
-
-        if bg_color not in BG_COLORS:
-            bg_color = "black"
-        if txt_color not in TXT_COLORS:
-            txt_color = "White"
+        bg_color = self.normalize_color(bg_color, "Black")
+        txt_color = self.normalize_color(txt_color, "White")
+        if txt_color == bg_color:
+            txt_color = "White" if bg_color == "Black" else "Black"
 
         # handle necessary character replacements
-        escape_characters = {
+        character_replacements = {
             "\n": r"\n",
             "\r": r"\r",
             "\t": r"\t",
@@ -123,25 +113,25 @@ class LaTeX(commands.Cog):
             "\x0c": r"\f",
             "\x0b": r"\v",
             "\x07": r"\a",
+            "%": r"\%",
+            "&": r"\&",
+            "#": r"%23",
             " ": "&space;",
         }
 
-        for e, c in escape_characters.items():
+        for e, c in character_replacements.items():
             equation = equation.replace(e, c)
 
         # prevent user specified dpi from being too big/small
-        dpi = max(100, min(dpi, 500))
+        dpi = max(200, min(dpi, 500))
 
         image_path = (
-            r"https://latex.codecogs.com/png.image?\dpi{"
-            + f"{dpi}"
-            + r"}\bg{"
-            + bg_color
-            + r"}\color{"
-            + txt_color
-            + r"}\setlength{\fboxsep}{5pt}\fbox{$"
-            + equation
-            + r"$}"
+            rf"https://latex.codecogs.com/png.image?"
+            rf"\dpi{{{dpi}}}"
+            rf"\color{{{txt_color}}}"
+            r"\setlength{\fboxsep}{6pt}"
+            r"\setlength{\fboxrule}{0pt}"
+            rf"\colorbox{{{bg_color}}}{{${equation}$}}"
         )
 
         if await self.latex_available(image_path):
@@ -154,11 +144,11 @@ class LaTeX(commands.Cog):
             await interaction.response.send_message(embed=embed)
         else:
             await interaction.response.send_message(
-                "Failed to fetch the image from the API", ephemeral=True
+                f"Failed to fetch the image ({image_path}) from the API", ephemeral=True
             )
 
 
-async def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     """
     Required.
     """
