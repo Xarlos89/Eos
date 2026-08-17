@@ -68,6 +68,12 @@ class LoggingMessageDelete(BaseCog):
             raise RuntimeError("Failed to fetch staff channel setting from API.")
         self.staff_channel = setting["setting"]["value"]
 
+        setting = self.bot.api.get_one_setting("1")  # Verification Channel ID
+        if setting["status"] != "ok":
+            raise RuntimeError("Failed to fetch verification channel setting from API.")
+        self.verification_channel = setting["setting"]["value"]
+        self.verification_command = f"{os.getenv("PREFIX")}verify"
+
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
         if self.chat_log["status"] != "ok":
             raise RuntimeError("Failed to fetch chat log setting from API.")
@@ -125,8 +131,17 @@ class LoggingMessageDelete(BaseCog):
             )
             return
 
-        if message.channel.id == self.staff_channel:
+        if message.channel.id == int(self.staff_channel):
             logger.debug("Message delete in staff channel was ignored.")
+            return
+
+        if (
+            message.channel.id == int(self.verification_channel) and (
+                message.author.bot or
+                message.content == self.verification_command
+            )
+        ):
+            logger.debug("Message from verification process was ignored.")
             return
 
         audit_log = [entry async for entry in message.guild.audit_logs(limit=1)][0]
