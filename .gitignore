@@ -158,4 +158,9 @@ dmypy.json
 cython_debug/
 
 /.obsidian/
+
+# MacOS Hidden Files
 .DS_Store
+
+# VSCode
+.vscode/
