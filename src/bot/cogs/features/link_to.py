@@ -12,9 +12,6 @@ from ..constants import WEBPAGE_CHOICES
 logger = logging.getLogger(__name__)
 
 SITE_LINK: str = "https://www.practicalpython.org/"
-DEFAULT_PAGE_CHOICE: app_commands.Choice[str] = app_commands.Choice(
-    name="Server site", value=""
-)
 
 
 class LinkTo(commands.Cog):
@@ -41,7 +38,7 @@ class LinkTo(commands.Cog):
             "%s used the %s command.", interaction.user.name, interaction.command.name
         )
 
-        page = page or DEFAULT_PAGE_CHOICE
+        page = page or WEBPAGE_CHOICES[0]
         await interaction.response.send_message(f"{page.name}: {SITE_LINK}{page.value}")
 
 
