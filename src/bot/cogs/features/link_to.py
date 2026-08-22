@@ -4,7 +4,7 @@ Command that links to the official server site.
 
 import logging
 
-from discord import app_commands, Interaction
+from discord import Interaction, app_commands
 from discord.ext import commands
 
 from ..constants import WEBPAGE_CHOICES
@@ -27,10 +27,7 @@ class LinkTo(commands.Cog):
     @app_commands.describe(page="Site page to link to.")
     @app_commands.choices(page=WEBPAGE_CHOICES)
     async def link_to(
-        self, 
-        interaction: Interaction,
-        *,
-        page: app_commands.Choice[str] | None = None
+        self, interaction: Interaction, *, page: app_commands.Choice[str] | None = None
     ) -> None:
         """
         Send message with desired link.
@@ -41,15 +38,11 @@ class LinkTo(commands.Cog):
             Selected site page or the homepage as default.
         """
         logger.info(
-            "%s used the %s command.", 
-            interaction.user.name, 
-            interaction.command.name
+            "%s used the %s command.", interaction.user.name, interaction.command.name
         )
 
         page = page or DEFAULT_PAGE_CHOICE
-        await interaction.response.send_message(
-            f"{page.name}: {SITE_LINK}{page.value}"
-        )
+        await interaction.response.send_message(f"{page.name}: {SITE_LINK}{page.value}")
 
 
 async def setup(bot: commands.Bot) -> None:
