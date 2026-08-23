@@ -72,7 +72,7 @@ class LoggingMessageDelete(BaseCog):
         if setting["status"] != "ok":
             raise RuntimeError("Failed to fetch verification channel setting from API.")
         self.verification_channel = setting["setting"]["value"]
-        self.verification_command = f"{os.getenv("PREFIX")}verify"
+        self.verification_command = f"{os.getenv('PREFIX')}verify"
 
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
         if self.chat_log["status"] != "ok":
