@@ -10,6 +10,8 @@ from io import BytesIO
 import discord
 from discord.ext import commands
 
+from src.bot.cogs import BaseCog
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,13 +53,15 @@ def embed_message_delete(some_member, some_message, some_moderator=None):
     return embed
 
 
-class LoggingMessageDelete(commands.Cog):
+class LoggingMessageDelete(BaseCog):
     """
     Simple listener to on_message_delete
     then checks the audit log for exact details
     """
 
     def __init__(self, bot):
+        super().__init__(logger)
+
         self.bot = bot
         setting = self.bot.api.get_one_setting("3")  # Staff Channel ID
         if setting["status"] != "ok":
