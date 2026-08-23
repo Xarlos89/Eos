@@ -163,13 +163,14 @@ class LaTeX(commands.Cog):
             dpi,
         )
 
+        await interaction.response.defer(ephemeral=True)
+
         embed, file = await view.render()
 
-        await interaction.response.send_message(
+        await interaction.edit_original_response(
             embed=embed,
-            files=[file] if file else [],
+            attachments=[file] if file else [],
             view=view,
-            ephemeral=True,
         )
 
 

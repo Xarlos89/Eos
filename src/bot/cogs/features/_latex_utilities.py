@@ -50,9 +50,11 @@ class LatexEditModal(discord.ui.Modal, title="Edit LaTeX"):
                     interaction.user.display_name,
                 )
 
+        await interaction.response.defer(ephemeral=True)
+
         embed, file = await self.view.render()
 
-        await interaction.response.edit_message(
+        await interaction.edit_original_response(
             embed=embed,
             attachments=[file] if file else [],
             view=self.view,
@@ -106,6 +108,8 @@ class LatexView(discord.ui.View):
     async def publish(
         self, interaction: discord.Interaction, button: discord.ui.Button
     ) -> None:
+        await interaction.response.defer(ephemeral=True)
+
         embed = await self.latex.render(
             self.equation,
             self.bg_color,
@@ -116,13 +120,13 @@ class LatexView(discord.ui.View):
         if embed.image.url is None or not await self.latex.latex_available(
             embed.image.url
         ):
-            await interaction.response.send_message(
-                "Failed to display the LaTeX equation.",
+            await interaction.followup.send(
+                content="Failed to display the LaTeX equation.",
                 ephemeral=True,
             )
             return
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
         for child in self.children:
             if isinstance(child, discord.ui.Button):
