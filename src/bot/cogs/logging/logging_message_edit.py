@@ -57,10 +57,11 @@ class LoggingMessageEdit(BaseCog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before, message_after):
-        if (
-            message_before.guild.id != int(os.getenv("MASTER_GUILD"))
-            or message_before.guild.id is None
-        ):
+        if message_before.guild is None:
+            logger.debug(">> on_message_edit fired in DMs. Ignoring event.")
+            return
+
+        if message_before.guild.id != int(os.getenv("MASTER_GUILD")):
             logger.warning(
                 ">> on_message_edit fired, but not in master guild. Ignoring event."
             )
