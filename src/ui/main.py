@@ -79,7 +79,7 @@ def index():
 
 if __name__ in {"__main__", "__mp_main__"}:
     ui.run(
-        host="0.0.0.0",  # noqa: S104 - container-internal, published only on loopback
+        host="0.0.0.0",  # noqa: S104  # nosec B104
         port=int(os.getenv("UI_PORT", "8080")),
         title="Eos Admin",
         reload=False,
