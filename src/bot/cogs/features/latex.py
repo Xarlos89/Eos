@@ -12,6 +12,7 @@ from discord.ext import commands
 
 from src.bot.cogs import BaseCog
 from src.bot.cogs.constants import LATEX_COLORS
+from src.bot.cogs.features._latex_utilities import LatexView
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,8 @@ class LaTeX(BaseCog):
 
     @app_commands.command(description="Show the available LaTeX colors.")
     async def latex_colors(self, interaction: discord.Interaction) -> None:
+        logger.info("%s used the /latex_colors command.", interaction.user.display_name)
+
         file = discord.File(
             Path.cwd().joinpath("src", "bot", "static", "images", "colors.png"),
             filename="colors.png",
@@ -66,18 +69,75 @@ class LaTeX(BaseCog):
         await interaction.response.send_message(file=file, embed=embed, ephemeral=True)
 
     async def latex_available(self, image_path: str) -> bool:
+        """
+        Check whether the CodeCogs JSON response reports a valid equation.
+        """
         try:
             if not self.session:
                 return False
-            async with self.session.get(image_path) as response:
-                return response.status == 200
-        except aiohttp.ClientError:
-            logger.exception("Failed to fetch LaTeX image from CodeCogs")
+
+            json_path = image_path.replace(
+                "png.image?",
+                "png.json?",
+                1,
+            )
+
+            async with self.session.get(json_path) as response:
+                if response.status != 200:
+                    return False
+                data = await response.json(content_type="text/json")
+
+                return data["latex"]["valid"]
+
+        except (aiohttp.ClientError, KeyError, TypeError, ValueError):
+            logger.exception("Failed to validate LaTeX equation with CodeCogs")
             return False
 
     def normalize_color(self, value: str, default: str) -> str:
         normalized = value.strip().replace(" ", "").lower()
         return LATEX_COLORS.get(normalized, default)
+
+    async def render(
+        self, equation: str, bg_color: str, txt_color: str, dpi: int
+    ) -> discord.Embed:
+        # Check for valid user specified color for text and background.
+        bg_color = self.normalize_color(bg_color, "Black")
+        txt_color = self.normalize_color(txt_color, "White")
+
+        if txt_color == bg_color:
+            txt_color = "White" if bg_color == "Black" else "Black"
+
+        # Handle necessary character replacements.
+        character_replacements = {
+            "\n": r"\n",
+            "\r": r"\r",
+            "\t": r"\t",
+            "\x08": r"\b",
+            "\x0c": r"\f",
+            "\x0b": r"\v",
+            "\x07": r"\a",
+            "#": "&hash;",
+            " ": "&space;",
+        }
+        for old, new in character_replacements.items():
+            equation = equation.replace(old, new)
+
+        dpi = max(200, min(dpi, 800))
+
+        image_path = (
+            rf"https://latex.codecogs.com/png.image?"
+            rf"\dpi{{{dpi}}}"
+            rf"\color{{{txt_color}}}"
+            r"\setlength{\fboxsep}{6pt}"
+            r"\setlength{\fboxrule}{0pt}"
+            rf"\colorbox{{{bg_color}}}{{${equation}$}}"
+        )
+
+        return embed_info(
+            "LaTeX",
+            equation.replace("&space;", " "),
+            image_path,
+        )
 
     @app_commands.command()
     async def latex(
@@ -97,62 +157,28 @@ class LaTeX(BaseCog):
         equation : LaTeX equation (do not include `$` delimiters).
         bg_color : Background color. See `/latex_colors` for available colors.
         txt_color : Text color. See `/latex_colors` for available colors.
-        dpi : Image resolution in DPI (200–500).
+        dpi : Image resolution in DPI (200–800).
         """
-        logger.info(
-            "%s used the %s command.",
-            interaction.user.display_name,
-            interaction.command,
+        logger.info("%s used the /latex command.", interaction.user.display_name)
+
+        view = LatexView(
+            self,
+            interaction,
+            equation,
+            bg_color,
+            txt_color,
+            dpi,
         )
 
-        # check for valid user specified color for text and background
-        bg_color = self.normalize_color(bg_color, "Black")
-        txt_color = self.normalize_color(txt_color, "White")
-        if txt_color == bg_color:
-            txt_color = "White" if bg_color == "Black" else "Black"
+        await interaction.response.defer(ephemeral=True)
 
-        # handle necessary character replacements
-        character_replacements = {
-            "\n": r"\n",
-            "\r": r"\r",
-            "\t": r"\t",
-            "\x08": r"\b",
-            "\x0c": r"\f",
-            "\x0b": r"\v",
-            "\x07": r"\a",
-            "%": r"\%",
-            "&": r"\&",
-            "#": r"%23",
-            " ": "&space;",
-        }
+        embed, file = await view.render()
 
-        for e, c in character_replacements.items():
-            equation = equation.replace(e, c)
-
-        # prevent user specified dpi from being too big/small
-        dpi = max(200, min(dpi, 500))
-
-        image_path = (
-            rf"https://latex.codecogs.com/png.image?"
-            rf"\dpi{{{dpi}}}"
-            rf"\color{{{txt_color}}}"
-            r"\setlength{\fboxsep}{6pt}"
-            r"\setlength{\fboxrule}{0pt}"
-            rf"\colorbox{{{bg_color}}}{{${equation}$}}"
+        await interaction.edit_original_response(
+            embed=embed,
+            attachments=[file] if file else [],
+            view=view,
         )
-
-        if await self.latex_available(image_path):
-            embed = embed_info(
-                "LaTeX",
-                equation.replace("&space;", " "),
-                image_path,
-            )
-            # Send the embed with the image
-            await interaction.response.send_message(embed=embed)
-        else:
-            await interaction.response.send_message(
-                f"Failed to fetch the image ({image_path}) from the API", ephemeral=True
-            )
 
 
 async def setup(bot: commands.Bot) -> None:
