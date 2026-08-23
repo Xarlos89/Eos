@@ -1,6 +1,5 @@
 from discord.app_commands import Choice
 
-
 WEBPAGE_CHOICES: tuple[Choice[str], ...] = (
     Choice(name="Home", value=""),
     Choice(name="Getting started", value="getting-started/"),
