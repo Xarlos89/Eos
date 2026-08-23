@@ -5,9 +5,10 @@ import sys
 from pathlib import Path
 
 import discord
-from __logger__ import setup_logger
-from core.api_helper import API
 from discord.ext import commands
+
+from src.bot.__logger__ import setup_logger
+from src.bot.core.api_helper import API
 
 discord.VoiceClient.warn_nacl = False
 logger = logging.getLogger(__name__)
@@ -16,7 +17,24 @@ setup_logger(
 )
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=os.getenv("PREFIX"), intents=intents)
+
+
+class Eos(commands.Bot):
+    """
+    The bot
+    """
+
+    async def close(self) -> None:
+        """
+        Closes the shared API session before disconnecting from Discord.
+        """
+        logger.debug("Executing shutdown tasks...")
+        if getattr(self, "api", None) is not None:
+            await self.api.close()
+        await super().close()
+
+
+bot = Eos(command_prefix=os.getenv("PREFIX"), intents=intents)
 bot.boot_time = datetime.datetime.now()
 
 
@@ -36,20 +54,39 @@ async def load_cogs(robot: commands.Bot) -> None:
     """
     logger.info("Loading Cogs...")
 
+    base_dir = Path(__file__).parent.parent.parent
     cogs_path = Path(__file__).parent / "cogs"
+    cogs_loaded = 0
+    cogs_failed = 0
 
     for directory in cogs_path.iterdir():
         if directory.is_dir() and not directory.name.startswith("_"):
             for file in directory.glob("*.py"):
                 if not file.stem.startswith("_"):
-                    logger.info(f"\\{directory.name}\\{file.name}")
-                    try:
-                        await robot.load_extension(f"cogs.{directory.name}.{file.stem}")
-                    except Exception as e:
-                        logger.warning("- - - Cog failed to load!!")
-                        logger.warning(f"- - - {e}")
+                    relative_path = file.relative_to(base_dir).with_suffix("")
+                    module_name = ".".join(relative_path.parts)
 
-    logger.info("... Success.")
+                    try:
+                        await robot.load_extension(module_name)
+                        cogs_loaded += 1
+                    except commands.ExtensionAlreadyLoaded:
+                        logger.warning(f"Already loaded: {module_name}")
+                    except commands.ExtensionFailed as e:
+                        logger.warning(f"Failed to load {module_name}: {e}")
+                        cogs_failed += 1
+                    except commands.NoEntryPointError:
+                        logger.warning(f"No setup() function in: {module_name}")
+                        cogs_failed += 1
+                    except Exception as e:
+                        logger.warning(
+                            f"Unexpected error loading {module_name}: {e}",
+                            exc_info=True,
+                            stack_info=True,
+                        )
+                        cogs_failed += 1
+
+    logger.info("Loaded: %s | Failed: %s", cogs_loaded, cogs_failed)
+    logger.info("Finished loading cogs.")
 
 
 @bot.event

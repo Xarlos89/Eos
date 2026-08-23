@@ -8,10 +8,11 @@ when an option is selected, can verify or kick the user
 
 import datetime
 import logging
-from time import sleep
 
 import discord
 from discord.ext import commands
+
+from src.bot.cogs import BaseCog
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +34,14 @@ def embed_verified_success(name, amount):
 class VerificationSelector(discord.ui.Select):
     def __init__(self, bot):
         self.bot = bot
-        self.verified_role = self.bot.api.get_one_role("6")[0]["roles"][2]
-        self.join_log = self.bot.api.get_one_log_setting("2")[0]["logging"][2]
-        self.verification_log = self.bot.api.get_one_log_setting("1")[0]["logging"][2]
-        self.verification_channel = self.bot.api.get_one_setting("1")[0]["setting"][2]
+        self.verified_role = self.bot.api.get_one_role("6")["role"]["value"]
+        self.join_log = self.bot.api.get_one_log_setting("2")["log_setting"]["value"]
+        self.verification_log = self.bot.api.get_one_log_setting("1")["log_setting"][
+            "value"
+        ]
+        self.verification_channel = self.bot.api.get_one_setting("1")["setting"][
+            "value"
+        ]
 
         self.robot = [
             discord.SelectOption(
@@ -91,13 +96,13 @@ class VerificationSelector(discord.ui.Select):
                     "Someone is verifying, but there is no verification role set!"
                 )
         else:
-            msg = await interaction.response.send_message("You are a robot? Nice try.")
-            await verification_log.send(
-                f"{interaction.user.display_name} admitted to being a robot, and was kicked. "
+            await interaction.response.send_message(
+                "You are a robot? Nice try.", delete_after=3.0
             )
-            sleep(3)
+            await verification_log.send(
+                f"{interaction.user.display_name} admitted to being a robot, and was kicked."
+            )
             await interaction.user.kick(reason="User admitted to being a robot.")
-            await msg.delete()
 
 
 class DropdownView(discord.ui.View):
@@ -106,17 +111,21 @@ class DropdownView(discord.ui.View):
         self.add_item(VerificationSelector(bot))
 
 
-class Verification(commands.Cog):
+class Verification(BaseCog):
     """
     This is the class that defines the actual slash command.
     It uses the view above to execute actual logic.
     """
 
     def __init__(self, bot):
+        super().__init__(logger)
+
         self.bot = bot  # Passed in from main.py
-        self.join_log = self.bot.api.get_one_log_setting("4")[0]["logging"][2]
-        self.verification_channel = self.bot.api.get_one_setting("1")[0]["setting"][2]
-        self.verified_role = self.bot.api.get_one_role("6")[0]["roles"][2]
+        self.join_log = self.bot.api.get_one_log_setting("4")["log_setting"]["value"]
+        self.verification_channel = self.bot.api.get_one_setting("1")["setting"][
+            "value"
+        ]
+        self.verified_role = self.bot.api.get_one_role("6")["role"]["value"]
 
     @commands.command()
     async def verify(self, ctx):
@@ -131,7 +140,7 @@ class Verification(commands.Cog):
             return
 
         else:
-            if self.verified_role not in [role.id for role in ctx.author.roles]:
+            if int(self.verified_role) not in [role.id for role in ctx.author.roles]:
                 logger.debug(f"{ctx.author.name} is attempting to verify")
                 await ctx.send(
                     "# ~ Verification ~ \n"
@@ -141,7 +150,7 @@ class Verification(commands.Cog):
                     delete_after=15.0,
                 )
             else:
-                await ctx.send("You are already verified. Go away.")
+                await ctx.send("You are already verified. Go away.", delete_after=10.0)
 
 
 async def setup(bot: commands.Bot) -> None:

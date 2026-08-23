@@ -6,8 +6,10 @@ import datetime
 import logging
 import os
 
-from discord.ext import commands, tasks
+from discord.ext import tasks
 from discord.utils import get
+
+from src.bot.cogs import BaseCog
 
 logger = logging.getLogger(__name__)
 
@@ -17,20 +19,24 @@ TIME = datetime.time(hour=0, minute=0, second=0, tzinfo=datetime.timezone.utc)
 DATE = 1
 
 
-class MonthlyYapathon(commands.Cog):
+class MonthlyYapathon(BaseCog):
     """
     This cog deals with all the stuff of monthly yapathon.
     """
 
     def __init__(self, bot):
+        super().__init__(logger)
+
         self.bot = bot
-        self.yapper_role_id = self.bot.api.get_one_role("8")[0]["roles"][2]
-        self.announcement_channel_id = self.bot.api.get_one_setting("5")[0]["setting"][
-            2
+        self.yapper_role_id = self.bot.api.get_one_role("8")["role"]["value"]
+        self.announcement_channel_id = self.bot.api.get_one_setting("5")["setting"][
+            "value"
         ]
         self.appoint_monthly_yapper.start()
 
-    def cog_unload(self):
+    async def cog_unload(self):
+        await super().cog_unload()
+
         self.appoint_monthly_yapper.cancel()
 
     @tasks.loop(time=TIME)
@@ -44,6 +50,12 @@ class MonthlyYapathon(commands.Cog):
             monthly_top_point_earner = self.bot.api.monthly_top_point_earner()
             current_monthly_yapper = self.bot.api.get_parameter("monthly_yapper")
 
+            if current_monthly_yapper["status"] != "ok":
+                logger.error(
+                    f"Error reading the current monthly yapper: {current_monthly_yapper['message']}"
+                )
+                return
+
             if monthly_top_point_earner["status"] == "ok":
                 try:
                     guild = self.bot.get_guild(int(os.getenv("MASTER_GUILD")))
@@ -51,10 +63,11 @@ class MonthlyYapathon(commands.Cog):
                     yapper_role = get(guild.roles, id=int(self.yapper_role_id))
 
                     new_yapper = get(
-                        guild.members, id=int(monthly_top_point_earner["message"][0])
+                        guild.members,
+                        id=int(monthly_top_point_earner["top_earner"]["discord_id"]),
                     )
                     current_yapper = get(
-                        guild.members, id=int(current_monthly_yapper["message"][0])
+                        guild.members, id=int(current_monthly_yapper["parameter"])
                     )
                     # This condition will save this from crash when the current yapper has left the guild
                     if current_yapper is not None:

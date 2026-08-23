@@ -9,6 +9,8 @@ import os
 import discord
 from discord.ext import commands
 
+from src.bot.cogs import BaseCog
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,12 +27,14 @@ def embed_name_change(username_before, username_after):
     return embed
 
 
-class LoggingNameChanges(commands.Cog):
+class LoggingNameChanges(BaseCog):
     """
     Simple listener to on_member_update
     """
 
     def __init__(self, bot):
+        super().__init__(logger)
+
         self.bot = bot
         self.user_log = self.bot.api.get_one_log_setting("4")  # User_log
 
@@ -54,14 +58,14 @@ class LoggingNameChanges(commands.Cog):
             return
 
         if username_before != username_after:
-            if self.user_log[0]["status"] == "ok":
-                if self.user_log[0]["logging"][2] == "0":
+            if self.user_log["status"] == "ok":
+                if self.user_log["log_setting"]["value"] == "0":
                     logger.debug(
                         f"log was triggered, but logging is disabled. API: {self.user_log}"
                     )
                     return
                 logs_channel = await self.bot.fetch_channel(
-                    self.user_log[0]["logging"][2]
+                    self.user_log["log_setting"]["value"]
                 )
 
                 embed = embed_name_change(username_before, username_after)

@@ -10,8 +10,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from ..constants import LATEX_COLORS
-from ._latex_utilities import LatexView
+from src.bot.cogs import BaseCog
+from src.bot.cogs.constants import LATEX_COLORS
+from src.bot.cogs.features._latex_utilities import LatexView
 
 logger = logging.getLogger(__name__)
 
@@ -30,19 +31,25 @@ def embed_info(title: str, message: str, image_url: str | None = None) -> discor
     return embed
 
 
-class LaTeX(commands.Cog):
+class LaTeX(BaseCog):
     """
     # Generates a LaTeX equation image using the CodeCogs API and displays it in an embed.
     """
 
     def __init__(self, bot: commands.Bot):
+        super().__init__(logger)
+
         self.bot = bot
         self.session: aiohttp.ClientSession | None = None
 
     async def cog_load(self) -> None:
+        await super().cog_load()
+
         self.session = aiohttp.ClientSession()
 
     async def cog_unload(self) -> None:
+        await super().cog_unload()
+
         if self.session:
             await self.session.close()
 

@@ -9,6 +9,8 @@ import logging
 import discord
 from discord.ext import commands
 
+from src.bot.cogs import BaseCog
+
 logger = logging.getLogger(__name__)
 
 
@@ -27,12 +29,14 @@ def embed_avatar(before, after):
     return embed
 
 
-class LoggingAvatars(commands.Cog):
+class LoggingAvatars(BaseCog):
     """
     Simple listener to on_user_update
     """
 
     def __init__(self, bot):
+        super().__init__(logger)
+
         self.bot = bot
         self.user_log = self.bot.api.get_one_log_setting("4")  # User_log
 
@@ -48,14 +52,14 @@ class LoggingAvatars(commands.Cog):
         #     return
 
         if before.avatar != after.avatar:
-            if self.user_log[0]["status"] == "ok":
-                if self.user_log[0]["logging"][2] == "0":
+            if self.user_log["status"] == "ok":
+                if self.user_log["log_setting"]["value"] == "0":
                     logger.debug(
                         f"log was triggered, but logging is disabled. API: {self.user_log}"
                     )
                     return
                 logs_channel = await self.bot.fetch_channel(
-                    self.user_log[0]["logging"][2]
+                    self.user_log["log_setting"]["value"]
                 )
 
                 embed = embed_avatar(before, after)

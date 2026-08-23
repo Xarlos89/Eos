@@ -5,7 +5,8 @@ import os
 import discord
 from discord.ext import commands
 
-from .._checks import is_admin, is_master_guild
+from src.bot.cogs import BaseCog
+from src.bot.cogs._checks import is_admin, is_master_guild
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ def embed_info(title, message, color):
     return embed
 
 
-class Points(commands.Cog):
+class Points(BaseCog):
     """
     This cog manages a points-based system for Discord guild members.
 
@@ -40,6 +41,8 @@ class Points(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         """Initialization of the points Class"""
+        super().__init__(logger)
+
         self.bot = bot
 
     @is_admin()
@@ -73,7 +76,7 @@ class Points(commands.Cog):
             await ctx.reply(
                 embed=embed_info(
                     "",
-                    f"{user.display_name} has {points['points'][0]} points",
+                    f"{user.display_name} has {points['points']} points",
                     discord.Color.lighter_gray(),
                 )
             )
@@ -93,7 +96,7 @@ class Points(commands.Cog):
             await ctx.reply(
                 embed=embed_info(
                     "",
-                    f"{user.display_name} has {monthly_points['monthly_points'][0]} points",
+                    f"{user.display_name} has {monthly_points['monthly_points']} points",
                     discord.Color.lighter_gray(),
                 )
             )
@@ -139,12 +142,12 @@ class Points(commands.Cog):
         top10 = await self.bot.api.top_10()
         if top10["status"] == "ok":
             data = []
-            for user in top10["message"]:
-                user_obj = self.bot.get_user(int(user[0]))
+            for user in top10["leaderboard"]:
+                user_obj = self.bot.get_user(int(user["discord_id"]))
                 if user_obj is None:
                     continue
 
-                data.append((user_obj.display_name, user[1]))
+                data.append((user_obj.display_name, user["points"]))
 
             await ctx.reply(
                 embed=embed_info(
@@ -171,12 +174,12 @@ class Points(commands.Cog):
         monthly_top10 = self.bot.api.monthly_top_10()
         if monthly_top10["status"] == "ok":
             data = []
-            for user in monthly_top10["message"]:
-                user_obj = self.bot.get_user(int(user[0]))
+            for user in monthly_top10["leaderboard"]:
+                user_obj = self.bot.get_user(int(user["discord_id"]))
                 if user_obj is None:
                     continue
 
-                data.append((user_obj.display_name, user[1]))
+                data.append((user_obj.display_name, user["monthly_points"]))
 
             await ctx.reply(
                 embed=embed_info(

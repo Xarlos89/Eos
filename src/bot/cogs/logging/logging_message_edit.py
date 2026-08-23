@@ -9,6 +9,8 @@ import os
 import discord
 from discord.ext import commands
 
+from src.bot.cogs import BaseCog
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,15 +41,17 @@ def embed_message_edit(
     return embed
 
 
-class LoggingMessageEdit(commands.Cog):
+class LoggingMessageEdit(BaseCog):
     """
     Simple listener to on_message_edit
     """
 
     def __init__(self, bot):
+        super().__init__(logger)
+
         self.bot = bot
-        self.staff_channel = self.bot.api.get_one_setting("3")[0]["setting"][
-            2
+        self.staff_channel = self.bot.api.get_one_setting("3")["setting"][
+            "value"
         ]  # Staff Channel ID
         self.chat_log = self.bot.api.get_one_log_setting("3")  # chat_log
 
@@ -76,15 +80,15 @@ class LoggingMessageEdit(commands.Cog):
             return
 
         elif message_before.content != message_after.content:
-            if self.chat_log[0]["status"] == "ok":
-                if self.chat_log[0]["logging"][2] == "0":
+            if self.chat_log["status"] == "ok":
+                if self.chat_log["log_setting"]["value"] == "0":
                     logger.debug(
                         f"log was triggered, but logging is disabled. API: {self.chat_log}"
                     )
                     return
 
                 logs_channel = await self.bot.fetch_channel(
-                    self.chat_log[0]["logging"][2]
+                    self.chat_log["log_setting"]["value"]
                 )
 
                 # This guy here makes sure we use the displayed name inside the guild.

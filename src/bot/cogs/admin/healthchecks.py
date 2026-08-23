@@ -5,6 +5,8 @@ import os
 import discord
 from discord.ext import commands
 
+from src.bot.cogs import BaseCog
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,8 +32,10 @@ def embed_hc(api, db, uptime, git_hash):
     return embed
 
 
-class Health(commands.Cog):
+class Health(BaseCog):
     def __init__(self, bot: commands.Bot) -> None:
+        super().__init__(logger)
+
         self.bot = bot
 
     @commands.hybrid_command()
@@ -46,9 +50,9 @@ class Health(commands.Cog):
         hc_api = results["api_status"]
         logger.debug(hc_api)
         try:
-            status_api = hc_api[0]["status"]
-            status_code_api = hc_api[1]
-        except KeyError:
+            status_api = hc_api["status"]
+            status_code_api = "200"
+        except (KeyError, TypeError):
             status_api = "Unhealthy"
             status_code_api = "API Unreachable"
 
@@ -63,9 +67,9 @@ class Health(commands.Cog):
         hc_db = results["db_status"]
         logger.debug(hc_db)
         try:
-            status_db = hc_db[0]["status"]
-            status_code_db = hc_db[1]
-        except KeyError:
+            status_db = hc_db["status"]
+            status_code_db = "200" if status_db == "ok" else "503"
+        except (KeyError, TypeError):
             status_db = "Unhealthy"
             status_code_db = "DB Unreachable"
 
