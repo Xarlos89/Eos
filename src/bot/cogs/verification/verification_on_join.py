@@ -113,19 +113,15 @@ class LoggingVerification(BaseCog):
                     return
                 else:  # this covers any other message in the channel.
                     await message.delete()  # delete the user's incorrect message
-                    bot_message = await message.channel.send(
-                        f"You need to use the **{os.getenv('PREFIX')}verify** command."
+                    await message.channel.send(
+                        f"You need to use the **{os.getenv('PREFIX')}verify** command.",
+                        delete_after=8.0,
                     )
 
                     logs_channel = await self.bot.fetch_channel(self.verification_log)
                     await logs_channel.send(
                         f"{message.author} is failing at life in {self.bot.get_channel(int(self.verification_channel)).mention}"
                     )
-
-                    await sleep(8)
-                    await (
-                        bot_message.delete()
-                    )  # remove the message to correct people after 8? seconds
 
 
 async def setup(bot: commands.Bot) -> None:

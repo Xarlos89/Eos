@@ -8,7 +8,6 @@ when an option is selected, can verify or kick the user
 
 import datetime
 import logging
-from time import sleep
 
 import discord
 from discord.ext import commands
@@ -97,14 +96,12 @@ class VerificationSelector(discord.ui.Select):
                     "Someone is verifying, but there is no verification role set!"
                 )
         else:
-            response = await interaction.response.send_message(
-                "You are a robot? Nice try."
+            await interaction.response.send_message(
+                "You are a robot? Nice try.", delete_after=3.0
             )
             await verification_log.send(
                 f"{interaction.user.display_name} admitted to being a robot, and was kicked."
             )
-            sleep(3)
-            await response.resource.delete()
             await interaction.user.kick(reason="User admitted to being a robot.")
 
 
@@ -153,9 +150,7 @@ class Verification(BaseCog):
                     delete_after=15.0,
                 )
             else:
-                msg = await ctx.send("You are already verified. Go away.")
-                sleep(10)
-                await msg.delete()
+                await ctx.send("You are already verified. Go away.", delete_after=10.0)
 
 
 async def setup(bot: commands.Bot) -> None:
