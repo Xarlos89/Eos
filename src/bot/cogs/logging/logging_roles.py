@@ -1,9 +1,11 @@
 """
 Logging for role changes. Logs the user who did the changing, the target user and the role.
 """
-import os
-import logging
+
 import datetime
+import logging
+import os
+
 import discord
 from discord.ext import commands
 
@@ -15,10 +17,10 @@ def embed_role_add(some_member, member_who_did_action, role_obj):
     Embedding for user kick alerts.
     """
     embed = discord.Embed(
-        title=""
-        , description=f'<@{member_who_did_action.id}> added <@&{role_obj.id}> to <@{some_member.id}>'
-        , color=discord.Color.green()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title="",
+        description=f"<@{member_who_did_action.id}> added <@&{role_obj.id}> to <@{some_member.id}>",
+        color=discord.Color.green(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     return embed
 
@@ -28,10 +30,10 @@ def embed_role_remove(some_member, member_who_did_action, role_obj):
     Embedding for user kick alerts.
     """
     embed = discord.Embed(
-        title=""
-        , description=f'<@{member_who_did_action.id}> removed <@&{role_obj.id}> from <@{some_member.id}>'
-        , color=discord.Color.red()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title="",
+        description=f"<@{member_who_did_action.id}> removed <@&{role_obj.id}> from <@{some_member.id}>",
+        color=discord.Color.red(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     return embed
 
@@ -51,9 +53,10 @@ class LoggingRoles(commands.Cog):
         Checks what roles were changed, and logs it in the log channel.
         Can be quite spammy.
         """
-        if before.guild.id != int(os.getenv("MASTER_GUILD")) or \
-                before.guild.id is None:
-            logger.warning("on_member_update fired, but not in master guild. Ignoring event.")
+        if before.guild.id != int(os.getenv("MASTER_GUILD")) or before.guild.id is None:
+            logger.warning(
+                "on_member_update fired, but not in master guild. Ignoring event."
+            )
             return
 
         audit_log = [entry async for entry in before.guild.audit_logs(limit=1)][0]
@@ -63,18 +66,24 @@ class LoggingRoles(commands.Cog):
             responsible_member = audit_log.user
 
             changed_roles = []
-            if self.mod_log[0]["status"] == "ok":
-                if self.mod_log[0]["logging"][2] == "0":
-                    logger.debug(f"log was triggered, but logging is disabled. API: {self.mod_log}")
+            if self.mod_log["status"] == "ok":
+                if self.mod_log["log_setting"]["value"] == "0":
+                    logger.debug(
+                        f"log was triggered, but logging is disabled. API: {self.mod_log}"
+                    )
                     return
-                logs_channel = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
+                logs_channel = await self.bot.fetch_channel(
+                    self.mod_log["log_setting"]["value"]
+                )
 
                 if len(before.roles) > len(after.roles):
                     for role in before.roles:
                         if role not in after.roles:
                             changed_roles.append(role)
                     for item in changed_roles:
-                        embed = embed_role_remove(target_member, responsible_member, item)
+                        embed = embed_role_remove(
+                            target_member, responsible_member, item
+                        )
                         await logs_channel.send(embed=embed)
 
                 elif len(before.roles) < len(after.roles):

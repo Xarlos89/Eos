@@ -1,9 +1,11 @@
 """
 This is a handler that adds a Need Approval role and sends the user a message.
 """
+
+import logging
 import os
 from asyncio import sleep
-import logging
+
 import discord
 from discord.ext import commands
 
@@ -19,16 +21,21 @@ class LoggingVerification(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.verification_channel = self.bot.api.get_one_setting('1')[0]['setting'][2]
-        self.verification_log = self.bot.api.get_one_log_setting('1')[0]['logging'][2]
-        self.join_log = self.bot.api.get_one_log_setting('2')[0]['logging'][2]
-        self.verified_role = self.bot.api.get_one_role('6')[0]['roles'][2]
-        self.naughty_role = self.bot.api.get_one_role('7')[0]['roles'][2]
+        self.verification_channel = self.bot.api.get_one_setting("1")["setting"][
+            "value"
+        ]
+        self.verification_log = self.bot.api.get_one_log_setting("1")["log_setting"][
+            "value"
+        ]
+        self.join_log = self.bot.api.get_one_log_setting("2")["log_setting"]["value"]
+        self.verified_role = self.bot.api.get_one_role("6")["role"]["value"]
+        self.naughty_role = self.bot.api.get_one_role("7")["role"]["value"]
 
     async def log_unverified_join(self, member, logging_channel):
         await logging_channel.send(f"<@{member.id}> joined, but has not verified.")
 
     async def send_welcome_message(self, guild, member):
+        verification_channel = self.bot.get_channel(int(self.verification_channel))
         welcome_message = f"""
             Hi there, {member.mention}
             I'm Zorak, the moderator of {guild.name}.
@@ -36,23 +43,27 @@ class LoggingVerification(commands.Cog):
             We are very happy that you have decided to join us.
             Before you are allowed to chat, you need to verify that you are NOT a bot.\n
             Dont worry... it's easy.
-            Just go to {self.bot.get_channel(self.verification_log) if self.verification_log is not None else 'the verification channel'}
-            and use the **{os.getenv('PREFIX')}verify** command.
+            Just go to {verification_channel.mention if verification_channel else "the verification channel"}
+            and use the **{os.getenv("PREFIX")}verify** command.
 
             After you do, all of {guild.name} is available to you. Have a great time :-)
             """
         # Send Welcome Message
         try:
             await member.send(welcome_message)
-        except discord.errors.Forbidden as catch_dat_forbidden:
-            logger.debug(f'{member.name} cannot be sent a DM.')
+        except discord.errors.Forbidden:
+            logger.debug(f"{member.name} cannot be sent a DM.")
 
     async def kick_if_not_verified(self, member, time_to_kick, logging_channel):
         await sleep(time_to_kick)
 
-        if all(x not in [role.id for role in member.roles] for x in (self.verified_role, self.naughty_role)):
+        if all(
+            x not in [role.id for role in member.roles]
+            for x in (self.verified_role, self.naughty_role)
+        ):
             await logging_channel.send(
-                f"{member.mention} did not verify after {int((time_to_kick / 3600))} hour/s, auto-removed.")
+                f"{member.mention} did not verify after {int((time_to_kick / 3600))} hour/s, auto-removed."
+            )
             await member.kick(reason="Did not verify.")
 
     @commands.Cog.listener()
@@ -61,7 +72,9 @@ class LoggingVerification(commands.Cog):
         guild_id = member.guild.id
 
         if guild_id != int(os.getenv("MASTER_GUILD")):
-            logger.warning("on_member_join fired, but not in master guild. Ignoring event.")
+            logger.warning(
+                "on_member_join fired, but not in master guild. Ignoring event."
+            )
             return
 
         verification_log = await self.bot.fetch_channel(self.verification_log)

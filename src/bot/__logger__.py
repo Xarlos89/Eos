@@ -1,5 +1,5 @@
 from __future__ import annotations
-import os
+
 import logging
 
 
@@ -27,8 +27,9 @@ def setup_logger(level, stream_logs) -> None:
         This function does not return any value.
     """
     log_formatter = logging.Formatter(
-        ":: %(asctime)s :: %(levelname)s :: %(filename)s line %(lineno)s --- %(message)s"
-        , "%m-%d %H:%M.%S")
+        ":: %(asctime)s :: %(levelname)s :: %(filename)s line %(lineno)s --- %(message)s",
+        "%m-%d %H:%M.%S",
+    )
 
     handlers: list[logging.Handler] = []
     if stream_logs:

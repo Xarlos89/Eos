@@ -23,9 +23,7 @@ class GeneralCatFact(commands.Cog):
         """
         Gives you a cat fact.
         """
-        logger.info("%s used the %s command.",
-                    ctx.author.name,
-                    ctx.command)
+        logger.info("%s used the %s command.", ctx.author.name, ctx.command)
         fact = await self.get_catfact()
         if fact is None:
             await ctx.send("Failed to get cat fact.")

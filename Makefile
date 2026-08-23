@@ -1,4 +1,4 @@
-.PHONY: start stop build
+.PHONY: start stop build pre-commit format test
 
 all: start
 
@@ -10,3 +10,13 @@ stop:
 
 build:
 	docker compose -f src/docker-compose.yml up --build -d
+
+pre-commit:
+	uv run --dev pre-commit run --all-files
+
+format:
+	uv run --dev ruff format .
+	uv run --dev ruff check . --fix
+
+test:
+	uv run --dev python -m pytest tests/

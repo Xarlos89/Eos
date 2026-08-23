@@ -1,7 +1,7 @@
+import datetime
 import hashlib
 import logging
 import os
-import datetime
 
 import discord
 import discord.errors
@@ -96,8 +96,8 @@ class ModerationSpamMessages(commands.Cog):
 
         author_id = message.author.id
         content = message.content or ""
-        if message.attachments:
-            attachment = message.attachments[0]
+        attachment = message.attachments[0] if message.attachments else None
+        if attachment:
             content += hashlib.sha256(
                 f"|{attachment.filename}|{attachment.size}|{attachment.content_type}".encode()
             ).hexdigest()
@@ -142,11 +142,11 @@ class ModerationSpamMessages(commands.Cog):
                 {
                     "message_id": message.id,
                     "channel_id": message.channel.id,
-                    "file_name": message.attachments[0].filename
-                    if not message.content
+                    "file_name": attachment.filename
+                    if attachment and not message.content
                     else None,
-                    "file_url": message.attachments[0].url
-                    if not message.content
+                    "file_url": attachment.url
+                    if attachment and not message.content
                     else None,
                 }
             )
@@ -163,11 +163,11 @@ class ModerationSpamMessages(commands.Cog):
                     {
                         "message_id": message.id,
                         "channel_id": message.channel.id,
-                        "file_name": message.attachments[0].filename
-                        if not message.content
+                        "file_name": attachment.filename
+                        if attachment and not message.content
                         else None,
-                        "file_url": message.attachments[0].url
-                        if not message.content
+                        "file_url": attachment.url
+                        if attachment and not message.content
                         else None,
                     }
                 ],
@@ -233,7 +233,9 @@ class ModerationSpamMessages(commands.Cog):
                 f"You already posted this in {first_channel.mention}"
             )
         finally:
-            fifteen_seconds = datetime.datetime.now().astimezone() + datetime.timedelta(seconds=15)
+            fifteen_seconds = datetime.datetime.now().astimezone() + datetime.timedelta(
+                seconds=15
+            )
             await message.author.timeout(
                 fifteen_seconds, reason="Sending the same message multiple times."
             )
@@ -249,15 +251,17 @@ class ModerationSpamMessages(commands.Cog):
         author_id = message.author.id
         try:
             naughty_role = await message.guild.fetch_role(
-                self.bot.api.get_one_role("7")[0]["roles"][2]
+                self.bot.api.get_one_role("7")["role"]["value"]
             )
             verified_role = await message.guild.fetch_role(
-                self.bot.api.get_one_role("6")[0]["roles"][2]
+                self.bot.api.get_one_role("6")["role"]["value"]
             )
 
-            quarantine_channel = self.bot.api.get_one_setting("2")[0]["setting"][2]
+            quarantine_channel = self.bot.api.get_one_setting("2")["setting"]["value"]
             quarantine_channel = await self.bot.fetch_channel(quarantine_channel)
-            thirty_seconds = datetime.datetime.now().astimezone() + datetime.timedelta(seconds=30)
+            thirty_seconds = datetime.datetime.now().astimezone() + datetime.timedelta(
+                seconds=30
+            )
 
             await message.author.timeout(
                 thirty_seconds, reason="Sending the same message multiple times."

@@ -1,0 +1,20 @@
+# A .editorconfig file standardizes code style and formatting
+# settings across different editors and IDEs.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,toml,cfg,ini}]
+indent_style = space
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

@@ -1,9 +1,11 @@
 """
 Logs when a member gets banned.
 """
-import os
-import logging
+
 import datetime
+import logging
+import os
+
 import discord
 from discord.ext import commands
 
@@ -15,10 +17,10 @@ def embed_ban(some_member, audit_log_entry):
     Embedding for user ban alerts.
     """
     embed = discord.Embed(
-        title=""
-        , description=f"{some_member} was banned by: {audit_log_entry.user}. Reason: {audit_log_entry.reason}"
-        , color=discord.Color.red()
-        , timestamp=datetime.datetime.now(datetime.timezone.utc)
+        title="",
+        description=f"{some_member} was banned by: {audit_log_entry.user}. Reason: {audit_log_entry.reason}",
+        color=discord.Color.red(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc),
     )
     return embed
 
@@ -31,7 +33,9 @@ class LoggingBans(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.verification_role = self.bot.api.get_one_role('6')[0]['roles'][2]  # Verification role ID
+        self.verification_role = self.bot.api.get_one_role("6")["role"][
+            "value"
+        ]  # Verification role ID
         self.mod_log = self.bot.api.get_one_log_setting("5")  # mod_log
 
     @commands.Cog.listener()
@@ -40,9 +44,10 @@ class LoggingBans(commands.Cog):
         First we don't log bans for unapproved people.
         then we grab the guild, and from there read the last entry in the audit log.
         """
-        if member.guild.id != int(os.getenv("MASTER_GUILD")) or \
-                member.guild.id is None:
-            logger.warning(">> on_member_remove fired, but not in master guild. Ignoring event.")
+        if member.guild.id != int(os.getenv("MASTER_GUILD")) or member.guild.id is None:
+            logger.warning(
+                ">> on_member_remove fired, but not in master guild. Ignoring event."
+            )
             return
 
         if self.verification_role in [role.id for role in member.roles]:
@@ -50,11 +55,15 @@ class LoggingBans(commands.Cog):
 
         audit_log = [entry async for entry in member.guild.audit_logs(limit=1)][0]
 
-        if self.mod_log[0]["status"] == "ok":
-            if self.mod_log[0]["logging"][2] == "0":
-                logger.debug(f"log was triggered, but logging is disabled. API: {self.join_log}")
+        if self.mod_log["status"] == "ok":
+            if self.mod_log["log_setting"]["value"] == "0":
+                logger.debug(
+                    f"log was triggered, but logging is disabled. API: {self.join_log}"
+                )
                 return
-            logs_channel = await self.bot.fetch_channel(self.mod_log[0]["logging"][2])
+            logs_channel = await self.bot.fetch_channel(
+                self.mod_log["log_setting"]["value"]
+            )
 
             if str(audit_log.action) == "AuditLogAction.ban":
                 if audit_log.target == member:

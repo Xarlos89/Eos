@@ -9,6 +9,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.so
 
 # Distribution / packaging
 .Python
@@ -157,3 +158,9 @@ dmypy.json
 cython_debug/
 
 /.obsidian/
+
+# MacOS Hidden Files
+.DS_Store
+
+# VSCode
+.vscode/
