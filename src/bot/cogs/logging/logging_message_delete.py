@@ -122,10 +122,11 @@ class LoggingMessageDelete(BaseCog):
         """
         If a mod deletes, take the audit log event. If a user deletes, handle it normally.
         """
-        if (
-            message.author.guild.id != int(os.getenv("MASTER_GUILD", 0))
-            or message.author.guild.id is None
-        ):
+        if message.guild is None:
+            logger.debug(">> on_message_delete fired in DMs. Ignoring event.")
+            return
+
+        if message.guild.id != int(os.getenv("MASTER_GUILD", 0)):
             logger.warning(
                 ">> on_message_delete fired, but not in master guild. Ignoring event."
             )
