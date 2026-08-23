@@ -94,6 +94,10 @@ class LoggingVerification(BaseCog):
         """
         Keep verification clean again
         """
+        if isinstance(message.channel, discord.channel.DMChannel):
+            logger.info("Skipping messages in DMs.")
+            return
+
         if message.author.guild.id != int(os.getenv("MASTER_GUILD")):
             logger.warning(
                 "on_message in verification fired, but not in master guild. Ignoring event."
