@@ -126,7 +126,13 @@ class LatexView(discord.ui.View):
             )
             return
 
-        await interaction.followup.send(embed=embed)
+        channel = interaction.channel
+
+        if isinstance(channel, (discord.TextChannel, discord.Thread)):
+            await channel.send(
+                content=interaction.user.mention,
+                embed=embed,
+            )
 
         for child in self.children:
             if isinstance(child, discord.ui.Button):
